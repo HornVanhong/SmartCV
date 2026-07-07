@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart CV Builder
+
+A professional, high-performance programmatic resume builder built with React 19, Next.js (App Router), Tailwind CSS v4, and `@react-pdf/renderer`.
+
+Smart CV Builder enables users to design, edit, and export ATS-friendly resumes in real-time. It features a side-by-side editing interface, automated offline draft saves, portrait photo uploads, and pixel-perfect programmatic PDF downloads.
+
+---
+
+## Key Features
+
+1. **Live A4 Preview**
+   * Edit form inputs on the left and see changes instantly update on a mock A4 sheet preview on the right.
+   * Beautifully rendered typography using modern system sans-serif fonts.
+
+2. **High-Fidelity PDF Export**
+   * Programmatic, client-side PDF generation powered by `@react-pdf/renderer`.
+   * Completely avoids browser print margin issues, unwanted header/footer print URLs, and styling shifts.
+   * Implements block wrapping to protect sections (Experience, Education, Projects) from splitting awkwardly across page boundaries.
+   * Compiles the PDF **on-demand** only when the download button is clicked, preventing input latency in the form editor.
+
+3. **Profile Photo Upload**
+   * Supports dragging/selecting images directly in the Personal Details form.
+   * Automatically encodes uploads as Base64 data URLs for seamless client-side storage.
+   * Includes file size validations (under **2MB**) to optimize local storage consumption.
+   * Styled in a professional 3:4 portrait aspect ratio, both in the form thumbnail and the PDF header.
+
+4. **Offline Draft Persistence**
+   * Automatically saves your progress to browser `localStorage` as you type.
+   * Restores your draft instantly upon reloading the page.
+   * Includes a safe confirmation modal to clear cache and reset all details to the default template.
+
+5. **Fluid Responsive Layout**
+   * **Desktop (1024px+)**: Elegant split-screen panel grid (editor left, sticky A4 preview right).
+   * **Mobile / Tablet**: Flowing stacked layout. Scroll behavior switches from nested viewports to single-page scroll to prevent mobile scroll hijacking.
+   * **Navbar collapse**: Action buttons automatically shrink (e.g. showing "Save" and "Download" instead of "Save Draft" and "Download PDF") to fit on a single row on small phone viewports.
+
+---
+
+## Tech Stack
+
+* **Framework**: [Next.js](https://nextjs.org/) (App Router, static prerendering)
+* **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict types)
+* **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+* **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (using Base UI primitives)
+* **Icons**: [Lucide React](https://lucide.dev/)
+* **PDF Compiler**: [@react-pdf/renderer](https://react-pdf.org/) (programmatic layout engine)
+
+---
+
+## Project Structure
+
+```bash
+├── public/                  # Static assets (icons, SVGs)
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   │   ├── cv-builder/      # Main CV Builder workspace route
+│   │   ├── layout.tsx       # Root layout & Metadata
+│   │   ├── page.tsx         # Sleek landing page
+│   │   └── globals.css      # Core tailwind styles
+│   ├── components/          # Reusable React components
+│   │   ├── ui/              # shadcn/ui components (accordion, button, badge, input, etc)
+│   │   ├── CVBuilder.tsx    # State coordinator & local saver
+│   │   ├── CVForm.tsx       # Input fields & section wrappers
+│   │   ├── CVPreview.tsx    # A4 mockup page sheet wrapper
+│   │   ├── CVTemplateModern.tsx # HTML rendering template
+│   │   ├── CVDocumentPDF.tsx    # Programmatic PDF layout template
+│   │   └── ExportButton.tsx     # On-demand PDF downloader
+│   ├── lib/
+│   │   ├── default-cv.ts    # Default prefilled candidate data
+│   │   └── utils.ts         # Utility class helpers (cn)
+│   └── types/
+│       └── cv.ts            # TypeScript interface definitions
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
+### 1. Installation
+Clone the repository, navigate into the project folder, and install the npm dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Development Server
+Start the local Next.js development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Production Build
+To run static typechecks, lint rules, and compile the optimized production bundle:
+```bash
+npm run build
+```
+You can preview the production build locally using `npm run start`.
