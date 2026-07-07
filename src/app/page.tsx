@@ -204,7 +204,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900/80 bg-slate-950 py-8 text-center text-xs text-slate-500 relative z-10">
-        <p>&copy; {new Date().getFullYear()} Smart CV Builder. Designed with excellence.</p>
+        <p>&copy; {new Date().getFullYear()} Smart CV Builder. Designed with excellence by Horn Vanhong.</p>
       </footer>
     </div>
   );
