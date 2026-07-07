@@ -148,7 +148,7 @@ export const CVBuilder: React.FC = () => {
             className="flex items-center gap-1.5 h-9 text-xs font-semibold border-slate-250 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
           >
             <Save className="h-3.5 w-3.5" />
-            <span>Save Draft</span>
+            <span>Save <span className="hidden sm:inline">Draft</span></span>
           </Button>
 
           <ExportButton data={cvData} />

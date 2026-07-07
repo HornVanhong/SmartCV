@@ -25,7 +25,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data }) => {
       {/* Preview Canvas Container */}
       <div className="flex-1 bg-slate-100 p-4 sm:p-8 overflow-y-auto flex justify-center items-start min-h-[500px]">
         {/* A4 Sheet Mock */}
-        <div className="w-full max-w-[800px] bg-white shadow-md hover:shadow-lg transition-shadow border border-slate-200/80 rounded-sm overflow-hidden min-h-[29.7cm] flex flex-col">
+        <div className="w-full max-w-[800px] bg-white shadow-md hover:shadow-lg transition-shadow border border-slate-200/80 rounded-sm overflow-hidden min-h-[auto] lg:min-h-[29.7cm] print:min-h-[29.7cm] flex flex-col">
           <CVTemplateModern data={data} />
         </div>
       </div>

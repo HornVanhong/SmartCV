@@ -45,7 +45,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ data }) => {
       ) : (
         <Download className="h-4 w-4" />
       )}
-      <span>{isGenerating ? "Generating..." : "Download PDF"}</span>
+      <span>{isGenerating ? "Generating..." : <span>Download <span className="hidden sm:inline">PDF</span></span>}</span>
     </Button>
   );
 };

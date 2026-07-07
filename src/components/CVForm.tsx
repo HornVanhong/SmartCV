@@ -200,7 +200,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
         <p className="text-xs text-slate-500 mt-0.5">Fill in your information to update the preview instantly.</p>
       </div>
 
-      <div className="p-6 overflow-y-auto max-h-[calc(100vh-280px)] space-y-6">
+      <div className="p-6 lg:overflow-y-auto lg:max-h-[calc(100vh-280px)] space-y-6">
         <Accordion multiple defaultValue={["personal"]} className="w-full space-y-3 border-none">
           
           {/* Personal Information */}
