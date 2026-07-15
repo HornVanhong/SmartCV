@@ -10,7 +10,9 @@ export const defaultCVData: CVData = {
     github: "github.com/alexwright",
     linkedin: "linkedin.com/in/alexwright",
     portfolio: "alexwright.dev",
-    targetRole: "Staff Frontend Architect"
+    targetRole: "Staff Frontend Architect",
+    dob: "Feb 19th, 2002",
+    nationality: "Cambodian"
   },
   professionalSummary: "Product-focused Senior Frontend Engineer with 6+ years of experience designing, building, and scaling high-performance web applications. Expert in React, Next.js, and TypeScript with a passion for web performance, clean architecture, and creating exceptional user experiences. Proven track record of leading development teams, optimizing rendering pipelines, and reducing bundle sizes by up to 40%.",
   education: [

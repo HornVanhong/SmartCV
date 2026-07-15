@@ -259,7 +259,8 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   {([
                     { id: "modern", name: "Modern", desc: "Double column" },
                     { id: "minimalist", name: "Minimalist", desc: "Traditional layout" },
-                    { id: "creative", name: "Creative", desc: "Split sidebar" }
+                    { id: "creative", name: "Creative", desc: "Split sidebar" },
+                    { id: "professional", name: "Professional", desc: "Solid top banner" }
                   ] as const).map((temp) => {
                     const active = (data.theme?.templateId || "modern") === temp.id;
                     return (
@@ -447,6 +448,29 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     value={data.personalInfo.location}
                     onChange={(e) => handlePersonalInfoChange("location", e.target.value)}
                     placeholder="City, State"
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="dob" className="text-xs font-semibold text-slate-600">Date of Birth</Label>
+                  <Input
+                    id="dob"
+                    value={data.personalInfo.dob || ""}
+                    onChange={(e) => handlePersonalInfoChange("dob", e.target.value)}
+                    placeholder="e.g. Feb 19th, 2002"
+                    className="h-9 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="nationality" className="text-xs font-semibold text-slate-600">Nationality</Label>
+                  <Input
+                    id="nationality"
+                    value={data.personalInfo.nationality || ""}
+                    onChange={(e) => handlePersonalInfoChange("nationality", e.target.value)}
+                    placeholder="e.g. Cambodian"
                     className="h-9 text-xs"
                   />
                 </div>

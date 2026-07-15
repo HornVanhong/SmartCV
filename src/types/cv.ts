@@ -9,6 +9,8 @@ export interface PersonalInfo {
   portfolio: string;
   photo?: string;
   targetRole?: string;
+  dob?: string;
+  nationality?: string;
 }
 
 export interface Education {
@@ -53,7 +55,7 @@ export interface Reference {
 }
 
 export interface CVTheme {
-  templateId: "modern" | "minimalist" | "creative";
+  templateId: "modern" | "minimalist" | "creative" | "professional";
   primaryColor: string;
 }
 

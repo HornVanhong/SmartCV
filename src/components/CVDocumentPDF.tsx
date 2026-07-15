@@ -2,10 +2,10 @@ import React from "react";
 import { Document, Page, Text, View, StyleSheet, Image, Link } from "@react-pdf/renderer";
 import { CVData } from "@/types/cv";
 
-// Create styles mimicking CVTemplateModern
+// Create styles mimicking templates
 const styles = StyleSheet.create({
   page: {
-    padding: 36, // approx 13mm margin
+    padding: 0, // 0 padding for full-bleed layouts, templates handle padding individually
     backgroundColor: "#ffffff",
     fontFamily: "Helvetica",
     fontSize: 9.5,
@@ -283,7 +283,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
   // Render Modern Layout
   const renderModern = () => (
-    <View>
+    <View style={{ padding: 36 }}>
       {/* Header */}
       <View style={styles.header}>
         {personalInfo.photo ? (
@@ -489,7 +489,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
   // Render Minimalist Layout
   const renderMinimalist = () => (
-    <View>
+    <View style={{ padding: 36 }}>
       {/* Centered Header */}
       <View style={[styles.centeredHeader, { borderBottomColor: primaryColor }]}>
         {personalInfo.photo ? (
@@ -668,7 +668,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
   // Render Creative Split Layout
   const renderCreative = () => (
-    <View style={styles.splitLayout}>
+    <View style={[styles.splitLayout, { padding: 36 }]}>
       {/* Sidebar Column */}
       <View style={styles.sidebarColumn}>
         {personalInfo.photo ? (
@@ -864,12 +864,211 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
     </View>
   );
 
+  // Render Professional Layout (Top Banner, Solid boxes)
+  const renderProfessional = () => (
+    <View style={{ flex: 1 }}>
+      {/* Full-bleed Top Banner */}
+      <View style={{ backgroundColor: primaryColor, paddingHorizontal: 36, paddingVertical: 20, flexDirection: "row", alignItems: "center", gap: 15 }}>
+        {personalInfo.photo ? (
+          <Image src={personalInfo.photo} style={[styles.photo, { width: 66, height: 88, borderWidth: 3, borderColor: "#ffffff", borderRadius: 2, marginBottom: -42, zIndex: 10 }]} />
+        ) : null}
+        <View style={{ flex: 1, marginLeft: personalInfo.photo ? 15 : 0 }}>
+          <Text style={[styles.name, { color: "#ffffff", textTransform: "uppercase" }]}>{personalInfo.fullName || "Your Name"}</Text>
+          <Text style={[styles.title, { color: "#f1f5f9", fontSize: 10, textTransform: "uppercase", marginTop: 2, fontFamily: "Helvetica-Bold" }]}>
+            {personalInfo.jobTitle || "Professional Title"}
+          </Text>
+          {personalInfo.targetRole ? (
+            <Text style={{ fontSize: 7.5, color: "#cbd5e1", textTransform: "uppercase", marginTop: 2, letterSpacing: 0.5 }}>
+              Applied for: {personalInfo.targetRole}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+
+      {/* Main split content below banner */}
+      <View style={{ paddingHorizontal: 36, paddingTop: 35, paddingBottom: 20, flex: 1, flexDirection: "row", gap: 20 }}>
+        {/* Left Sidebar */}
+        <View style={styles.sidebarColumn}>
+          {/* Contacts with small primary color icon box equivalent */}
+          <View style={[styles.sidebarSection, { marginTop: 10 }]}>
+            {personalInfo.phone ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>P</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.phone}</Text>
+              </View>
+            ) : null}
+            {personalInfo.email ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>E</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.email}</Text>
+              </View>
+            ) : null}
+            {personalInfo.dob ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>D</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.dob}</Text>
+              </View>
+            ) : null}
+            {personalInfo.nationality ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>N</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.nationality}</Text>
+              </View>
+            ) : null}
+            {personalInfo.location ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>L</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.location}</Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Education */}
+          {education && education.length > 0 ? (
+            <View style={styles.sidebarSection}>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Education</Text>
+              {education.map((edu) => (
+                <View key={edu.id} style={{ marginBottom: 6 }}>
+                  <Text style={{ fontSize: 8, fontFamily: "Helvetica-Bold", color: "#1e293b" }}>{edu.major}</Text>
+                  <Text style={{ fontSize: 7.5, color: "#475569" }}>{edu.school}</Text>
+                  <Text style={{ fontSize: 7, color: "#64748b" }}>{edu.startDate} - {edu.endDate || "Present"}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {/* Skills */}
+          {skills && skills.length > 0 ? (
+            <View style={styles.sidebarSection}>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Skills</Text>
+              <View style={{ gap: 2 }}>
+                {skills.map((skill, index) => (
+                  <Text key={index} style={{ fontSize: 8, color: "#475569" }}>• {skill}</Text>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          {/* Languages */}
+          {languages && languages.length > 0 ? (
+            <View style={styles.sidebarSection}>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Languages</Text>
+              {languages.map((lang) => (
+                <View key={lang.id} style={[styles.languageRow, { borderBottomColor: "#cbd5e1" }]}>
+                  <Text style={[styles.languageName, { fontSize: 8 }]}>{lang.name}</Text>
+                  <Text style={[styles.languageLevel, { fontSize: 7.5 }]}>{lang.level}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
+
+        {/* Right Main Column */}
+        <View style={styles.mainColumn}>
+          {/* Profile */}
+          {professionalSummary ? (
+            <View style={styles.section} wrap={false}>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Profile</Text>
+              <Text style={styles.summaryText}>{professionalSummary}</Text>
+            </View>
+          ) : null}
+
+          {/* Work Experience */}
+          {experience && experience.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Work Experience</Text>
+              {experience.map((exp) => (
+                <View key={exp.id} style={{ flexDirection: "row", gap: 10, marginBottom: 8 }} wrap={false}>
+                  <View style={{ width: 60, flexShrink: 0 }}>
+                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#64748b" }}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 9, fontFamily: "Helvetica-Bold", color: "#0f172a" }}>
+                      {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
+                    </Text>
+                    {exp.description ? (
+                      <Text style={[styles.itemDescription, { marginTop: 2 }]}>{exp.description}</Text>
+                    ) : null}
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {/* Projects */}
+          {projects && projects.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Projects & Courses</Text>
+              {projects.map((proj) => (
+                <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.projectHeader}>
+                    <Text style={styles.itemTitle}>{proj.name}</Text>
+                    {proj.link ? (
+                      <Link src={`https://${proj.link}`} style={[styles.projectLink, { color: primaryColor }]}>
+                        <Text>{cleanLink(proj.link)}</Text>
+                      </Link>
+                    ) : null}
+                  </View>
+                  {proj.description ? (
+                    <Text style={styles.itemDescription}>{proj.description}</Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {/* References */}
+          {references && references.length > 0 ? (
+            <View style={[styles.section, { marginTop: 8 }]} wrap={false}>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>References</Text>
+              <View style={styles.referencesGrid}>
+                {references.map((ref) => (
+                  <View key={ref.id} style={styles.referenceItem}>
+                    <Text style={styles.referenceName}>{ref.name}</Text>
+                    {ref.relationship && ref.company ? (
+                      <Text style={styles.referenceSub}>{ref.relationship} at {ref.company}</Text>
+                    ) : ref.relationship || ref.company ? (
+                      <Text style={styles.referenceSub}>{ref.relationship || ref.company}</Text>
+                    ) : null}
+                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginTop: 1 }}>
+                      {ref.email ? (
+                        <Text style={styles.referenceContact}>Email: {ref.email}</Text>
+                      ) : null}
+                      {ref.email && ref.phone ? (
+                        <Text style={[styles.referenceContact, { color: "#cbd5e1" }]}>|</Text>
+                      ) : null}
+                      {ref.phone ? (
+                        <Text style={styles.referenceContact}>Tel: {ref.phone}</Text>
+                      ) : null}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
+
   const renderLayout = () => {
     switch (templateId) {
       case "minimalist":
         return renderMinimalist();
       case "creative":
         return renderCreative();
+      case "professional":
+        return renderProfessional();
       case "modern":
       default:
         return renderModern();

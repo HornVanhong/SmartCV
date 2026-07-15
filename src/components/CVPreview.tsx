@@ -5,6 +5,7 @@ import { CVData } from "@/types/cv";
 import { CVTemplateModern } from "@/components/CVTemplateModern";
 import { CVTemplateMinimalist } from "@/components/CVTemplateMinimalist";
 import { CVTemplateCreative } from "@/components/CVTemplateCreative";
+import { CVTemplateProfessional } from "@/components/CVTemplateProfessional";
 
 interface CVPreviewProps {
   data: CVData;
@@ -19,6 +20,8 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data }) => {
         return <CVTemplateMinimalist data={data} />;
       case "creative":
         return <CVTemplateCreative data={data} />;
+      case "professional":
+        return <CVTemplateProfessional data={data} />;
       case "modern":
       default:
         return <CVTemplateModern data={data} />;
