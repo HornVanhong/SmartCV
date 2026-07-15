@@ -178,6 +178,31 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     color: "#475569",
   },
+  referencesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 15,
+    marginTop: 4,
+  },
+  referenceItem: {
+    width: "48%",
+    marginBottom: 6,
+  },
+  referenceName: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#0f172a",
+  },
+  referenceSub: {
+    fontSize: 8,
+    color: "#475569",
+    fontFamily: "Helvetica-Bold",
+  },
+  referenceContact: {
+    fontSize: 7.5,
+    color: "#64748b",
+    marginTop: 1,
+  },
 });
 
 interface CVDocumentPDFProps {
@@ -185,7 +210,7 @@ interface CVDocumentPDFProps {
 }
 
 export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
-  const { personalInfo, professionalSummary, education, skills, projects, experience, languages } = data;
+  const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
 
   const cleanLink = (url: string) => {
     return url.replace(/^(https?:\/\/)?(www\.)?/, "");
@@ -350,6 +375,36 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             </View>
           ) : null}
         </View>
+
+        {/* References */}
+        {references && references.length > 0 ? (
+          <View style={[styles.section, { marginTop: 12 }]} wrap={false}>
+            <Text style={styles.sectionTitle}>References</Text>
+            <View style={styles.referencesGrid}>
+              {references.map((ref) => (
+                <View key={ref.id} style={styles.referenceItem}>
+                  <Text style={styles.referenceName}>{ref.name}</Text>
+                  {ref.relationship && ref.company ? (
+                    <Text style={styles.referenceSub}>{ref.relationship} at {ref.company}</Text>
+                  ) : ref.relationship || ref.company ? (
+                    <Text style={styles.referenceSub}>{ref.relationship || ref.company}</Text>
+                  ) : null}
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginTop: 1 }}>
+                    {ref.email ? (
+                      <Text style={styles.referenceContact}>{ref.email}</Text>
+                    ) : null}
+                    {ref.email && ref.phone ? (
+                      <Text style={[styles.referenceContact, { color: "#cbd5e1" }]}>|</Text>
+                    ) : null}
+                    {ref.phone ? (
+                      <Text style={styles.referenceContact}>{ref.phone}</Text>
+                    ) : null}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
 
       </Page>
     </Document>

@@ -8,7 +8,7 @@ interface CVTemplateModernProps {
 
 export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModernProps>(
   ({ data }, ref) => {
-    const { personalInfo, professionalSummary, education, skills, projects, experience, languages } = data;
+    const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
 
     return (
       <div
@@ -242,6 +242,36 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
               </section>
             )}
           </div>
+
+          {/* References */}
+          {references && references.length > 0 && (
+            <section className="space-y-2 pt-2 break-inside-avoid">
+              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+                References
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pt-1">
+                {references.map((ref) => (
+                  <div key={ref.id} className="space-y-0.5 break-inside-avoid text-xs sm:text-sm">
+                    <h3 className="text-slate-900 font-bold">{ref.name}</h3>
+                    {ref.relationship && ref.company ? (
+                      <p className="text-slate-600 font-medium text-xs">{ref.relationship} at {ref.company}</p>
+                    ) : ref.relationship || ref.company ? (
+                      <p className="text-slate-600 font-medium text-xs">{ref.relationship || ref.company}</p>
+                    ) : null}
+                    <div className="text-slate-500 text-xs flex flex-wrap gap-x-2 mt-0.5 font-medium">
+                      {ref.email && (
+                        <a href={`mailto:${ref.email}`} className="hover:text-slate-900 transition-colors">
+                          {ref.email}
+                        </a>
+                      )}
+                      {ref.email && ref.phone && <span className="text-slate-300">•</span>}
+                      {ref.phone && <span>{ref.phone}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     );

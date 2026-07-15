@@ -7,7 +7,7 @@ import { CVForm } from "@/components/CVForm";
 import { CVPreview } from "@/components/CVPreview";
 import { ExportButton } from "@/components/ExportButton";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Save, ArrowLeft, Check, Sparkles, FileText, X } from "lucide-react";
+import { RotateCcw, Save, ArrowLeft, Check, FileText } from "lucide-react";
 import Link from "next/link";
 
 export const CVBuilder: React.FC = () => {
@@ -22,6 +22,7 @@ export const CVBuilder: React.FC = () => {
     const saved = localStorage.getItem("smart_cv_data");
     if (saved) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCvData(JSON.parse(saved));
       } catch (err) {
         console.error("Failed to parse saved CV data, loading default.", err);

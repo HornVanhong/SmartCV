@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { CVData, PersonalInfo, Education, Experience, Project, Language } from "@/types/cv";
+import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference } from "@/types/cv";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload } from "lucide-react";
+import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck } from "lucide-react";
 
 interface CVFormProps {
   data: CVData;
@@ -170,6 +170,35 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     onChange({
       ...data,
       languages: data.languages.filter((lang) => lang.id !== id),
+    });
+  };
+
+  const addReference = () => {
+    const newRef: Reference = {
+      id: `ref-${Date.now()}`,
+      name: "",
+      relationship: "",
+      company: "",
+      email: "",
+      phone: "",
+    };
+    onChange({
+      ...data,
+      references: [...(data.references || []), newRef],
+    });
+  };
+
+  const updateReference = (id: string, field: keyof Reference, value: string) => {
+    onChange({
+      ...data,
+      references: (data.references || []).map((ref) => (ref.id === id ? { ...ref, [field]: value } : ref)),
+    });
+  };
+
+  const removeReference = (id: string) => {
+    onChange({
+      ...data,
+      references: (data.references || []).filter((ref) => ref.id !== id),
     });
   };
 
@@ -725,6 +754,94 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
               >
                 <Plus className="h-4 w-4" />
                 Add Language
+              </Button>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* References */}
+          <AccordionItem value="references" className="border border-slate-200 rounded-xl px-4 py-1 bg-white shadow-none">
+            <AccordionTrigger className="hover:no-underline py-3">
+              <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
+                <UserCheck className="h-4.5 w-4.5 text-blue-500" />
+                References
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 pb-4 space-y-4">
+              {(data.references || []).map((ref, index) => (
+                <div key={ref.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
+                  <div className="absolute top-3 right-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeReference(ref.id)}
+                      className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Reference #{index + 1}</h4>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Reference Name</Label>
+                      <Input
+                        value={ref.name}
+                        onChange={(e) => updateReference(ref.id, "name", e.target.value)}
+                        placeholder="John Doe"
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Relationship</Label>
+                      <Input
+                        value={ref.relationship}
+                        onChange={(e) => updateReference(ref.id, "relationship", e.target.value)}
+                        placeholder="e.g. Former Manager, Mentor"
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5 sm:col-span-1">
+                      <Label className="text-xs font-semibold text-slate-600">Company</Label>
+                      <Input
+                        value={ref.company}
+                        onChange={(e) => updateReference(ref.id, "company", e.target.value)}
+                        placeholder="e.g. Stripe"
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Email</Label>
+                      <Input
+                        value={ref.email}
+                        onChange={(e) => updateReference(ref.id, "email", e.target.value)}
+                        placeholder="john.doe@company.com"
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Phone</Label>
+                      <Input
+                        value={ref.phone}
+                        onChange={(e) => updateReference(ref.id, "phone", e.target.value)}
+                        placeholder="+1 (555) 012-3456"
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addReference}
+                className="w-full flex items-center justify-center gap-2 h-9 text-xs font-semibold border-dashed border-slate-350 hover:bg-slate-50 text-slate-600"
+              >
+                <Plus className="h-4 w-4" />
+                Add Reference
               </Button>
             </AccordionContent>
           </AccordionItem>

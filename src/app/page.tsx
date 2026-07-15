@@ -10,7 +10,6 @@ import {
   Eye, 
   Search, 
   ArrowRight, 
-  CheckCircle2,
   Github
 } from "lucide-react";
 

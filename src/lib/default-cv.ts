@@ -81,5 +81,15 @@ export const defaultCVData: CVData = {
       name: "Spanish",
       level: "Conversational"
     }
+  ],
+  references: [
+    {
+      id: "ref-1",
+      name: "Sarah Jenkins",
+      relationship: "Engineering Manager",
+      company: "Stripe",
+      email: "sarah.jenkins@stripe.com",
+      phone: "+1 (555) 012-3456"
+    }
   ]
 };

@@ -42,6 +42,15 @@ export interface Language {
   level: string;
 }
 
+export interface Reference {
+  id: string;
+  name: string;
+  relationship: string;
+  company: string;
+  email: string;
+  phone: string;
+}
+
 export interface CVData {
   personalInfo: PersonalInfo;
   professionalSummary: string;
@@ -50,4 +59,6 @@ export interface CVData {
   projects: Project[];
   experience: Experience[];
   languages: Language[];
+  references?: Reference[];
 }
+
