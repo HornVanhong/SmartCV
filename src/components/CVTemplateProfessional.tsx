@@ -22,7 +22,11 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
           <div className="flex flex-col sm:flex-row items-center gap-6 z-10">
             {/* White border Photo offset */}
             {personalInfo.photo && (
-              <div className="h-32 w-28 rounded-sm overflow-hidden border-3 border-white bg-white shadow-md sm:-mb-14 print:-mb-14">
+              <div className={`rounded-sm overflow-hidden border-3 border-white bg-white shadow-md sm:-mb-14 print:-mb-14 ${
+                data.theme?.photoAspectRatio === "4:6"
+                  ? "h-36 w-24"
+                  : "h-32 w-24"
+              }`}>
                 <img
                   src={personalInfo.photo}
                   alt={personalInfo.fullName}

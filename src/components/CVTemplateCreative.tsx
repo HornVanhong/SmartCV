@@ -22,7 +22,11 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
           
           {/* Profile Photo */}
           {personalInfo.photo && (
-            <div className="h-28 w-24 rounded-2xl overflow-hidden border border-slate-200 shadow-xs mx-auto shrink-0">
+            <div className={`rounded-2xl overflow-hidden border border-slate-200 shadow-xs mx-auto shrink-0 ${
+              data.theme?.photoAspectRatio === "4:6"
+                ? "h-36 w-24"
+                : "h-32 w-24"
+            }`}>
               <img
                 src={personalInfo.photo}
                 alt={personalInfo.fullName}

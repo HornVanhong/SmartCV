@@ -23,7 +23,11 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
         <header className="border-b-2 border-slate-900 pb-5 mb-6">
           <div className="flex flex-col sm:flex-row gap-5 items-start">
             {personalInfo.photo && (
-              <div className="shrink-0 h-32 w-24 rounded-xl overflow-hidden border border-slate-200 shadow-xs print:h-28 print:w-20 print:rounded-lg">
+              <div className={`shrink-0 rounded-xl overflow-hidden border border-slate-200 shadow-xs ${
+                data.theme?.photoAspectRatio === "4:6"
+                  ? "h-36 w-24 print:h-30 print:w-20"
+                  : "h-32 w-24 print:h-28 print:w-20"
+              }`}>
                 <img
                   src={personalInfo.photo}
                   alt={personalInfo.fullName}

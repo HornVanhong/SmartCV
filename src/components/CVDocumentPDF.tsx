@@ -287,7 +287,15 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {/* Header */}
       <View style={styles.header}>
         {personalInfo.photo ? (
-          <Image src={personalInfo.photo} style={styles.photo} />
+          <Image
+            src={personalInfo.photo}
+            style={[
+              styles.photo,
+              data.theme?.photoAspectRatio === "4:6"
+                ? { width: 60, height: 90 }
+                : { width: 66, height: 88 }
+            ]}
+          />
         ) : null}
         
         <View style={styles.headerTextContainer}>
@@ -493,7 +501,16 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {/* Centered Header */}
       <View style={[styles.centeredHeader, { borderBottomColor: primaryColor }]}>
         {personalInfo.photo ? (
-          <Image src={personalInfo.photo} style={[styles.photo, { borderRadius: 44, width: 60, height: 60, marginBottom: 8 }]} />
+          <Image
+            src={personalInfo.photo}
+            style={[
+              styles.photo,
+              { borderRadius: 6, marginBottom: 8 },
+              data.theme?.photoAspectRatio === "4:6"
+                ? { width: 60, height: 90 }
+                : { width: 66, height: 88 }
+            ]}
+          />
         ) : null}
         <Text style={styles.name}>{personalInfo.fullName || "Your Name"}</Text>
         <Text style={[styles.title, { fontFamily: "Helvetica-Bold", color: primaryColor, fontSize: 10, textTransform: "uppercase" }]}>
@@ -672,7 +689,16 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {/* Sidebar Column */}
       <View style={styles.sidebarColumn}>
         {personalInfo.photo ? (
-          <Image src={personalInfo.photo} style={[styles.photo, { width: 66, height: 88, borderRadius: 6, marginBottom: 12, marginLeft: "auto", marginRight: "auto" }]} />
+          <Image
+            src={personalInfo.photo}
+            style={[
+              styles.photo,
+              { borderRadius: 6, marginBottom: 12, marginLeft: "auto", marginRight: "auto" },
+              data.theme?.photoAspectRatio === "4:6"
+                ? { width: 60, height: 90 }
+                : { width: 66, height: 88 }
+            ]}
+          />
         ) : null}
 
         <View style={{ marginBottom: 15 }}>
@@ -870,7 +896,16 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {/* Full-bleed Top Banner */}
       <View style={{ backgroundColor: primaryColor, paddingHorizontal: 36, paddingVertical: 20, flexDirection: "row", alignItems: "center", gap: 15 }}>
         {personalInfo.photo ? (
-          <Image src={personalInfo.photo} style={[styles.photo, { width: 66, height: 88, borderWidth: 3, borderColor: "#ffffff", borderRadius: 2, marginBottom: -42, zIndex: 10 }]} />
+          <Image
+            src={personalInfo.photo}
+            style={[
+              styles.photo,
+              { borderWidth: 3, borderColor: "#ffffff", borderRadius: 2, zIndex: 10 },
+              data.theme?.photoAspectRatio === "4:6"
+                ? { width: 60, height: 90, marginBottom: -46 }
+                : { width: 66, height: 88, marginBottom: -42 }
+            ]}
+          />
         ) : null}
         <View style={{ flex: 1, marginLeft: personalInfo.photo ? 15 : 0 }}>
           <Text style={[styles.name, { color: "#ffffff", textTransform: "uppercase" }]}>{personalInfo.fullName || "Your Name"}</Text>

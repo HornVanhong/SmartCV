@@ -347,41 +347,70 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
               {/* Profile Photo Upload */}
-              <div className="space-y-2 pb-2 border-b border-slate-100">
-                <Label className="text-xs font-semibold text-slate-600">Profile Photo</Label>
-                <div className="flex items-center gap-4">
-                  {data.personalInfo.photo ? (
-                    <div className="relative h-20 w-16 rounded-xl border border-slate-200 overflow-hidden group">
-                      <img
-                        src={data.personalInfo.photo}
-                        alt="Profile Preview"
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleRemovePhoto}
-                        className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white rounded-xl"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-20 w-16 rounded-xl border border-dashed border-slate-350 bg-slate-50/50 text-slate-400">
-                      <Upload className="h-5 w-5" />
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-1.5">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      className="text-xs h-9 w-full max-w-[240px] cursor-pointer file:text-xs file:font-semibold"
-                    />
-                    {photoError ? (
-                      <span className="text-[10px] text-rose-500 font-medium">{photoError}</span>
+              <div className="space-y-4 pb-4 border-b border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 justify-between">
+                  <div className="flex items-center gap-4">
+                    {data.personalInfo.photo ? (
+                      <div className="relative h-20 w-16 rounded-xl border border-slate-200 overflow-hidden group">
+                        <img
+                          src={data.personalInfo.photo}
+                          alt="Profile Preview"
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemovePhoto}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white rounded-xl"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     ) : (
-                      <span className="text-[10px] text-slate-400">Recommended: Square image, PNG or JPG, max 2MB.</span>
+                      <div className="flex items-center justify-center h-20 w-16 rounded-xl border border-dashed border-slate-350 bg-slate-50/50 text-slate-400">
+                        <Upload className="h-5 w-5" />
+                      </div>
                     )}
+                    <div className="flex flex-col gap-1.5">
+                      <Label className="text-xs font-semibold text-slate-650">Profile Photo</Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="text-xs h-9 w-full max-w-[240px] cursor-pointer file:text-xs file:font-semibold"
+                      />
+                      {photoError ? (
+                        <span className="text-[10px] text-rose-500 font-medium">{photoError}</span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400">Recommended: Portrait image, PNG or JPG, max 2MB.</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Aspect Ratio Picker */}
+                  <div className="space-y-1.5 shrink-0">
+                    <Label className="text-xs font-semibold text-slate-650 block">Photo Size (Aspect Ratio)</Label>
+                    <div className="flex gap-2">
+                      {([
+                        { id: "3:4", label: "3x4 Portrait" },
+                        { id: "4:6", label: "4x6 Portrait" }
+                      ] as const).map((ratio) => {
+                        const active = (data.theme?.photoAspectRatio || "3:4") === ratio.id;
+                        return (
+                          <button
+                            key={ratio.id}
+                            type="button"
+                            onClick={() => handleThemeChange("photoAspectRatio", ratio.id)}
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                              active
+                                ? "bg-blue-600 border-blue-600 text-white shadow-xs"
+                                : "bg-white border-slate-200 text-slate-700 hover:border-slate-350 hover:bg-slate-50/50"
+                            }`}
+                          >
+                            {ratio.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>

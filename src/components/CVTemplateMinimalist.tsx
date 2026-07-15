@@ -20,7 +20,11 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
         {/* Header - Centered */}
         <header className="flex flex-col items-center text-center border-b pb-6 mb-6" style={{ borderColor: primaryColor }}>
           {personalInfo.photo && (
-            <div className="h-24 w-24 rounded-full overflow-hidden border border-slate-200 shadow-xs mb-4">
+            <div className={`overflow-hidden border border-slate-200 shadow-xs mb-4 ${
+              data.theme?.photoAspectRatio === "4:6"
+                ? "h-36 w-24 rounded-xl"
+                : "h-32 w-24 rounded-xl"
+            }`}>
               <img
                 src={personalInfo.photo}
                 alt={personalInfo.fullName}
