@@ -46,9 +46,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    color: "#475569", // slate-600
+    color: "#475569",
     marginTop: 4,
     lineHeight: 1.2,
+  },
+  targetRole: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: "#2563eb",
+    textTransform: "uppercase",
+    marginTop: 4,
+    letterSpacing: 0.5,
   },
   contactContainer: {
     alignItems: "flex-end",
@@ -230,6 +238,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             <View style={styles.nameTitleContainer}>
               <Text style={styles.name}>{personalInfo.fullName || "Your Name"}</Text>
               <Text style={styles.title}>{personalInfo.jobTitle || "Professional Title"}</Text>
+              {personalInfo.targetRole ? (
+                <Text style={styles.targetRole}>Applied for: {personalInfo.targetRole}</Text>
+              ) : null}
             </View>
             
             <View style={styles.contactContainer}>

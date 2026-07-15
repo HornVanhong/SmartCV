@@ -281,7 +281,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="fullName" className="text-xs font-semibold text-slate-600">Full Name</Label>
                   <Input
@@ -299,6 +299,16 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     value={data.personalInfo.jobTitle}
                     onChange={(e) => handlePersonalInfoChange("jobTitle", e.target.value)}
                     placeholder="Senior Developer"
+                    className="h-9 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="targetRole" className="text-xs font-semibold text-slate-600">Target Role / Applied For</Label>
+                  <Input
+                    id="targetRole"
+                    value={data.personalInfo.targetRole || ""}
+                    onChange={(e) => handlePersonalInfoChange("targetRole", e.target.value)}
+                    placeholder="e.g. Staff Architect"
                     className="h-9 text-xs"
                   />
                 </div>

@@ -8,6 +8,7 @@ export interface PersonalInfo {
   linkedin: string;
   portfolio: string;
   photo?: string;
+  targetRole?: string;
 }
 
 export interface Education {

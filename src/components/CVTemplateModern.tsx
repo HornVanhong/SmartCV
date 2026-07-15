@@ -38,6 +38,11 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                 <p className="text-lg font-medium text-slate-600 mt-1">
                   {personalInfo.jobTitle || "Professional Title"}
                 </p>
+                {personalInfo.targetRole && (
+                  <p className="text-xs font-bold text-blue-600 mt-1 uppercase tracking-wider">
+                    Applied for: {personalInfo.targetRole}
+                  </p>
+                )}
               </div>
               
               {/* Contact details */}
