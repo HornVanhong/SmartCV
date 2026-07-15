@@ -170,8 +170,8 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                   {experience.map((exp) => (
                     <div key={exp.id} className="flex flex-col sm:flex-row print:flex-row gap-2 sm:gap-4 print:gap-4 break-inside-avoid">
                       {/* Left dates column */}
-                      <div className="w-[100px] shrink-0 text-xs font-bold text-slate-600 sm:text-left print:text-left">
-                        {exp.startDate} <br className="hidden sm:inline print:inline" /> - <br className="hidden sm:inline print:inline" /> {exp.endDate || "Present"}
+                      <div className="w-[120px] shrink-0 text-xs font-bold text-slate-500 whitespace-nowrap">
+                        {exp.startDate} – {exp.endDate || "Present"}
                       </div>
                       {/* Right desc column */}
                       <div className="flex-1 space-y-1">

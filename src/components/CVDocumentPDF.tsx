@@ -989,7 +989,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
               <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Work Experience</Text>
               {experience.map((exp) => (
                 <View key={exp.id} style={{ flexDirection: "row", gap: 10, marginBottom: 8 }} wrap={false}>
-                  <View style={{ width: 60, flexShrink: 0 }}>
+                  <View style={{ width: 90, flexShrink: 0 }}>
                     <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#64748b" }}>{exp.startDate} – {exp.endDate || "Present"}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
