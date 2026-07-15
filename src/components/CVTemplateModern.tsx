@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
+import { t } from "@/lib/translations";
 
 interface CVTemplateModernProps {
   data: CVData;
@@ -10,6 +11,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
   ({ data }, ref) => {
     const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
     const primaryColor = data.theme?.primaryColor || "#2563eb";
+    const lang = data.theme?.language || "en";
 
     return (
       <div
@@ -45,13 +47,13 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                 </p>
                 {personalInfo.targetRole && (
                   <p className="text-xs font-bold mt-1 uppercase tracking-wider" style={{ color: primaryColor }}>
-                    Applied for: {personalInfo.targetRole}
+                    {t("appliedFor", lang)}: {personalInfo.targetRole}
                   </p>
                 )}
               </div>
               
               {/* Contact details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1.5 text-xs text-slate-600 w-full md:w-auto md:text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1.5 text-xs text-slate-650 w-full md:w-auto md:text-right">
                 {personalInfo.email && (
                   <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-1.5 justify-start md:justify-end hover:text-slate-900 transition-colors">
                     <span>{personalInfo.email}</span>
@@ -71,7 +73,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                   </div>
                 )}
                 
-                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-start md:justify-end col-span-full md:col-span-1 mt-1 text-[11px] font-medium text-slate-500">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 justify-start md:justify-end col-span-full md:col-span-1 mt-1 text-[11px] font-semibold text-slate-500">
                   {personalInfo.github && (
                     <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                       <Github className="h-3 w-3 print:hidden" />
@@ -102,9 +104,9 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {professionalSummary && (
             <section className="space-y-2 print:space-y-1">
               <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                Professional Summary
+                {t("professionalSummary", lang)}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
+              <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
                 {professionalSummary}
               </p>
             </section>
@@ -114,7 +116,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {experience && experience.length > 0 && (
             <section className="space-y-3 print:space-y-2">
               <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                Work Experience
+                {t("workExperience", lang)}
               </h2>
               <div className="space-y-4 print:space-y-2">
                 {experience.map((exp) => (
@@ -124,11 +126,11 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                         {exp.position} <span className="text-slate-400 font-normal">at</span> {exp.company}
                       </h3>
                       <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
-                        {exp.startDate} – {exp.endDate || "Present"}
+                        {exp.startDate} – {exp.endDate || t("present", lang)}
                       </span>
                     </div>
                     {exp.description && (
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line text-justify">
+                      <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
                         {exp.description}
                       </p>
                     )}
@@ -142,7 +144,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {education && education.length > 0 && (
             <section className="space-y-3 print:space-y-2">
               <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                Education
+                {t("education", lang)}
               </h2>
               <div className="space-y-3 print:space-y-1.5">
                 {education.map((edu) => (
@@ -152,7 +154,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                         {edu.major}
                       </h3>
                       <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
-                        {edu.startDate} – {edu.endDate || "Present"}
+                        {edu.startDate} – {edu.endDate || t("present", lang)}
                       </span>
                     </div>
                     <div className="text-xs text-slate-700 font-medium">
@@ -173,7 +175,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {projects && projects.length > 0 && (
             <section className="space-y-3 print:space-y-2">
               <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                Projects
+                {t("projects", lang)}
               </h2>
               <div className="space-y-3 print:space-y-1.5">
                 {projects.map((proj) => (
@@ -206,7 +208,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                     )}
                     {proj.technologies && (
                       <div className="text-xs text-slate-500 font-medium mt-1">
-                        <span className="text-slate-700 font-semibold">Technologies:</span> {proj.technologies}
+                        <span className="text-slate-700 font-semibold">Tech:</span> {proj.technologies}
                       </div>
                     )}
                   </div>
@@ -221,7 +223,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
             {skills && skills.length > 0 && (
               <section className="space-y-2">
                 <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                  Skills
+                  {t("skills", lang)}
                 </h2>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {skills.map((skill, index) => (
@@ -240,13 +242,13 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
             {languages && languages.length > 0 && (
               <section className="space-y-2">
                 <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                  Languages
+                  {t("languages", lang)}
                 </h2>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-1">
-                  {languages.map((lang) => (
-                    <div key={lang.id} className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-800">{lang.name}</span>
-                      <span className="text-slate-500 font-medium italic">{lang.level}</span>
+                  {languages.map((langItem) => (
+                    <div key={langItem.id} className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800">{langItem.name}</span>
+                      <span className="text-slate-500 font-medium italic">{langItem.level}</span>
                     </div>
                   ))}
                 </div>
@@ -258,7 +260,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {references && references.length > 0 && (
             <section className="space-y-2 pt-2 break-inside-avoid">
               <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
-                References
+                {t("references", lang)}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pt-1">
                 {references.map((ref) => (
@@ -272,11 +274,11 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                     <div className="text-slate-500 text-xs flex flex-wrap gap-x-2 mt-0.5 font-medium">
                       {ref.email && (
                         <a href={`mailto:${ref.email}`} className="hover:text-slate-900 transition-colors">
-                          {ref.email}
+                          {t("email", lang)}: {ref.email}
                         </a>
                       )}
                       {ref.email && ref.phone && <span className="text-slate-300">•</span>}
-                      {ref.phone && <span>{ref.phone}</span>}
+                      {ref.phone && <span>{t("tel", lang)}: {ref.phone}</span>}
                     </div>
                   </div>
                 ))}

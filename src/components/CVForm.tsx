@@ -344,17 +344,22 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   
                   {(() => {
                     const templates = [
-                      { id: "modern", name: "Modern Tech", desc: "Double column", category: "Tech", style: "Modern", language: "English" },
-                      { id: "minimalist", name: "Classic Minimalist", desc: "Traditional layout", category: "General", style: "Minimalist", language: "English" },
-                      { id: "creative", name: "Creative Split", desc: "Split sidebar", category: "Design", style: "Creative", language: "English" },
-                      { id: "professional", name: "Professional Executive (EN)", desc: "Solid top banner", category: "Executive", style: "Professional", language: "English" },
-                      { id: "professional_kh", name: "Professional Executive (KH)", desc: "Solid top banner (Khmer)", category: "Executive", style: "Professional", language: "Khmer" }
+                      { id: "modern", name: "Modern Tech", desc: "Double column layout", category: "Tech", style: "Modern", languages: ["English", "Khmer"] },
+                      { id: "minimalist", name: "Classic Minimalist", desc: "Clean centered layout", category: "General", style: "Minimalist", languages: ["English", "Khmer"] },
+                      { id: "creative", name: "Creative Split", desc: "Modern split sidebar", category: "Design", style: "Creative", languages: ["English", "Khmer"] },
+                      { id: "professional", name: "Professional Executive", desc: "Banner header design", category: "Executive", style: "Professional", languages: ["English", "Khmer"] },
+                      { id: "elegant", name: "Elegant Academic", desc: "Serif font centered layout", category: "General", style: "Elegant", languages: ["English", "Khmer"] },
+                      { id: "executive", name: "Executive Contrast", desc: "Dark panel sidebar style", category: "Executive", style: "Professional", languages: ["English", "Khmer"] },
+                      { id: "fancygrid", name: "Fancy Grid", desc: "Card widget layout design", category: "Design", style: "Creative", languages: ["English", "Khmer"] },
+                      { id: "simpleleft", name: "Simple Left Margin", desc: "Left sidebar headers layout", category: "General", style: "Minimalist", languages: ["English", "Khmer"] },
+                      { id: "timeline", name: "Timeline Accent", desc: "Timeline dots experience list", category: "Tech", style: "Modern", languages: ["English", "Khmer"] },
+                      { id: "portfolio", name: "Initial Portfolio", desc: "Initials branding badge header", category: "Design", style: "Creative", languages: ["English", "Khmer"] }
                     ] as const;
 
                     const filtered = templates.filter((temp) => {
                       const matchCategory = filterCategory === "All" || temp.category === filterCategory;
                       const matchStyle = filterStyle === "All" || temp.style === filterStyle;
-                      const matchLanguage = filterLanguage === "All" || temp.language === filterLanguage;
+                      const matchLanguage = filterLanguage === "All" || (temp.languages as readonly string[]).includes(filterLanguage);
                       return matchCategory && matchStyle && matchLanguage;
                     });
 
@@ -389,7 +394,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                               </span>
                               <div className="flex gap-1 mt-2 flex-wrap">
                                 <span className="text-[8px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-sm">{temp.category}</span>
-                                <span className="text-[8px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-sm">{temp.language}</span>
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-sm">{temp.style}</span>
                               </div>
                             </button>
                           );
@@ -397,6 +402,33 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       </div>
                     );
                   })()}
+                </div>
+              </div>
+
+              {/* Document Language */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <Label className="text-xs font-bold text-slate-700">Document Language</Label>
+                <div className="flex gap-2">
+                  {[
+                    { code: "en", name: "English (EN)" },
+                    { code: "km", name: "Khmer (KH)" }
+                  ].map((langOpt) => {
+                    const active = (data.theme?.language || "en") === langOpt.code;
+                    return (
+                      <button
+                        key={langOpt.code}
+                        type="button"
+                        onClick={() => handleThemeChange("language", langOpt.code)}
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+                          active
+                            ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                            : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                        }`}
+                      >
+                        {langOpt.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

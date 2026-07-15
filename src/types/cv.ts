@@ -55,9 +55,10 @@ export interface Reference {
 }
 
 export interface CVTheme {
-  templateId: "modern" | "minimalist" | "creative" | "professional" | "professional_kh";
+  templateId: "modern" | "minimalist" | "creative" | "professional" | "elegant" | "executive" | "fancygrid" | "simpleleft" | "timeline" | "portfolio";
   primaryColor: string;
   photoAspectRatio?: "3:4" | "4:6";
+  language?: "en" | "km";
 }
 
 export interface CVData {

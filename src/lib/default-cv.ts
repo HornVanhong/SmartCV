@@ -98,6 +98,7 @@ export const defaultCVData: CVData = {
   theme: {
     templateId: "modern",
     primaryColor: "#2563eb",
-    photoAspectRatio: "3:4"
+    photoAspectRatio: "3:4",
+    language: "en"
   }
 };

@@ -6,6 +6,12 @@ import { CVTemplateModern } from "@/components/CVTemplateModern";
 import { CVTemplateMinimalist } from "@/components/CVTemplateMinimalist";
 import { CVTemplateCreative } from "@/components/CVTemplateCreative";
 import { CVTemplateProfessional } from "@/components/CVTemplateProfessional";
+import { CVTemplateElegant } from "@/components/CVTemplateElegant";
+import { CVTemplateExecutive } from "@/components/CVTemplateExecutive";
+import { CVTemplateFancyGrid } from "@/components/CVTemplateFancyGrid";
+import { CVTemplateSimpleLeft } from "@/components/CVTemplateSimpleLeft";
+import { CVTemplateTimeline } from "@/components/CVTemplateTimeline";
+import { CVTemplatePortfolio } from "@/components/CVTemplatePortfolio";
 
 interface CVPreviewProps {
   data: CVData;
@@ -21,8 +27,19 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data }) => {
       case "creative":
         return <CVTemplateCreative data={data} />;
       case "professional":
-      case "professional_kh":
         return <CVTemplateProfessional data={data} />;
+      case "elegant":
+        return <CVTemplateElegant data={data} />;
+      case "executive":
+        return <CVTemplateExecutive data={data} />;
+      case "fancygrid":
+        return <CVTemplateFancyGrid data={data} />;
+      case "simpleleft":
+        return <CVTemplateSimpleLeft data={data} />;
+      case "timeline":
+        return <CVTemplateTimeline data={data} />;
+      case "portfolio":
+        return <CVTemplatePortfolio data={data} />;
       case "modern":
       default:
         return <CVTemplateModern data={data} />;

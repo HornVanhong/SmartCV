@@ -11,7 +11,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
   ({ data }, ref) => {
     const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
     const primaryColor = data.theme?.primaryColor || "#2563eb";
-    const lang = data.theme?.templateId === "professional_kh" ? "km" : "en";
+    const lang = data.theme?.language || "en";
 
     return (
       <div
