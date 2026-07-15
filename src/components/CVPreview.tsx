@@ -21,6 +21,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data }) => {
       case "creative":
         return <CVTemplateCreative data={data} />;
       case "professional":
+      case "professional_kh":
         return <CVTemplateProfessional data={data} />;
       case "modern":
       default:

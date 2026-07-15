@@ -1,6 +1,7 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, Image, Link } from "@react-pdf/renderer";
 import { CVData } from "@/types/cv";
+import { t } from "@/lib/translations";
 
 // Create styles mimicking templates
 const styles = StyleSheet.create({
@@ -276,6 +277,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
   const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
   const primaryColor = data.theme?.primaryColor || "#2563eb";
   const templateId = data.theme?.templateId || "modern";
+  const lang = templateId === "professional_kh" ? "km" : "en";
 
   const cleanLink = (url: string) => {
     return url.replace(/^(https?:\/\/)?(www\.)?/, "");
@@ -947,7 +949,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                 <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>D</Text>
                 </View>
-                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.dob}</Text>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{lang === "km" ? "ថ្ងៃកំណើត" : "DOB"}: {personalInfo.dob}</Text>
               </View>
             ) : null}
             {personalInfo.nationality ? (
@@ -955,7 +957,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                 <View style={{ width: 14, height: 14, backgroundColor: primaryColor, borderRadius: 2, alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ color: "#ffffff", fontSize: 7, fontFamily: "Helvetica-Bold" }}>N</Text>
                 </View>
-                <Text style={{ fontSize: 8, color: "#475569" }}>{personalInfo.nationality}</Text>
+                <Text style={{ fontSize: 8, color: "#475569" }}>{lang === "km" ? "សញ្ជាតិ" : "Nat."}: {personalInfo.nationality}</Text>
               </View>
             ) : null}
             {personalInfo.location ? (
@@ -971,12 +973,12 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Education */}
           {education && education.length > 0 ? (
             <View style={styles.sidebarSection}>
-              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Education</Text>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>{t("education", lang)}</Text>
               {education.map((edu) => (
                 <View key={edu.id} style={{ marginBottom: 6 }}>
                   <Text style={{ fontSize: 8, fontFamily: "Helvetica-Bold", color: "#1e293b" }}>{edu.major}</Text>
                   <Text style={{ fontSize: 7.5, color: "#475569" }}>{edu.school}</Text>
-                  <Text style={{ fontSize: 7, color: "#64748b" }}>{edu.startDate} - {edu.endDate || "Present"}</Text>
+                  <Text style={{ fontSize: 7, color: "#64748b" }}>{edu.startDate} - {edu.endDate || t("present", lang)}</Text>
                 </View>
               ))}
             </View>
@@ -985,7 +987,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Skills */}
           {skills && skills.length > 0 ? (
             <View style={styles.sidebarSection}>
-              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Skills</Text>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>{t("skills", lang)}</Text>
               <View style={{ gap: 2 }}>
                 {skills.map((skill, index) => (
                   <Text key={index} style={{ fontSize: 8, color: "#475569" }}>• {skill}</Text>
@@ -997,11 +999,11 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Languages */}
           {languages && languages.length > 0 ? (
             <View style={styles.sidebarSection}>
-              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>Languages</Text>
-              {languages.map((lang) => (
-                <View key={lang.id} style={[styles.languageRow, { borderBottomColor: "#cbd5e1" }]}>
-                  <Text style={[styles.languageName, { fontSize: 8 }]}>{lang.name}</Text>
-                  <Text style={[styles.languageLevel, { fontSize: 7.5 }]}>{lang.level}</Text>
+              <Text style={[styles.sidebarSectionTitle, { backgroundColor: primaryColor, color: "#ffffff", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 2, borderBottomWidth: 0 }]}>{t("languages", lang)}</Text>
+              {languages.map((langItem) => (
+                <View key={langItem.id} style={[styles.languageRow, { borderBottomColor: "#cbd5e1" }]}>
+                  <Text style={[styles.languageName, { fontSize: 8 }]}>{langItem.name}</Text>
+                  <Text style={[styles.languageLevel, { fontSize: 7.5 }]}>{langItem.level}</Text>
                 </View>
               ))}
             </View>
@@ -1013,7 +1015,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Profile */}
           {professionalSummary ? (
             <View style={styles.section} wrap={false}>
-              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Profile</Text>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>{t("profile", lang)}</Text>
               <Text style={styles.summaryText}>{professionalSummary}</Text>
             </View>
           ) : null}
@@ -1021,11 +1023,11 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Work Experience */}
           {experience && experience.length > 0 ? (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Work Experience</Text>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>{t("workExperience", lang)}</Text>
               {experience.map((exp) => (
                 <View key={exp.id} style={{ flexDirection: "row", gap: 10, marginBottom: 8 }} wrap={false}>
                   <View style={{ width: 90, flexShrink: 0 }}>
-                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#64748b" }}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#64748b" }}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 9, fontFamily: "Helvetica-Bold", color: "#0f172a" }}>
@@ -1043,7 +1045,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* Projects */}
           {projects && projects.length > 0 ? (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>Projects & Courses</Text>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>{t("projects", lang)}</Text>
               {projects.map((proj) => (
                 <View key={proj.id} style={styles.itemContainer} wrap={false}>
                   <View style={styles.projectHeader}>
@@ -1065,7 +1067,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* References */}
           {references && references.length > 0 ? (
             <View style={[styles.section, { marginTop: 8 }]} wrap={false}>
-              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>References</Text>
+              <Text style={[styles.sectionTitle, { color: "#0f172a", borderBottomColor: `${primaryColor}20`, fontFamily: "Helvetica-Bold" }]}>{t("references", lang)}</Text>
               <View style={styles.referencesGrid}>
                 {references.map((ref) => (
                   <View key={ref.id} style={styles.referenceItem}>
@@ -1077,13 +1079,13 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                     ) : null}
                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginTop: 1 }}>
                       {ref.email ? (
-                        <Text style={styles.referenceContact}>Email: {ref.email}</Text>
+                        <Text style={styles.referenceContact}>{t("email", lang)}: {ref.email}</Text>
                       ) : null}
                       {ref.email && ref.phone ? (
                         <Text style={[styles.referenceContact, { color: "#cbd5e1" }]}>|</Text>
                       ) : null}
                       {ref.phone ? (
-                        <Text style={styles.referenceContact}>Tel: {ref.phone}</Text>
+                        <Text style={styles.referenceContact}>{t("tel", lang)}: {ref.phone}</Text>
                       ) : null}
                     </View>
                   </View>
@@ -1103,6 +1105,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       case "creative":
         return renderCreative();
       case "professional":
+      case "professional_kh":
         return renderProfessional();
       case "modern":
       default:

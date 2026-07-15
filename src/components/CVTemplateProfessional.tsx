@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Calendar, Flag, Briefcase, Award, BookOpen, User } from "lucide-react";
+import { t } from "@/lib/translations";
 
 interface CVTemplateProfessionalProps {
   data: CVData;
@@ -10,6 +11,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
   ({ data }, ref) => {
     const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
     const primaryColor = data.theme?.primaryColor || "#2563eb";
+    const lang = data.theme?.templateId === "professional_kh" ? "km" : "en";
 
     return (
       <div
@@ -75,7 +77,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                     <div className="h-6 w-6 shrink-0 rounded-sm flex items-center justify-center text-white" style={{ backgroundColor: primaryColor }}>
                       <Calendar className="h-3.5 w-3.5" />
                     </div>
-                    <span>Date of Birth: {personalInfo.dob}</span>
+                    <span>{lang === "km" ? "ថ្ងៃខែឆ្នាំកំណើត" : "Date of Birth"}: {personalInfo.dob}</span>
                   </div>
                 )}
                 {personalInfo.nationality && (
@@ -83,7 +85,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                     <div className="h-6 w-6 shrink-0 rounded-sm flex items-center justify-center text-white" style={{ backgroundColor: primaryColor }}>
                       <Flag className="h-3.5 w-3.5" />
                     </div>
-                    <span>Nationality: {personalInfo.nationality}</span>
+                    <span>{lang === "km" ? "សញ្ជាតិ" : "Nationality"}: {personalInfo.nationality}</span>
                   </div>
                 )}
                 {personalInfo.location && (
@@ -101,14 +103,14 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
             {education && education.length > 0 && (
               <div className="space-y-2.5">
                 <h2 className="px-3 py-1 text-xs font-bold text-white uppercase tracking-wider rounded-sm" style={{ backgroundColor: primaryColor }}>
-                  Education
+                  {t("education", lang)}
                 </h2>
                 <div className="space-y-3">
                   {education.map((edu) => (
                     <div key={edu.id} className="space-y-0.5 text-xs">
                       <h4 className="font-bold text-slate-900 leading-snug">{edu.major}</h4>
                       <p className="text-slate-500 font-semibold text-[10px]">{edu.school}</p>
-                      <p className="text-slate-400 font-semibold text-[9px]">{edu.startDate} - {edu.endDate || "Present"}</p>
+                      <p className="text-slate-400 font-semibold text-[9px]">{edu.startDate} - {edu.endDate || t("present", lang)}</p>
                     </div>
                   ))}
                 </div>
@@ -119,7 +121,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
             {skills && skills.length > 0 && (
               <div className="space-y-2.5">
                 <h2 className="px-3 py-1 text-xs font-bold text-white uppercase tracking-wider rounded-sm" style={{ backgroundColor: primaryColor }}>
-                  Skills
+                  {t("skills", lang)}
                 </h2>
                 <ul className="list-disc pl-4 space-y-1 text-xs font-medium text-slate-700">
                   {skills.map((skill, index) => (
@@ -133,13 +135,13 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
             {languages && languages.length > 0 && (
               <div className="space-y-2.5">
                 <h2 className="px-3 py-1 text-xs font-bold text-white uppercase tracking-wider rounded-sm" style={{ backgroundColor: primaryColor }}>
-                  Languages
+                  {t("languages", lang)}
                 </h2>
                 <div className="space-y-1.5">
-                  {languages.map((lang) => (
-                    <div key={lang.id} className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-800">{lang.name}</span>
-                      <span className="text-slate-500 font-medium italic text-[11px]">{lang.level}</span>
+                  {languages.map((langItem) => (
+                    <div key={langItem.id} className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800">{langItem.name}</span>
+                      <span className="text-slate-500 font-medium italic text-[11px]">{langItem.level}</span>
                     </div>
                   ))}
                 </div>
@@ -155,7 +157,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
               <section className="space-y-2">
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 border-b pb-1" style={{ borderColor: `${primaryColor}20` }}>
                   <User className="h-4.5 w-4.5" style={{ color: primaryColor }} />
-                  Profile
+                  {t("profile", lang)}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
                   {professionalSummary}
@@ -168,14 +170,14 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
               <section className="space-y-3">
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 border-b pb-1" style={{ borderColor: `${primaryColor}20` }}>
                   <Briefcase className="h-4.5 w-4.5" style={{ color: primaryColor }} />
-                  Work Experience
+                  {t("workExperience", lang)}
                 </h2>
                 <div className="space-y-4">
                   {experience.map((exp) => (
                     <div key={exp.id} className="flex flex-col sm:flex-row print:flex-row gap-2 sm:gap-4 print:gap-4 break-inside-avoid">
                       {/* Left dates column */}
                       <div className="w-[120px] shrink-0 text-xs font-bold text-slate-500 whitespace-nowrap">
-                        {exp.startDate} – {exp.endDate || "Present"}
+                        {exp.startDate} – {exp.endDate || t("present", lang)}
                       </div>
                       {/* Right desc column */}
                       <div className="flex-1 space-y-1">
@@ -199,7 +201,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
               <section className="space-y-3">
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 border-b pb-1" style={{ borderColor: `${primaryColor}20` }}>
                   <Award className="h-4.5 w-4.5" style={{ color: primaryColor }} />
-                  Projects & Courses
+                  {t("projects", lang)}
                 </h2>
                 <div className="space-y-3">
                   {projects.map((proj) => (
@@ -233,7 +235,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
               <section className="space-y-3">
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 border-b pb-1" style={{ borderColor: `${primaryColor}20` }}>
                   <BookOpen className="h-4.5 w-4.5" style={{ color: primaryColor }} />
-                  References
+                  {t("references", lang)}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-1">
                   {references.map((ref) => (
@@ -247,10 +249,10 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                       <div className="text-slate-500 text-[10px] space-y-0.5 mt-1 font-medium">
                         {ref.email && (
                           <a href={`mailto:${ref.email}`} className="hover:text-slate-950 transition-colors block">
-                            Email: {ref.email}
+                            {t("email", lang)}: {ref.email}
                           </a>
                         )}
-                        {ref.phone && <span className="block">Tel: {ref.phone}</span>}
+                        {ref.phone && <span className="block">{t("tel", lang)}: {ref.phone}</span>}
                       </div>
                     </div>
                   ))}

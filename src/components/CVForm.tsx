@@ -18,6 +18,11 @@ interface CVFormProps {
 export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
   const [skillInput, setSkillInput] = useState("");
   const [photoError, setPhotoError] = useState("");
+  
+  // Template filter states
+  const [filterCategory, setFilterCategory] = useState<string>("All");
+  const [filterStyle, setFilterStyle] = useState<string>("All");
+  const [filterLanguage, setFilterLanguage] = useState<string>("All");
 
   // Photo handlers
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -253,36 +258,145 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-5">
               
-              <div className="space-y-2">
-                <Label className="text-xs font-bold text-slate-700">Select Layout Template</Label>
-                <div className="grid grid-cols-3 gap-3">
-                  {([
-                    { id: "modern", name: "Modern", desc: "Double column" },
-                    { id: "minimalist", name: "Minimalist", desc: "Traditional layout" },
-                    { id: "creative", name: "Creative", desc: "Split sidebar" },
-                    { id: "professional", name: "Professional", desc: "Solid top banner" }
-                  ] as const).map((temp) => {
-                    const active = (data.theme?.templateId || "modern") === temp.id;
+              <div className="space-y-4">
+                {/* Category, Style, Language Filters */}
+                <div className="space-y-3 border-b border-slate-100 pb-4">
+                  {/* Category Filter */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Category</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["All", "Tech", "Executive", "Design", "General"].map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setFilterCategory(cat)}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition-all cursor-pointer ${
+                            filterCategory === cat
+                              ? "bg-indigo-650 border-indigo-650 text-white shadow-xs"
+                              : "bg-slate-55 border-slate-200 text-slate-650 hover:bg-slate-100 hover:border-slate-300"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Style Filter */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Style</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["All", "Modern", "Minimalist", "Creative", "Professional"].map((sty) => (
+                        <button
+                          key={sty}
+                          type="button"
+                          onClick={() => setFilterStyle(sty)}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition-all cursor-pointer ${
+                            filterStyle === sty
+                              ? "bg-emerald-650 border-emerald-650 text-white shadow-xs"
+                              : "bg-slate-55 border-slate-200 text-slate-650 hover:bg-slate-100 hover:border-slate-300"
+                          }`}
+                        >
+                          {sty}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Language Filter */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Language</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["All", "English", "Khmer"].map((lang) => (
+                        <button
+                          key={lang}
+                          type="button"
+                          onClick={() => setFilterLanguage(lang)}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition-all cursor-pointer ${
+                            filterLanguage === lang
+                              ? "bg-amber-650 border-amber-650 text-white shadow-xs"
+                              : "bg-slate-55 border-slate-200 text-slate-650 hover:bg-slate-100 hover:border-slate-300"
+                          }`}
+                        >
+                          {lang}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Templates Grid Selector */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs font-bold text-slate-700">Select Layout Template</Label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterCategory("All");
+                        setFilterStyle("All");
+                        setFilterLanguage("All");
+                      }}
+                      className="text-[10px] font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                  
+                  {(() => {
+                    const templates = [
+                      { id: "modern", name: "Modern Tech", desc: "Double column", category: "Tech", style: "Modern", language: "English" },
+                      { id: "minimalist", name: "Classic Minimalist", desc: "Traditional layout", category: "General", style: "Minimalist", language: "English" },
+                      { id: "creative", name: "Creative Split", desc: "Split sidebar", category: "Design", style: "Creative", language: "English" },
+                      { id: "professional", name: "Professional Executive (EN)", desc: "Solid top banner", category: "Executive", style: "Professional", language: "English" },
+                      { id: "professional_kh", name: "Professional Executive (KH)", desc: "Solid top banner (Khmer)", category: "Executive", style: "Professional", language: "Khmer" }
+                    ] as const;
+
+                    const filtered = templates.filter((temp) => {
+                      const matchCategory = filterCategory === "All" || temp.category === filterCategory;
+                      const matchStyle = filterStyle === "All" || temp.style === filterStyle;
+                      const matchLanguage = filterLanguage === "All" || temp.language === filterLanguage;
+                      return matchCategory && matchStyle && matchLanguage;
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="text-center py-6 text-xs text-slate-400 font-medium bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                          No templates match your filters.
+                        </div>
+                      );
+                    }
+
                     return (
-                      <button
-                        key={temp.id}
-                        type="button"
-                        onClick={() => handleThemeChange("templateId", temp.id)}
-                        className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                          active
-                            ? "border-blue-600 bg-blue-50/40 shadow-xs"
-                            : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/50"
-                        }`}
-                      >
-                        <span className={`text-xs font-bold ${active ? "text-blue-600" : "text-slate-800"}`}>
-                          {temp.name}
-                        </span>
-                        <span className="text-[10px] text-slate-400 mt-1 leading-tight">
-                          {temp.desc}
-                        </span>
-                      </button>
+                      <div className="grid grid-cols-2 gap-3">
+                        {filtered.map((temp) => {
+                          const active = (data.theme?.templateId || "modern") === temp.id;
+                          return (
+                            <button
+                              key={temp.id}
+                              type="button"
+                              onClick={() => handleThemeChange("templateId", temp.id)}
+                              className={`flex flex-col items-start justify-center p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                active
+                                  ? "border-blue-600 bg-blue-50/30 shadow-xs ring-1 ring-blue-500/20"
+                                  : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/50"
+                              }`}
+                            >
+                              <span className={`text-xs font-bold ${active ? "text-blue-600" : "text-slate-800"}`}>
+                                {temp.name}
+                              </span>
+                              <span className="text-[10px] text-slate-400 mt-1 leading-tight">
+                                {temp.desc}
+                              </span>
+                              <div className="flex gap-1 mt-2 flex-wrap">
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-sm">{temp.category}</span>
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-sm">{temp.language}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     );
-                  })}
+                  })()}
                 </div>
               </div>
 
