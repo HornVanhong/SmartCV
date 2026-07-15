@@ -92,5 +92,9 @@ export const defaultCVData: CVData = {
       email: "sarah.jenkins@stripe.com",
       phone: "+1 (555) 012-3456"
     }
-  ]
+  ],
+  theme: {
+    templateId: "modern",
+    primaryColor: "#2563eb"
+  }
 };

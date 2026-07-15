@@ -9,6 +9,7 @@ interface CVTemplateModernProps {
 export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModernProps>(
   ({ data }, ref) => {
     const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
+    const primaryColor = data.theme?.primaryColor || "#2563eb";
 
     return (
       <div
@@ -39,7 +40,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                   {personalInfo.jobTitle || "Professional Title"}
                 </p>
                 {personalInfo.targetRole && (
-                  <p className="text-xs font-bold text-blue-600 mt-1 uppercase tracking-wider">
+                  <p className="text-xs font-bold mt-1 uppercase tracking-wider" style={{ color: primaryColor }}>
                     Applied for: {personalInfo.targetRole}
                   </p>
                 )}
@@ -96,7 +97,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {/* Professional Summary */}
           {professionalSummary && (
             <section className="space-y-2 print:space-y-1">
-              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+              <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                 Professional Summary
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
@@ -108,7 +109,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {/* Work Experience */}
           {experience && experience.length > 0 && (
             <section className="space-y-3 print:space-y-2">
-              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+              <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                 Work Experience
               </h2>
               <div className="space-y-4 print:space-y-2">
@@ -136,7 +137,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {/* Education */}
           {education && education.length > 0 && (
             <section className="space-y-3 print:space-y-2">
-              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+              <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                 Education
               </h2>
               <div className="space-y-3 print:space-y-1.5">
@@ -167,7 +168,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {/* Projects */}
           {projects && projects.length > 0 && (
             <section className="space-y-3 print:space-y-2">
-              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+              <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                 Projects
               </h2>
               <div className="space-y-3 print:space-y-1.5">
@@ -187,7 +188,8 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                           href={`https://${proj.link}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline font-medium print:block hidden"
+                          className="text-xs hover:underline font-medium print:block hidden"
+                          style={{ color: primaryColor }}
                         >
                           {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                         </a>
@@ -214,7 +216,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
             {/* Skills */}
             {skills && skills.length > 0 && (
               <section className="space-y-2">
-                <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+                <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                   Skills
                 </h2>
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -233,7 +235,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
             {/* Languages */}
             {languages && languages.length > 0 && (
               <section className="space-y-2">
-                <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+                <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                   Languages
                 </h2>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-1">
@@ -251,7 +253,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
           {/* References */}
           {references && references.length > 0 && (
             <section className="space-y-2 pt-2 break-inside-avoid">
-              <h2 className="text-sm font-bold tracking-wider text-slate-950 uppercase border-b border-slate-200 pb-1.5">
+              <h2 className="text-sm font-bold tracking-wider uppercase border-b pb-1.5" style={{ color: primaryColor, borderColor: `${primaryColor}20` }}>
                 References
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pt-1">

@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference } from "@/types/cv";
+import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference, CVTheme } from "@/types/cv";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck } from "lucide-react";
+import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette } from "lucide-react";
 
 interface CVFormProps {
   data: CVData;
@@ -202,6 +202,17 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
+  const handleThemeChange = (field: keyof CVTheme, value: string) => {
+    onChange({
+      ...data,
+      theme: {
+        templateId: data.theme?.templateId || "modern",
+        primaryColor: data.theme?.primaryColor || "#2563eb",
+        [field]: value,
+      },
+    });
+  };
+
   // Skills helpers
   const handleAddSkill = (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,8 +241,101 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
       </div>
 
       <div className="p-6 lg:overflow-y-auto lg:max-h-[calc(100vh-280px)] space-y-6">
-        <Accordion multiple defaultValue={["personal"]} className="w-full space-y-3 border-none">
+        <Accordion multiple defaultValue={["theme", "personal"]} className="w-full space-y-3 border-none">
           
+          {/* Design & Layout (Templates & Colors) */}
+          <AccordionItem value="theme" className="border border-slate-200 rounded-xl px-4 py-1 bg-white shadow-none">
+            <AccordionTrigger className="hover:no-underline py-3">
+              <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
+                <Palette className="h-4.5 w-4.5 text-indigo-550" />
+                Design & Templates
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 pb-4 space-y-5">
+              
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-slate-700">Select Layout Template</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {([
+                    { id: "modern", name: "Modern", desc: "Double column" },
+                    { id: "minimalist", name: "Minimalist", desc: "Traditional layout" },
+                    { id: "creative", name: "Creative", desc: "Split sidebar" }
+                  ] as const).map((temp) => {
+                    const active = (data.theme?.templateId || "modern") === temp.id;
+                    return (
+                      <button
+                        key={temp.id}
+                        type="button"
+                        onClick={() => handleThemeChange("templateId", temp.id)}
+                        className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                          active
+                            ? "border-blue-600 bg-blue-50/40 shadow-xs"
+                            : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/50"
+                        }`}
+                      >
+                        <span className={`text-xs font-bold ${active ? "text-blue-600" : "text-slate-800"}`}>
+                          {temp.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400 mt-1 leading-tight">
+                          {temp.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Color Customization */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <Label className="text-xs font-bold text-slate-700">Primary Theme Color</Label>
+                
+                {/* Presets */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { hex: "#2563eb", name: "Royal Blue" },
+                    { hex: "#059669", name: "Emerald" },
+                    { hex: "#4f46e5", name: "Indigo" },
+                    { hex: "#7c3aed", name: "Violet" },
+                    { hex: "#e11d48", name: "Rose" },
+                    { hex: "#d97706", name: "Amber" },
+                    { hex: "#0f172a", name: "Charcoal" }
+                  ].map((color) => {
+                    const active = (data.theme?.primaryColor || "#2563eb") === color.hex;
+                    return (
+                      <button
+                        key={color.hex}
+                        type="button"
+                        onClick={() => handleThemeChange("primaryColor", color.hex)}
+                        title={color.name}
+                        style={{ backgroundColor: color.hex }}
+                        className={`h-7 w-7 rounded-full border transition-all cursor-pointer ${
+                          active 
+                            ? "ring-2 ring-offset-2 ring-blue-600 scale-110 border-white" 
+                            : "border-transparent hover:scale-105"
+                        }`}
+                      />
+                    );
+                  })}
+
+                  {/* Custom Picker */}
+                  <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                    <input
+                      type="color"
+                      id="customColorPicker"
+                      value={data.theme?.primaryColor || "#2563eb"}
+                      onChange={(e) => handleThemeChange("primaryColor", e.target.value)}
+                      className="h-7 w-7 rounded-full border border-slate-200 cursor-pointer overflow-hidden p-0 bg-transparent"
+                    />
+                    <Label htmlFor="customColorPicker" className="text-[10px] font-semibold text-slate-500 cursor-pointer">
+                      Custom
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+            </AccordionContent>
+          </AccordionItem>
+
           {/* Personal Information */}
           <AccordionItem value="personal" className="border border-slate-200 rounded-xl px-4 py-1 bg-white shadow-none">
             <AccordionTrigger className="hover:no-underline py-3">

@@ -52,6 +52,11 @@ export interface Reference {
   phone: string;
 }
 
+export interface CVTheme {
+  templateId: "modern" | "minimalist" | "creative";
+  primaryColor: string;
+}
+
 export interface CVData {
   personalInfo: PersonalInfo;
   professionalSummary: string;
@@ -61,5 +66,6 @@ export interface CVData {
   experience: Experience[];
   languages: Language[];
   references?: Reference[];
+  theme?: CVTheme;
 }
 
