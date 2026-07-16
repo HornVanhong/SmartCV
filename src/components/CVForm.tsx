@@ -10,6 +10,26 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette } from "lucide-react";
 
+const STANDARD_GOOGLE_FONTS = ["Inter", "Poppins", "Roboto", "Lora", "Playfair Display", "Noto Sans Khmer"];
+const KHMER_GOOGLE_FONT_SUGGESTIONS = [
+  "Angkor", "Battambang", "Bayon", "Bokor", "Chenla", "Content", "Dangrek", "Fasthand", "Freehand",
+  "Hanuman", "Kantumruy", "Kantumruy Pro", "Kdam Thmor Pro", "Khmer", "Khula", "Koh Santepheap",
+  "Koulen", "Krahand", "Moul", "Moulpali", "Noto Sans Khmer", "Noto Serif Khmer", "Odor Mean Chey",
+  "Preahvihear", "Siemreap", "Srisakdi", "Suwannaphum", "Taprom"
+];
+const GOOGLE_FONT_SUGGESTIONS = Array.from(new Set([
+  ...KHMER_GOOGLE_FONT_SUGGESTIONS,
+  "ABeeZee", "Abril Fatface", "Alegreya", "Archivo", "Arimo", "Bebas Neue", "Bitter", "Cairo",
+  "Cinzel", "Cormorant Garamond", "DM Sans", "DM Serif Display", "Dancing Script", "EB Garamond",
+  "Exo 2", "Fira Sans", "Fjalla One", "Forum", "IBM Plex Sans", "IBM Plex Serif", "Inconsolata",
+  "Indie Flower", "Inter", "Josefin Sans", "Kanit", "Lato", "Libre Baskerville", "Libre Franklin",
+  "Lora", "Manrope", "Merriweather", "Montserrat", "Mukta", "Noto Sans", "Noto Sans Khmer",
+  "Noto Serif Khmer", "Nunito", "Open Sans", "Oswald", "Outfit", "Pacifico", "Playfair Display",
+  "Plus Jakarta Sans", "Poppins", "Prompt", "PT Sans", "Quicksand", "Raleway", "Roboto",
+  "Roboto Condensed", "Roboto Slab", "Rubik", "Sarabun", "Source Sans 3", "Space Grotesk",
+  "Teko", "Ubuntu", "Work Sans", "Yeseva One"
+]));
+
 interface CVFormProps {
   data: CVData;
   onChange: (newData: CVData) => void;
@@ -18,6 +38,14 @@ interface CVFormProps {
 export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
   const [skillInput, setSkillInput] = useState("");
   const [photoError, setPhotoError] = useState("");
+  const [logoError, setLogoError] = useState("");
+  const [isCustomGoogleFont, setIsCustomGoogleFont] = useState(
+    !STANDARD_GOOGLE_FONTS.includes(data.theme?.fontFamily || "Inter")
+  );
+  const selectedGoogleFont = data.theme?.fontFamily || "";
+  const matchingGoogleFonts = GOOGLE_FONT_SUGGESTIONS.filter((font) =>
+    font.toLowerCase().includes(selectedGoogleFont.trim().toLowerCase())
+  ).slice(0, 30);
   
   // Template filter states
   const [filterCategory, setFilterCategory] = useState<string>("All");
@@ -46,6 +74,28 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     setPhotoError("");
   };
 
+  // Logo handlers
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setLogoError("Image size exceeds 2MB limit.");
+        return;
+      }
+      setLogoError("");
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handlePersonalInfoChange("logo", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    handlePersonalInfoChange("logo", "");
+    setLogoError("");
+  };
+
   // Personal Info helpers
   const handlePersonalInfoChange = (field: keyof PersonalInfo, value: string) => {
     onChange({
@@ -65,6 +115,37 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
+  const handleHighlightTextarea = (textareaId: string, value: string, onChangeFn: (val: string) => void) => {
+    const el = document.getElementById(textareaId) as HTMLTextAreaElement;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    if (start === end) {
+      alert("Please select some text inside the text area first, then click this button to highlight it!");
+      return;
+    }
+    const selectedText = value.substring(start, end);
+    const newValue = value.substring(0, start) + `==${selectedText}==` + value.substring(end);
+    onChangeFn(newValue);
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start, end + 4);
+    }, 50);
+  };
+
+  const renderHighlightButton = (textareaId: string, value: string, onChangeFn: (val: string) => void) => {
+    return (
+      <button
+        type="button"
+        onClick={() => handleHighlightTextarea(textareaId, value, onChangeFn)}
+        className="text-[10px] text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer transition-colors font-semibold shrink-0 ml-auto"
+        title="Select text in the editor and click to highlight it in yellow"
+      >
+        <span>✨</span> Highlight Selection
+      </button>
+    );
+  };
+
   // List manipulation helpers
   const addEducation = () => {
     const newEdu: Education = {
@@ -81,7 +162,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const updateEducation = (id: string, field: keyof Education, value: string) => {
+  const updateEducation = (id: string, field: keyof Education, value: string | boolean | number) => {
     onChange({
       ...data,
       education: data.education.map((edu) => (edu.id === id ? { ...edu, [field]: value } : edu)),
@@ -110,7 +191,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const updateExperience = (id: string, field: keyof Experience, value: string) => {
+  const updateExperience = (id: string, field: keyof Experience, value: string | boolean | number) => {
     onChange({
       ...data,
       experience: data.experience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
@@ -138,7 +219,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const updateProject = (id: string, field: keyof Project, value: string) => {
+  const updateProject = (id: string, field: keyof Project, value: string | boolean | number) => {
     onChange({
       ...data,
       projects: data.projects.map((proj) => (proj.id === id ? { ...proj, [field]: value } : proj)),
@@ -164,7 +245,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const updateLanguage = (id: string, field: keyof Language, value: string) => {
+  const updateLanguage = (id: string, field: keyof Language, value: string | number) => {
     onChange({
       ...data,
       languages: data.languages.map((lang) => (lang.id === id ? { ...lang, [field]: value } : lang)),
@@ -193,7 +274,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const updateReference = (id: string, field: keyof Reference, value: string) => {
+  const updateReference = (id: string, field: keyof Reference, value: string | boolean | number) => {
     onChange({
       ...data,
       references: (data.references || []).map((ref) => (ref.id === id ? { ...ref, [field]: value } : ref)),
@@ -207,12 +288,13 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const handleThemeChange = (field: keyof CVTheme, value: string) => {
+  const handleThemeChange = (field: keyof CVTheme, value: string | number) => {
     onChange({
       ...data,
       theme: {
         templateId: data.theme?.templateId || "modern",
         primaryColor: data.theme?.primaryColor || "#2563eb",
+        ...data.theme,
         [field]: value,
       },
     });
@@ -353,7 +435,9 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       { id: "fancygrid", name: "Fancy Grid", desc: "Card widget layout design", category: "Design", style: "Creative", languages: ["English", "Khmer"] },
                       { id: "simpleleft", name: "Simple Left Margin", desc: "Left sidebar headers layout", category: "General", style: "Minimalist", languages: ["English", "Khmer"] },
                       { id: "timeline", name: "Timeline Accent", desc: "Timeline dots experience list", category: "Tech", style: "Modern", languages: ["English", "Khmer"] },
-                      { id: "portfolio", name: "Initial Portfolio", desc: "Initials branding badge header", category: "Design", style: "Creative", languages: ["English", "Khmer"] }
+                      { id: "portfolio", name: "Initial Portfolio", desc: "Initials branding badge header", category: "Design", style: "Creative", languages: ["English", "Khmer"] },
+                      { id: "canvacolumn", name: "Canva Two Column", desc: "Elegant navy sidebar with linear progress and timeline dots", category: "Design", style: "Creative", languages: ["English", "Khmer"] },
+                      { id: "kshrd", name: "Korea Software HRD", desc: "Official HRD center student background CV template", category: "Academic", style: "Professional", languages: ["English", "Khmer"] }
                     ] as const;
 
                     const filtered = templates.filter((temp) => {
@@ -480,6 +564,102 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                 </div>
               </div>
 
+              <div className="space-y-3 border-t border-slate-100 pt-4">
+                <Label className="text-xs font-bold text-slate-700">Document Typography</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="font-family" className="text-[11px] font-semibold text-slate-600">Google Font</Label>
+                    <select
+                      id="font-family"
+                      value={isCustomGoogleFont ? "__custom" : (data.theme?.fontFamily || "Inter")}
+                      onChange={(e) => {
+                        if (e.target.value === "__custom") {
+                          setIsCustomGoogleFont(true);
+                          handleThemeChange("fontFamily", "");
+                          return;
+                        }
+                        setIsCustomGoogleFont(false);
+                        handleThemeChange("fontFamily", e.target.value);
+                      }}
+                      className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      <option value="Inter">Inter</option>
+                      <option value="Poppins">Poppins</option>
+                      <option value="Roboto">Roboto</option>
+                      <option value="Lora">Lora</option>
+                      <option value="Playfair Display">Playfair Display</option>
+                      <option value="Noto Sans Khmer">Noto Sans Khmer</option>
+                      <option value="__custom">Other Google Font…</option>
+                    </select>
+                    {isCustomGoogleFont ? (
+                      <div className="space-y-1.5">
+                        <Input
+                          value={selectedGoogleFont}
+                          onChange={(e) => handleThemeChange("fontFamily", e.target.value)}
+                          placeholder="Search Google Fonts, e.g. Roboto Condensed"
+                          className="h-8 text-xs"
+                          aria-label="Search Google Font family names"
+                        />
+                        <div className="max-h-44 overflow-y-auto rounded-lg border border-slate-200 bg-white p-1">
+                          <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            {selectedGoogleFont ? "Matching Google Fonts" : "Khmer & Google Font Results"}
+                          </p>
+                          {matchingGoogleFonts.length > 0 ? matchingGoogleFonts.map((font) => (
+                            <button
+                              key={font}
+                              type="button"
+                              onClick={() => {
+                                handleThemeChange("fontFamily", font);
+                                setIsCustomGoogleFont(!STANDARD_GOOGLE_FONTS.includes(font));
+                              }}
+                              className="flex w-full items-center rounded-md px-2 py-1.5 text-left text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700"
+                              style={{ fontFamily: `"${font}", sans-serif` }}
+                            >
+                              {font}
+                            </button>
+                          )) : (
+                            <p className="px-2 py-1.5 text-[11px] text-slate-400">No suggestion found. You can still use the font name you typed.</p>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="font-color" className="text-[11px] font-semibold text-slate-600">Text Color</Label>
+                    <div className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2">
+                      <input
+                        id="font-color"
+                        type="color"
+                        value={data.theme?.fontColor || "#1e293b"}
+                        onChange={(e) => handleThemeChange("fontColor", e.target.value)}
+                        className="h-5 w-5 cursor-pointer rounded border-0 bg-transparent p-0"
+                      />
+                      <span className="text-xs font-medium uppercase text-slate-500">{data.theme?.fontColor || "#1e293b"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="font-size" className="text-[11px] font-semibold text-slate-600">Font Size</Label>
+                    <span className="text-xs font-bold tabular-nums text-blue-700">{data.theme?.fontSize ?? 100}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-medium text-slate-400">Small</span>
+                    <input
+                      id="font-size"
+                      type="range"
+                      min="85"
+                      max="115"
+                      step="5"
+                      value={data.theme?.fontSize ?? 100}
+                      onChange={(e) => handleThemeChange("fontSize", Number(e.target.value))}
+                      className="h-1.5 flex-1 cursor-pointer accent-blue-600"
+                    />
+                    <span className="text-[10px] font-medium text-slate-400">Large</span>
+                  </div>
+                </div>
+              </div>
+
             </AccordionContent>
           </AccordionItem>
 
@@ -557,6 +737,105 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         );
                       })}
                     </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-3 border-t border-slate-100">
+                  <div className="flex items-center justify-between gap-4">
+                    <Label htmlFor="photo-scale" className="text-xs font-semibold text-slate-650">
+                      Portrait Size <span className="font-normal text-slate-400">(KSHRD template)</span>
+                    </Label>
+                    <span className="text-xs font-bold tabular-nums text-blue-700">{data.theme?.photoScale ?? 100}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-medium text-slate-400">Small</span>
+                    <input
+                      id="photo-scale"
+                      type="range"
+                      min="80"
+                      max="125"
+                      step="5"
+                      value={data.theme?.photoScale ?? 100}
+                      onChange={(e) => handleThemeChange("photoScale", Number(e.target.value))}
+                      className="h-1.5 flex-1 cursor-pointer accent-blue-600"
+                      aria-label="KSHRD portrait size"
+                    />
+                    <span className="text-[10px] font-medium text-slate-400">Large</span>
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange("photoScale", 100)}
+                      className="text-[10px] font-semibold text-blue-600 hover:text-blue-800"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-4">
+                    <Label htmlFor="logo-scale" className="text-xs font-semibold text-slate-650">
+                      Logo Size <span className="font-normal text-slate-400">(KSHRD header)</span>
+                    </Label>
+                    <span className="text-xs font-bold tabular-nums text-blue-700">{data.theme?.logoScale ?? 100}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-medium text-slate-400">Small</span>
+                    <input
+                      id="logo-scale"
+                      type="range"
+                      min="80"
+                      max="250"
+                      step="10"
+                      value={data.theme?.logoScale ?? 100}
+                      onChange={(e) => handleThemeChange("logoScale", Number(e.target.value))}
+                      className="h-1.5 flex-1 cursor-pointer accent-blue-600"
+                      aria-label="KSHRD header logo size"
+                    />
+                    <span className="text-[10px] font-medium text-slate-400">Large</span>
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange("logoScale", 100)}
+                      className="text-[10px] font-semibold text-blue-600 hover:text-blue-800"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100">
+                  {data.personalInfo.logo ? (
+                    <div className="relative h-16 w-16 rounded-xl border border-slate-200 overflow-hidden group flex items-center justify-center bg-white p-1">
+                      <img
+                        src={data.personalInfo.logo}
+                        alt="Logo Preview"
+                        className="h-full w-full object-contain"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveLogo}
+                        className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white rounded-xl cursor-pointer"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-16 w-16 rounded-xl border border-dashed border-slate-350 bg-slate-50/50 text-slate-400">
+                      <Upload className="h-4 w-4" />
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1.5 flex-1">
+                    <Label className="text-xs font-semibold text-slate-650">Custom Header Logo</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="text-xs h-9 w-full max-w-[240px] cursor-pointer file:text-xs file:font-semibold"
+                    />
+                    {logoError ? (
+                      <span className="text-[10px] text-rose-500 font-medium">{logoError}</span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400">Optional: Replaces default HRD Center logo in KSHRD layout. PNG/JPG, max 2MB.</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -651,6 +930,49 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="gender" className="text-xs font-semibold text-slate-600">Gender / Sex</Label>
+                  <Input
+                    id="gender"
+                    value={data.personalInfo.gender || ""}
+                    onChange={(e) => handlePersonalInfoChange("gender", e.target.value)}
+                    placeholder="e.g. Male"
+                    className="h-9 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="placeOfBirth" className="text-xs font-semibold text-slate-600">Place of Birth</Label>
+                  <Input
+                    id="placeOfBirth"
+                    value={data.personalInfo.placeOfBirth || ""}
+                    onChange={(e) => handlePersonalInfoChange("placeOfBirth", e.target.value)}
+                    placeholder="e.g. Kohkong"
+                    className="h-9 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="maritalStatus" className="text-xs font-semibold text-slate-600">Marital Status</Label>
+                  <Input
+                    id="maritalStatus"
+                    value={data.personalInfo.maritalStatus || ""}
+                    onChange={(e) => handlePersonalInfoChange("maritalStatus", e.target.value)}
+                    placeholder="e.g. Single"
+                    className="h-9 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="health" className="text-xs font-semibold text-slate-600">Health Status</Label>
+                  <Input
+                    id="health"
+                    value={data.personalInfo.health || ""}
+                    onChange={(e) => handlePersonalInfoChange("health", e.target.value)}
+                    placeholder="e.g. Excellent"
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="github" className="text-xs font-semibold text-slate-600">GitHub Profile</Label>
@@ -696,7 +1018,10 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4">
               <div className="space-y-1.5">
-                <Label htmlFor="summaryText" className="text-xs font-semibold text-slate-600">About Me</Label>
+                <div className="flex justify-between items-center gap-2">
+                  <Label htmlFor="summaryText" className="text-xs font-semibold text-slate-600">About Me</Label>
+                  {renderHighlightButton("summaryText", data.professionalSummary, handleSummaryChange)}
+                </div>
                 <Textarea
                   id="summaryText"
                   rows={4}
@@ -705,6 +1030,22 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   placeholder="Summarize your professional experience, key strengths, and career highlights..."
                   className="text-xs resize-none"
                 />
+
+                {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                  <div className="flex items-center gap-2 pt-2">
+                    <Label htmlFor="summary-pg" className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                    <select
+                      id="summary-pg"
+                      value={data.theme.summaryPage || 1}
+                      onChange={(e) => handleThemeChange("summaryPage", parseInt(e.target.value) || 1)}
+                      className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                    >
+                      {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                        <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -776,14 +1117,62 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-600">Description</Label>
+                    <div className="flex justify-between items-center gap-2">
+                      <Label className="text-xs font-semibold text-slate-600">Description</Label>
+                      {renderHighlightButton(`exp-desc-${exp.id}`, exp.description, (val) => updateExperience(exp.id, "description", val))}
+                    </div>
                     <Textarea
+                      id={`exp-desc-${exp.id}`}
                       rows={3}
                       value={exp.description}
                       onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
                       placeholder="Detail your responsibilities, key projects, and achievements..."
                       className="text-xs resize-none"
                     />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`exp-pb-${exp.id}`}
+                        checked={!!exp.pageBreakBefore}
+                        onChange={(e) => updateExperience(exp.id, "pageBreakBefore", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`exp-pb-${exp.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Force page break before this item
+                      </Label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`exp-hl-${exp.id}`}
+                        checked={!!exp.highlight}
+                        onChange={(e) => updateExperience(exp.id, "highlight", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`exp-hl-${exp.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Highlight date/duration
+                      </Label>
+                    </div>
+
+                    {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`exp-pg-${exp.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                        <select
+                          id={`exp-pg-${exp.id}`}
+                          value={exp.page || 1}
+                          onChange={(e) => updateExperience(exp.id, "page", parseInt(e.target.value) || 1)}
+                          className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                        >
+                          {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                            <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -866,14 +1255,62 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-600">Additional Description</Label>
+                    <div className="flex justify-between items-center gap-2">
+                      <Label className="text-xs font-semibold text-slate-600">Additional Description</Label>
+                      {renderHighlightButton(`edu-desc-${edu.id}`, edu.description, (val) => updateEducation(edu.id, "description", val))}
+                    </div>
                     <Textarea
+                      id={`edu-desc-${edu.id}`}
                       rows={2}
                       value={edu.description}
                       onChange={(e) => updateEducation(edu.id, "description", e.target.value)}
                       placeholder="Graduated with honors, GPA, key courses..."
                       className="text-xs resize-none"
                     />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`edu-pb-${edu.id}`}
+                        checked={!!edu.pageBreakBefore}
+                        onChange={(e) => updateEducation(edu.id, "pageBreakBefore", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`edu-pb-${edu.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Force page break before this item
+                      </Label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`edu-hl-${edu.id}`}
+                        checked={!!edu.highlight}
+                        onChange={(e) => updateEducation(edu.id, "highlight", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`edu-hl-${edu.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Highlight date/duration
+                      </Label>
+                    </div>
+
+                    {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`edu-pg-${edu.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                        <select
+                          id={`edu-pg-${edu.id}`}
+                          value={edu.page || 1}
+                          onChange={(e) => updateEducation(edu.id, "page", parseInt(e.target.value) || 1)}
+                          className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                        >
+                          {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                            <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -954,6 +1391,37 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       className="text-xs resize-none"
                     />
                   </div>
+
+                  <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`proj-pb-${proj.id}`}
+                        checked={!!proj.pageBreakBefore}
+                        onChange={(e) => updateProject(proj.id, "pageBreakBefore", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`proj-pb-${proj.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Force page break before this item
+                      </Label>
+                    </div>
+
+                    {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`proj-pg-${proj.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                        <select
+                          id={`proj-pg-${proj.id}`}
+                          value={proj.page || 1}
+                          onChange={(e) => updateProject(proj.id, "page", parseInt(e.target.value) || 1)}
+                          className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                        >
+                          {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                            <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               ))}
               <Button
@@ -1010,6 +1478,22 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   <p className="text-xs text-slate-400 italic">No skills added yet.</p>
                 )}
               </div>
+
+              {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-100 mt-2">
+                  <Label htmlFor="skills-pg" className="text-xs font-semibold text-slate-500">Show Skills on Page:</Label>
+                  <select
+                    id="skills-pg"
+                    value={data.theme.skillsPage || 1}
+                    onChange={(e) => handleThemeChange("skillsPage", parseInt(e.target.value) || 1)}
+                    className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                  >
+                    {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                      <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
             </AccordionContent>
           </AccordionItem>
 
@@ -1057,6 +1541,22 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       />
                     </div>
                   </div>
+
+                  {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                    <div className="flex items-center gap-2 pt-1">
+                      <Label htmlFor={`lang-pg-${lang.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                      <select
+                        id={`lang-pg-${lang.id}`}
+                        value={lang.page || 1}
+                        onChange={(e) => updateLanguage(lang.id, "page", parseInt(e.target.value) || 1)}
+                        className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                      >
+                        {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                          <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : null}
                 </div>
               ))}
               <Button
@@ -1144,6 +1644,37 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         className="h-9 text-xs"
                       />
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`ref-pb-${ref.id}`}
+                        checked={!!ref.pageBreakBefore}
+                        onChange={(e) => updateReference(ref.id, "pageBreakBefore", e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <Label htmlFor={`ref-pb-${ref.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                        Force page break before this item
+                      </Label>
+                    </div>
+
+                    {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`ref-pg-${ref.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                        <select
+                          id={`ref-pg-${ref.id}`}
+                          value={ref.page || 1}
+                          onChange={(e) => updateReference(ref.id, "page", parseInt(e.target.value) || 1)}
+                          className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                        >
+                          {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                            <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}

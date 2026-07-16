@@ -99,6 +99,11 @@ export const defaultCVData: CVData = {
     templateId: "modern",
     primaryColor: "#2563eb",
     photoAspectRatio: "3:4",
+    photoScale: 100,
+    logoScale: 100,
+    fontFamily: "Inter",
+    fontSize: 100,
+    fontColor: "#1e293b",
     language: "en"
   }
 };

@@ -166,7 +166,7 @@ export const CVBuilder: React.FC = () => {
 
           {/* Right Column: Live A4 Preview */}
           <section className="lg:col-span-7 xl:col-span-7 sticky top-24">
-            <CVPreview data={cvData} />
+            <CVPreview data={cvData} onChange={setCvData} />
           </section>
         </div>
       </main>
