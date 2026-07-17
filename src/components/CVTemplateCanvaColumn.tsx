@@ -2,6 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateCanvaColumnProps {
   data: CVData;
@@ -389,7 +390,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                       <div className="flex justify-between items-baseline font-bold flex-wrap gap-1">
                         <span className="text-slate-800 font-bold">{proj.name}</span>
                         {proj.link && (
-                          <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-semibold" style={{ color: primaryColor }}>
+                          <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-semibold" style={{ color: primaryColor }}>
                             {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                           </a>
                         )}

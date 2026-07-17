@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateElegantProps {
   data: CVData;
@@ -126,7 +127,7 @@ export const CVTemplateElegant = React.forwardRef<HTMLDivElement, CVTemplateEleg
                     <div className="flex justify-between items-baseline text-sm font-bold text-slate-900">
                       <span>{proj.name}</span>
                       {proj.link && (
-                        <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-xs font-sans hover:underline font-semibold" style={{ color: primaryColor }}>
+                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-sans hover:underline font-semibold" style={{ color: primaryColor }}>
                           {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                         </a>
                       )}

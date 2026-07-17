@@ -2,6 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateMinimalistProps {
   data: CVData;
@@ -71,19 +72,19 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
           {/* Social Links inline */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-semibold text-slate-500 mt-2">
             {personalInfo.github && (
-              <a href={`https://${personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
+              <a href={formatUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                 <Github className="h-3 w-3 print:hidden" />
                 <span>{personalInfo.github.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
               </a>
             )}
             {personalInfo.linkedin && (
-              <a href={`https://${personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
+              <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                 <Linkedin className="h-3 w-3 print:hidden" />
                 <span>{personalInfo.linkedin.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
               </a>
             )}
             {personalInfo.portfolio && (
-              <a href={`https://${personalInfo.portfolio}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
+              <a href={formatUrl(personalInfo.portfolio)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                 <Globe className="h-3 w-3 print:hidden" />
                 <span>{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
               </a>
@@ -180,7 +181,7 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                         )}
                       </h3>
                       {proj.link && (
-                        <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-medium print:block hidden" style={{ color: primaryColor }}>
+                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-medium print:block hidden" style={{ color: primaryColor }}>
                           {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                         </a>
                       )}

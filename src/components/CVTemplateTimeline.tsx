@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateTimelineProps {
   data: CVData;
@@ -179,7 +180,7 @@ export const CVTemplateTimeline = React.forwardRef<HTMLDivElement, CVTemplateTim
                     <div key={proj.id} className="space-y-0.5 break-inside-avoid text-xs">
                       <h4 className="font-bold text-slate-900">{proj.name}</h4>
                       {proj.link && (
-                        <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-[10px] hover:underline font-semibold block" style={{ color: primaryColor }}>
+                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-[10px] hover:underline font-semibold block" style={{ color: primaryColor }}>
                           {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                         </a>
                       )}

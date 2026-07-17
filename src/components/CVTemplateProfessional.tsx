@@ -2,6 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Calendar, Flag, Briefcase, Award, BookOpen, User } from "lucide-react";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateProfessionalProps {
   data: CVData;
@@ -209,7 +210,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                       <h4 className="font-bold text-slate-900 flex items-center gap-2">
                         {proj.name}
                         {proj.link && (
-                          <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-[10px] hover:underline font-semibold" style={{ color: primaryColor }}>
+                          <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-[10px] hover:underline font-semibold" style={{ color: primaryColor }}>
                             ({proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")})
                           </a>
                         )}

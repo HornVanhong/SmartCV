@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplateFancyGridProps {
   data: CVData;
@@ -168,7 +169,7 @@ export const CVTemplateFancyGrid = React.forwardRef<HTMLDivElement, CVTemplateFa
                       <div className="flex justify-between items-baseline text-xs sm:text-sm font-bold text-slate-900">
                         <span>{proj.name}</span>
                         {proj.link && (
-                          <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold hover:underline shrink-0 ml-4" style={{ color: primaryColor }}>
+                          <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold hover:underline shrink-0 ml-4" style={{ color: primaryColor }}>
                             {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                           </a>
                         )}

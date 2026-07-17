@@ -1,6 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
+import { formatUrl } from "@/lib/utils";
 
 interface CVTemplatePortfolioProps {
   data: CVData;
@@ -149,7 +150,7 @@ export const CVTemplatePortfolio = React.forwardRef<HTMLDivElement, CVTemplatePo
                   <div key={proj.id} className="flex flex-col sm:flex-row print:flex-row gap-2 sm:gap-6 print:gap-6 break-inside-avoid text-xs sm:text-sm">
                     <div className="w-[120px] shrink-0 text-xs font-bold text-slate-500 whitespace-nowrap">
                       {proj.link ? (
-                        <a href={`https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="hover:underline font-bold" style={{ color: primaryColor }}>
+                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="hover:underline font-bold" style={{ color: primaryColor }}>
                           {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
                         </a>
                       ) : (

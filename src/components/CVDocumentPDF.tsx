@@ -3,6 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Link, Svg, Circle, Path,
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
 import { getPageData } from "@/lib/page-utils";
+import { formatUrl } from "@/lib/utils";
 
 // Create styles mimicking templates
 const styles = StyleSheet.create({
@@ -326,19 +327,19 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             ) : null}
 
             {personalInfo.portfolio ? (
-              <Link src={`https://${personalInfo.portfolio}`} style={styles.contactText}>
+              <Link src={formatUrl(personalInfo.portfolio)} style={styles.contactText}>
                 <Text>{cleanLink(personalInfo.portfolio)}</Text>
               </Link>
             ) : null}
 
             {personalInfo.github ? (
-              <Link src={`https://${personalInfo.github}`} style={styles.contactText}>
+              <Link src={formatUrl(personalInfo.github)} style={styles.contactText}>
                 <Text>github: {cleanLink(personalInfo.github)}</Text>
               </Link>
             ) : null}
 
             {personalInfo.linkedin ? (
-              <Link src={`https://${personalInfo.linkedin}`} style={styles.contactText}>
+              <Link src={formatUrl(personalInfo.linkedin)} style={styles.contactText}>
                 <Text>linkedin: {cleanLink(personalInfo.linkedin)}</Text>
               </Link>
             ) : null}
@@ -412,7 +413,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                   <Text style={styles.itemTitle}>{proj.name}</Text>
                 </View>
                 {proj.link ? (
-                  <Link src={`https://${proj.link}`} style={[styles.projectLink, { color: primaryColor }]}>
+                  <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
                     <Text>{cleanLink(proj.link)}</Text>
                   </Link>
                 ) : null}
@@ -602,7 +603,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
               <View style={styles.projectHeader}>
                 <Text style={styles.itemTitle}>{proj.name}</Text>
                 {proj.link ? (
-                  <Link src={`https://${proj.link}`} style={[styles.projectLink, { color: primaryColor }]}>
+                  <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
                     <Text>{cleanLink(proj.link)}</Text>
                   </Link>
                 ) : null}
@@ -732,17 +733,17 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         <View style={styles.sidebarSection}>
           <Text style={styles.sidebarSectionTitle}>Socials</Text>
           {personalInfo.portfolio ? (
-            <Link src={`https://${personalInfo.portfolio}`} style={[styles.sidebarContactLink, { color: primaryColor }]}>
+            <Link src={formatUrl(personalInfo.portfolio)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
               <Text>{cleanLink(personalInfo.portfolio)}</Text>
             </Link>
           ) : null}
           {personalInfo.github ? (
-            <Link src={`https://${personalInfo.github}`} style={[styles.sidebarContactLink, { color: primaryColor }]}>
+            <Link src={formatUrl(personalInfo.github)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
               <Text>github: {cleanLink(personalInfo.github)}</Text>
             </Link>
           ) : null}
           {personalInfo.linkedin ? (
-            <Link src={`https://${personalInfo.linkedin}`} style={[styles.sidebarContactLink, { color: primaryColor }]}>
+            <Link src={formatUrl(personalInfo.linkedin)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
               <Text>linkedin: {cleanLink(personalInfo.linkedin)}</Text>
             </Link>
           ) : null}
@@ -840,7 +841,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                 <View style={styles.projectHeader}>
                   <Text style={styles.itemTitle}>{proj.name}</Text>
                   {proj.link ? (
-                    <Link src={`https://${proj.link}`} style={[styles.projectLink, { color: primaryColor }]}>
+                    <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
                       <Text>{cleanLink(proj.link)}</Text>
                     </Link>
                   ) : null}
@@ -1052,7 +1053,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                   <View style={styles.projectHeader}>
                     <Text style={styles.itemTitle}>{proj.name}</Text>
                     {proj.link ? (
-                      <Link src={`https://${proj.link}`} style={[styles.projectLink, { color: primaryColor }]}>
+                      <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
                         <Text>{cleanLink(proj.link)}</Text>
                       </Link>
                     ) : null}
