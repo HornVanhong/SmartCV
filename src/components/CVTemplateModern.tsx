@@ -17,7 +17,7 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-800 p-8 sm:p-12 font-sans selection:bg-slate-100 print:p-16"
+        className="w-full text-slate-800 p-8 sm:p-12 font-sans selection:bg-slate-100 print:p-16"
         style={{
           boxSizing: "border-box",
         }}

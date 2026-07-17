@@ -68,7 +68,7 @@ export const CVTemplateKSHRD: React.FC<CVTemplateKSHRDProps> = ({ data, pageNumb
 
   return (
     <div 
-      className="p-8 sm:p-12 bg-white flex flex-col font-serif text-slate-900 min-h-full leading-normal" 
+      className="p-8 sm:p-12 flex flex-col font-serif text-slate-900 min-h-full leading-normal" 
       style={{ fontFamily: '"Times New Roman", Times, serif' }}
     >
       {/* 1. HEADER SECTION */}

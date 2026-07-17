@@ -16,7 +16,7 @@ export const CVTemplateSimpleLeft = React.forwardRef<HTMLDivElement, CVTemplateS
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-800 p-8 sm:p-12 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col gap-8 print:p-0"
+        className="w-full text-slate-800 p-8 sm:p-12 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col gap-8 print:p-0"
         style={{ boxSizing: "border-box" }}
       >
         {/* Header - Simple clean top */}

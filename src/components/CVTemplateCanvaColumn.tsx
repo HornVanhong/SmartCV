@@ -93,7 +93,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row"
+        className="w-full text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row"
         style={{ boxSizing: "border-box" }}
       >
         {/* Left Sidebar (Dark Navy Background) */}
@@ -261,7 +261,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
         </aside>
 
         {/* Right Content Area */}
-        <main className="flex-1 flex flex-col min-h-full bg-white">
+        <main className="flex-1 flex flex-col min-h-full">
           {/* Top Header Banner */}
           <header 
             className="w-full text-white px-8 py-8 sm:py-10 print:py-8 flex flex-col justify-center" 

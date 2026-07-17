@@ -2287,7 +2287,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         </View>
 
         {/* Right main column */}
-        <View style={{ flex: 1, backgroundColor: "#ffffff", flexDirection: "column" }}>
+        <View style={{ flex: 1, backgroundColor: data.theme?.backgroundColor || "#ffffff", flexDirection: "column" }}>
           {/* Top Banner */}
           <View style={{ backgroundColor: localBannerColor, padding: 20 }}>
             <Text style={{ fontSize: 24, fontFamily: "Helvetica-Bold", color: "#ffffff", textTransform: "uppercase", lineHeight: 1.15 }}>{personalInfo.fullName || "Your Name"}</Text>

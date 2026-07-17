@@ -362,8 +362,11 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data, onChange }) => {
 
               {/* A4 Sheet Mock */}
               <div
-                className="cv-typography w-full bg-white shadow-md hover:shadow-lg transition-shadow border-x border-b border-slate-200/80 rounded-b-sm overflow-hidden min-h-[auto] lg:min-h-[29.7cm] print:min-h-[29.7cm] flex flex-col"
-                style={documentTypographyStyle(pageData)}
+                className="cv-typography w-full shadow-md hover:shadow-lg transition-shadow border-x border-b border-slate-200/80 rounded-b-sm overflow-hidden min-h-[auto] lg:min-h-[29.7cm] print:min-h-[29.7cm] flex flex-col"
+                style={{
+                  ...documentTypographyStyle(pageData),
+                  backgroundColor: pageData.theme?.backgroundColor || "#ffffff"
+                }}
               >
                 {renderTemplateForPage(pageData, pageLayout, pageNumber)}
               </div>

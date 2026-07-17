@@ -17,7 +17,7 @@ export const CVTemplateExecutive = React.forwardRef<HTMLDivElement, CVTemplateEx
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row print:p-0"
+        className="w-full text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row print:p-0"
         style={{ boxSizing: "border-box" }}
       >
         {/* Left Sidebar (Dark background panel) */}

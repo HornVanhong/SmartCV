@@ -16,7 +16,7 @@ export const CVTemplateElegant = React.forwardRef<HTMLDivElement, CVTemplateEleg
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-900 p-8 sm:p-12 font-serif selection:bg-slate-100 min-h-[inherit] flex flex-col print:p-0 print:font-serif"
+        className="w-full text-slate-900 p-8 sm:p-12 font-serif selection:bg-slate-100 min-h-[inherit] flex flex-col print:p-0 print:font-serif"
         style={{ boxSizing: "border-box" }}
       >
         {/* Header - Centered Serif */}
