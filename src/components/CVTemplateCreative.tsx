@@ -121,19 +121,14 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
           {skills && skills.length > 0 && (
             <div className={`space-y-3 pt-2 border-t ${borderClass}`}>
               <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${textHeaderClass}`}>{t("skills", lang)}</h3>
-              <div className="flex flex-wrap gap-1">
+              <div className="space-y-2 text-xs">
                 {skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-0.5 rounded text-[10px] font-semibold border"
-                    style={{ 
-                      borderColor: isLight ? `${primaryColor}20` : "rgba(255, 255, 255, 0.15)", 
-                      backgroundColor: isLight ? `${primaryColor}06` : "rgba(255, 255, 255, 0.08)", 
-                      color: isLight ? primaryColor : "#ffffff" 
-                    }}
-                  >
-                    {skill}
-                  </span>
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: primaryColor }} />
+                    <span className={`font-semibold text-[11px] ${isLight ? "text-slate-700" : "text-slate-200"}`}>
+                      {skill}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
