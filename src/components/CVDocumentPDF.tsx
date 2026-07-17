@@ -549,77 +549,168 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         </View>
       ) : null}
 
-      {/* Experience */}
-      {experience && experience.length > 0 ? (
-        <View style={styles.section}>
+      {/* Career Focus & Objective Pitch */}
+      {data.theme?.showPitch && data.theme?.professionalPitch ? (
+        <View style={styles.section} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Work Experience
+            {t("careerObjective", lang)}
           </Text>
-          {experience.map((exp) => (
-            <View key={exp.id} style={styles.itemContainer} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
-                </Text>
-                <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
-              </View>
-              {exp.description ? (
-                <Text style={styles.itemDescription}>{exp.description}</Text>
-              ) : null}
-            </View>
-          ))}
+          <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}04` }}>
+            <Text style={styles.summaryText}>{data.theme.professionalPitch}</Text>
+          </View>
         </View>
       ) : null}
 
-      {/* Education */}
-      {education && education.length > 0 ? (
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Education
-          </Text>
-          {education.map((edu) => (
-            <View key={edu.id} style={styles.itemContainer} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{edu.major}</Text>
-                <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{edu.school}</Text>
-              {edu.description ? (
-                <Text style={styles.itemDescription}>{edu.description}</Text>
-              ) : null}
+      {/* Dynamic Section Ordering */}
+      {data.theme?.experienceLevel === "entry" ? (
+        <>
+          {/* Education */}
+          {education && education.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Education
+              </Text>
+              {education.map((edu) => (
+                <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.itemHeader}>
+                    <Text style={styles.itemTitle}>{edu.major}</Text>
+                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                  </View>
+                  <Text style={styles.itemSubtitle}>{edu.school}</Text>
+                  {edu.description ? (
+                    <Text style={styles.itemDescription}>{edu.description}</Text>
+                  ) : null}
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      ) : null}
+          ) : null}
 
-      {/* Projects */}
-      {projects && projects.length > 0 ? (
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Projects
-          </Text>
-          {projects.map((proj) => (
-            <View key={proj.id} style={styles.itemContainer} wrap={false}>
-              <View style={styles.projectHeader}>
-                <Text style={styles.itemTitle}>{proj.name}</Text>
-                {proj.link ? (
-                  <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
-                    <Text>{cleanLink(proj.link)}</Text>
-                  </Link>
-                ) : null}
-              </View>
-              {proj.description ? (
-                <Text style={styles.itemDescription}>{proj.description}</Text>
-              ) : null}
-              {proj.technologies ? (
-                <Text style={styles.techsUsed}>
-                  <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
-                </Text>
-              ) : null}
+          {/* Projects */}
+          {projects && projects.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Projects
+              </Text>
+              {projects.map((proj) => (
+                <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.projectHeader}>
+                    <Text style={styles.itemTitle}>{proj.name}</Text>
+                    {proj.link ? (
+                      <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
+                        <Text>{cleanLink(proj.link)}</Text>
+                      </Link>
+                    ) : null}
+                  </View>
+                  {proj.description ? (
+                    <Text style={styles.itemDescription}>{proj.description}</Text>
+                  ) : null}
+                  {proj.technologies ? (
+                    <Text style={styles.techsUsed}>
+                      <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      ) : null}
+          ) : null}
+
+          {/* Experience */}
+          {experience && experience.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Work Experience
+              </Text>
+              {experience.map((exp) => (
+                <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.itemHeader}>
+                    <Text style={styles.itemTitle}>
+                      {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
+                    </Text>
+                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                  </View>
+                  {exp.description ? (
+                    <Text style={styles.itemDescription}>{exp.description}</Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {/* Experience */}
+          {experience && experience.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Work Experience
+              </Text>
+              {experience.map((exp) => (
+                <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.itemHeader}>
+                    <Text style={styles.itemTitle}>
+                      {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
+                    </Text>
+                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                  </View>
+                  {exp.description ? (
+                    <Text style={styles.itemDescription}>{exp.description}</Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {/* Education */}
+          {education && education.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Education
+              </Text>
+              {education.map((edu) => (
+                <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.itemHeader}>
+                    <Text style={styles.itemTitle}>{edu.major}</Text>
+                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                  </View>
+                  <Text style={styles.itemSubtitle}>{edu.school}</Text>
+                  {edu.description ? (
+                    <Text style={styles.itemDescription}>{edu.description}</Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+
+          {/* Projects */}
+          {projects && projects.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                Projects
+              </Text>
+              {projects.map((proj) => (
+                <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                  <View style={styles.projectHeader}>
+                    <Text style={styles.itemTitle}>{proj.name}</Text>
+                    {proj.link ? (
+                      <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
+                        <Text>{cleanLink(proj.link)}</Text>
+                      </Link>
+                    ) : null}
+                  </View>
+                  {proj.description ? (
+                    <Text style={styles.itemDescription}>{proj.description}</Text>
+                  ) : null}
+                  {proj.technologies ? (
+                    <Text style={styles.techsUsed}>
+                      <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </>
+      )}
 
       {/* Skills & Languages Grid */}
       <View style={styles.skillsLanguagesGrid} wrap={false}>
@@ -787,77 +878,168 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </View>
         ) : null}
 
-        {/* Work Experience */}
-        {experience && experience.length > 0 ? (
-          <View style={styles.section}>
+        {/* Career Focus & Objective Pitch */}
+        {data.theme?.showPitch && data.theme?.professionalPitch ? (
+          <View style={styles.section} wrap={false}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Work Experience
+              {t("careerObjective", lang)}
             </Text>
-            {experience.map((exp) => (
-              <View key={exp.id} style={styles.itemContainer} wrap={false}>
-                <View style={styles.itemHeader}>
-                  <Text style={styles.itemTitle}>
-                    {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
-                  </Text>
-                  <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
-                </View>
-                {exp.description ? (
-                  <Text style={styles.itemDescription}>{exp.description}</Text>
-                ) : null}
-              </View>
-            ))}
+            <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}04` }}>
+              <Text style={styles.summaryText}>{data.theme.professionalPitch}</Text>
+            </View>
           </View>
         ) : null}
 
-        {/* Education */}
-        {education && education.length > 0 ? (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Education
-            </Text>
-            {education.map((edu) => (
-              <View key={edu.id} style={styles.itemContainer} wrap={false}>
-                <View style={styles.itemHeader}>
-                  <Text style={styles.itemTitle}>{edu.major}</Text>
-                  <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
-                </View>
-                <Text style={styles.itemSubtitle}>{edu.school}</Text>
-                {edu.description ? (
-                  <Text style={styles.itemDescription}>{edu.description}</Text>
-                ) : null}
+        {/* Dynamic Section Ordering */}
+        {data.theme?.experienceLevel === "entry" ? (
+          <>
+            {/* Education */}
+            {education && education.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Education
+                </Text>
+                {education.map((edu) => (
+                  <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemTitle}>{edu.major}</Text>
+                      <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                    </View>
+                    <Text style={styles.itemSubtitle}>{edu.school}</Text>
+                    {edu.description ? (
+                      <Text style={styles.itemDescription}>{edu.description}</Text>
+                    ) : null}
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        ) : null}
+            ) : null}
 
-        {/* Projects */}
-        {projects && projects.length > 0 ? (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Projects
-            </Text>
-            {projects.map((proj) => (
-              <View key={proj.id} style={styles.itemContainer} wrap={false}>
-                <View style={styles.projectHeader}>
-                  <Text style={styles.itemTitle}>{proj.name}</Text>
-                  {proj.link ? (
-                    <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
-                      <Text>{cleanLink(proj.link)}</Text>
-                    </Link>
-                  ) : null}
-                </View>
-                {proj.description ? (
-                  <Text style={styles.itemDescription}>{proj.description}</Text>
-                ) : null}
-                {proj.technologies ? (
-                  <Text style={styles.techsUsed}>
-                    <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
-                  </Text>
-                ) : null}
+            {/* Projects */}
+            {projects && projects.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Projects
+                </Text>
+                {projects.map((proj) => (
+                  <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.projectHeader}>
+                      <Text style={styles.itemTitle}>{proj.name}</Text>
+                      {proj.link ? (
+                        <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
+                          <Text>{cleanLink(proj.link)}</Text>
+                        </Link>
+                      ) : null}
+                    </View>
+                    {proj.description ? (
+                      <Text style={styles.itemDescription}>{proj.description}</Text>
+                    ) : null}
+                    {proj.technologies ? (
+                      <Text style={styles.techsUsed}>
+                        <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
+                      </Text>
+                    ) : null}
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        ) : null}
+            ) : null}
+
+            {/* Work Experience */}
+            {experience && experience.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Work Experience
+                </Text>
+                {experience.map((exp) => (
+                  <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemTitle}>
+                        {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
+                      </Text>
+                      <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                    </View>
+                    {exp.description ? (
+                      <Text style={styles.itemDescription}>{exp.description}</Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </>
+        ) : (
+          <>
+            {/* Work Experience */}
+            {experience && experience.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Work Experience
+                </Text>
+                {experience.map((exp) => (
+                  <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemTitle}>
+                        {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
+                      </Text>
+                      <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                    </View>
+                    {exp.description ? (
+                      <Text style={styles.itemDescription}>{exp.description}</Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            ) : null}
+
+            {/* Education */}
+            {education && education.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Education
+                </Text>
+                {education.map((edu) => (
+                  <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemTitle}>{edu.major}</Text>
+                      <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                    </View>
+                    <Text style={styles.itemSubtitle}>{edu.school}</Text>
+                    {edu.description ? (
+                      <Text style={styles.itemDescription}>{edu.description}</Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            ) : null}
+
+            {/* Projects */}
+            {projects && projects.length > 0 ? (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+                  Projects
+                </Text>
+                {projects.map((proj) => (
+                  <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                    <View style={styles.projectHeader}>
+                      <Text style={styles.itemTitle}>{proj.name}</Text>
+                      {proj.link ? (
+                        <Link src={formatUrl(proj.link)} style={[styles.projectLink, { color: primaryColor }]}>
+                          <Text>{cleanLink(proj.link)}</Text>
+                        </Link>
+                      ) : null}
+                    </View>
+                    {proj.description ? (
+                      <Text style={styles.itemDescription}>{proj.description}</Text>
+                    ) : null}
+                    {proj.technologies ? (
+                      <Text style={styles.techsUsed}>
+                        <Text style={styles.techsLabel}>Technologies:</Text> {proj.technologies}
+                      </Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </>
+        )}
 
         {/* References */}
         {references && references.length > 0 ? (

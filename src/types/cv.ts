@@ -88,6 +88,9 @@ export interface CVTheme {
   summaryPage?: number;
   skillsPage?: number;
   pageLayouts?: string[];
+  experienceLevel?: "experienced" | "entry";
+  showPitch?: boolean;
+  professionalPitch?: string;
 }
 
 export interface CVData {

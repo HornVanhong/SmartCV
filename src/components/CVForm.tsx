@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette } from "lucide-react";
+import { translations } from "@/lib/translations";
 
 const STANDARD_GOOGLE_FONTS = ["Inter", "Poppins", "Roboto", "Lora", "Playfair Display", "Noto Sans Khmer"];
 const KHMER_GOOGLE_FONT_SUGGESTIONS = [
@@ -288,7 +289,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
-  const handleThemeChange = (field: keyof CVTheme, value: string | number) => {
+  const handleThemeChange = (field: keyof CVTheme, value: string | number | boolean) => {
     onChange({
       ...data,
       theme: {
@@ -510,6 +511,41 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         }`}
                       >
                         {langOpt.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Experience Layout Mode */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <Label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                  <span>Experience Layout Mode</span>
+                  <span className="text-[10px] font-normal text-slate-400">(Order sections)</span>
+                </Label>
+                <div className="flex gap-2">
+                  {[
+                    { code: "experienced", name: "Experienced (Work First)", desc: "Show professional career history first" },
+                    { code: "entry", name: "Entry-Level (Education First)", desc: "Show academic credentials & projects first" }
+                  ].map((levelOpt) => {
+                    const active = (data.theme?.experienceLevel || "experienced") === levelOpt.code;
+                    return (
+                      <button
+                        key={levelOpt.code}
+                        type="button"
+                        onClick={() => handleThemeChange("experienceLevel", levelOpt.code)}
+                        className={`flex-1 p-2.5 text-left rounded-xl border transition-all cursor-pointer flex flex-col justify-center gap-0.5 ${
+                          active
+                            ? "bg-indigo-50/40 border-indigo-600 ring-1 ring-indigo-500/20"
+                            : "bg-white border-slate-200 hover:border-slate-350 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span className={`text-xs font-bold ${active ? "text-indigo-650" : "text-slate-800"}`}>
+                          {levelOpt.name}
+                        </span>
+                        <span className="text-[9px] text-slate-400 leading-tight">
+                          {levelOpt.desc}
+                        </span>
                       </button>
                     );
                   })}
@@ -1059,6 +1095,68 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              {/* Professional Pitch for Entry-Level / No Experience */}
+              <div className="p-4 border border-indigo-100 rounded-xl bg-indigo-50/10 space-y-3">
+                <div className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="show-pitch-checkbox"
+                    checked={!!data.theme?.showPitch}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      handleThemeChange("showPitch", checked);
+                      // Pre-fill pitch if checking and empty
+                      if (checked && !data.theme?.professionalPitch) {
+                        const lang = data.theme?.language || "en";
+                        const defaultPitch = lang === "km" 
+                          ? translations.km.defaultPitch 
+                          : translations.en.defaultPitch;
+                        handleThemeChange("professionalPitch", defaultPitch);
+                      }
+                    }}
+                    className="h-4 w-4 mt-0.5 rounded border-slate-350 text-indigo-650 focus:ring-indigo-500 cursor-pointer"
+                  />
+                  <div className="flex flex-col gap-0.5">
+                    <Label htmlFor="show-pitch-checkbox" className="text-xs font-bold text-slate-800 cursor-pointer select-none leading-none">
+                      No work experience yet?
+                    </Label>
+                    <span className="text-[10px] text-slate-400">Show a compelling career objective/pitch to interest HR instead.</span>
+                  </div>
+                </div>
+
+                {data.theme?.showPitch ? (
+                  <div className="space-y-2 pt-2 border-t border-slate-100 animate-in fade-in slide-in-from-top-1.5 duration-200">
+                    <div className="flex justify-between items-center gap-2">
+                      <Label htmlFor="pitch-text" className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Career Focus & Objective Pitch</Label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const lang = data.theme?.language || "en";
+                          const defaultPitch = lang === "km" 
+                            ? translations.km.defaultPitch 
+                            : translations.en.defaultPitch;
+                          handleThemeChange("professionalPitch", defaultPitch);
+                        }}
+                        className="text-[10px] font-bold text-indigo-600 hover:text-indigo-855 cursor-pointer hover:underline"
+                      >
+                        Reset to default
+                      </button>
+                    </div>
+                    <Textarea
+                      id="pitch-text"
+                      rows={3}
+                      value={data.theme?.professionalPitch || ""}
+                      onChange={(e) => handleThemeChange("professionalPitch", e.target.value)}
+                      placeholder="Write 2-3 sentences to catch recruiter interest..."
+                      className="text-xs resize-none"
+                    />
+                    <span className="text-[9px] text-slate-400 block leading-tight">
+                      This statement is highlighted on your CV in place of work experience to grab the recruiter's interest immediately.
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+
               {data.experience.map((exp, index) => (
                 <div key={exp.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
                   <div className="absolute top-3 right-3">

@@ -107,99 +107,215 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
             </section>
           )}
 
-          {/* Work Experience */}
-          {experience && experience.length > 0 && (
-            <section className="space-y-3">
+          {/* Career Focus & Objective Pitch */}
+          {data.theme?.showPitch && data.theme?.professionalPitch && (
+            <section className="space-y-2">
               <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
-                {t("workExperience", lang)}
+                {t("careerObjective", lang)}
               </h2>
-              <div className="space-y-4 print:space-y-3">
-                {experience.map((exp) => (
-                  <div key={exp.id} className="space-y-1 break-inside-avoid">
-                    <div className="flex justify-between items-baseline text-xs sm:text-sm">
-                      <h3 className="text-slate-900 font-bold">
-                        {exp.position} <span className="text-slate-400 font-normal">at</span> {exp.company}
-                      </h3>
-                      <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
-                        {exp.startDate} – {exp.endDate || t("present", lang)}
-                      </span>
-                    </div>
-                    {exp.description && (
-                      <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
-                        {exp.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
+              <div 
+                className="p-3.5 rounded-xl border border-dashed text-xs sm:text-sm text-slate-700 leading-relaxed text-justify"
+                style={{ borderColor: `${primaryColor}30`, backgroundColor: `${primaryColor}04` }}
+              >
+                {data.theme.professionalPitch}
               </div>
             </section>
           )}
 
-          {/* Education */}
-          {education && education.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
-                {t("education", lang)}
-              </h2>
-              <div className="space-y-3 print:space-y-2">
-                {education.map((edu) => (
-                  <div key={edu.id} className="space-y-1 break-inside-avoid">
-                    <div className="flex justify-between items-baseline text-xs sm:text-sm">
-                      <h3 className="text-slate-900 font-bold">{edu.major}</h3>
-                      <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
-                        {edu.startDate} – {edu.endDate || t("present", lang)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-slate-600 font-semibold">{edu.school}</div>
-                    {edu.description && (
-                      <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
-                        {edu.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Projects */}
-          {projects && projects.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
-                {t("projects", lang)}
-              </h2>
-              <div className="space-y-3 print:space-y-2">
-                {projects.map((proj) => (
-                  <div key={proj.id} className="space-y-1 break-inside-avoid">
-                    <div className="flex justify-between items-baseline text-xs sm:text-sm">
-                      <h3 className="text-slate-900 font-bold flex items-center gap-1.5">
-                        {proj.name}
-                        {proj.link && (
-                          <span className="text-slate-400 font-normal text-xs print:hidden">
-                            ({proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")})
+          {data.theme?.experienceLevel === "entry" ? (
+            <>
+              {/* Education */}
+              {education && education.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("education", lang)}
+                  </h2>
+                  <div className="space-y-3 print:space-y-2">
+                    {education.map((edu) => (
+                      <div key={edu.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold">{edu.major}</h3>
+                          <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
+                            {edu.startDate} – {edu.endDate || t("present", lang)}
                           </span>
+                        </div>
+                        <div className="text-xs text-slate-600 font-semibold">{edu.school}</div>
+                        {edu.description && (
+                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                            {edu.description}
+                          </p>
                         )}
-                      </h3>
-                      {proj.link && (
-                        <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-medium print:block hidden" style={{ color: primaryColor }}>
-                          {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
-                        </a>
-                      )}
-                    </div>
-                    {proj.description && (
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
-                        {proj.description}
-                      </p>
-                    )}
-                    {proj.technologies && (
-                      <div className="text-xs text-slate-500 font-medium mt-0.5">
-                        <span className="text-slate-700 font-semibold">Tech:</span> {proj.technologies}
                       </div>
-                    )}
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
+              )}
+
+              {/* Projects */}
+              {projects && projects.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("projects", lang)}
+                  </h2>
+                  <div className="space-y-3 print:space-y-2">
+                    {projects.map((proj) => (
+                      <div key={proj.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold flex items-center gap-1.5">
+                            {proj.name}
+                            {proj.link && (
+                              <span className="text-slate-400 font-normal text-xs print:hidden">
+                                ({proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")})
+                              </span>
+                            )}
+                          </h3>
+                          {proj.link && (
+                            <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-medium print:block hidden" style={{ color: primaryColor }}>
+                              {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
+                            </a>
+                          )}
+                        </div>
+                        {proj.description && (
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
+                            {proj.description}
+                          </p>
+                        )}
+                        {proj.technologies && (
+                          <div className="text-xs text-slate-500 font-medium mt-0.5">
+                            <span className="text-slate-700 font-semibold">Tech:</span> {proj.technologies}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Work Experience */}
+              {experience && experience.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("workExperience", lang)}
+                  </h2>
+                  <div className="space-y-4 print:space-y-3">
+                    {experience.map((exp) => (
+                      <div key={exp.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold">
+                            {exp.position} <span className="text-slate-400 font-normal">at</span> {exp.company}
+                          </h3>
+                          <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
+                            {exp.startDate} – {exp.endDate || t("present", lang)}
+                          </span>
+                        </div>
+                        {exp.description && (
+                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
+                            {exp.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Work Experience */}
+              {experience && experience.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("workExperience", lang)}
+                  </h2>
+                  <div className="space-y-4 print:space-y-3">
+                    {experience.map((exp) => (
+                      <div key={exp.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold">
+                            {exp.position} <span className="text-slate-400 font-normal">at</span> {exp.company}
+                          </h3>
+                          <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
+                            {exp.startDate} – {exp.endDate || t("present", lang)}
+                          </span>
+                        </div>
+                        {exp.description && (
+                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
+                            {exp.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Education */}
+              {education && education.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("education", lang)}
+                  </h2>
+                  <div className="space-y-3 print:space-y-2">
+                    {education.map((edu) => (
+                      <div key={edu.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold">{edu.major}</h3>
+                          <span className="text-slate-500 font-medium whitespace-nowrap text-xs">
+                            {edu.startDate} – {edu.endDate || t("present", lang)}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-600 font-semibold">{edu.school}</div>
+                        {edu.description && (
+                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                            {edu.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Projects */}
+              {projects && projects.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
+                    {t("projects", lang)}
+                  </h2>
+                  <div className="space-y-3 print:space-y-2">
+                    {projects.map((proj) => (
+                      <div key={proj.id} className="space-y-1 break-inside-avoid">
+                        <div className="flex justify-between items-baseline text-xs sm:text-sm">
+                          <h3 className="text-slate-900 font-bold flex items-center gap-1.5">
+                            {proj.name}
+                            {proj.link && (
+                              <span className="text-slate-400 font-normal text-xs print:hidden">
+                                ({proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")})
+                              </span>
+                            )}
+                          </h3>
+                          {proj.link && (
+                            <a href={formatUrl(proj.link)} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline font-medium print:block hidden" style={{ color: primaryColor }}>
+                              {proj.link.replace(/^(https?:\/\/)?(www\.)?/, "")}
+                            </a>
+                          )}
+                        </div>
+                        {proj.description && (
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
+                            {proj.description}
+                          </p>
+                        )}
+                        {proj.technologies && (
+                          <div className="text-xs text-slate-500 font-medium mt-0.5">
+                            <span className="text-slate-700 font-semibold">Tech:</span> {proj.technologies}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
           )}
 
           {/* Skills & Languages */}

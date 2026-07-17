@@ -104,6 +104,9 @@ export const defaultCVData: CVData = {
     fontFamily: "Inter",
     fontSize: 100,
     fontColor: "#1e293b",
-    language: "en"
+    language: "en",
+    experienceLevel: "experienced",
+    showPitch: false,
+    professionalPitch: ""
   }
 };
