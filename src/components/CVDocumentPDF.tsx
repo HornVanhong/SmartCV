@@ -328,7 +328,9 @@ const styles = StyleSheet.create({
   },
   creativeSplitLayout: {
     flexDirection: "row",
-    height: "100%",
+    // Let content continue onto an additional PDF page instead of forcing it
+    // into a fixed A4-height row, which causes crowded/overlapping content.
+    minHeight: "100%",
     width: "100%",
   },
   creativeSidebarColumn: {
