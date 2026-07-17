@@ -175,8 +175,8 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
                 {t("careerObjective", lang)}
               </h2>
               <div 
-                className="p-3.5 rounded-xl border border-dashed text-xs sm:text-sm text-slate-700 leading-relaxed text-justify"
-                style={{ borderColor: `${primaryColor}30`, backgroundColor: `${primaryColor}04` }}
+                className="p-3 rounded-lg border text-xs sm:text-sm text-slate-700 leading-relaxed text-justify"
+                style={{ borderColor: `${primaryColor}15`, backgroundColor: `${primaryColor}02` }}
               >
                 {data.theme.professionalPitch}
               </div>

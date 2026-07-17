@@ -685,7 +685,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
             {t("careerObjective", lang)}
           </Text>
-          <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}04` }}>
+          <View style={{ padding: 8, borderRadius: 6, borderWidth: 0.5, borderColor: `${primaryColor}20`, backgroundColor: `${primaryColor}02` }}>
             <Text style={styles.summaryText}>{data.theme.professionalPitch}</Text>
           </View>
         </View>
@@ -1048,7 +1048,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             <Text style={creativeSectionTitleStyle}>
               {t("careerObjective", lang)}
             </Text>
-            <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: withPdfAlpha(primaryColor, 0.25), backgroundColor: withPdfAlpha(primaryColor, 0.02) }}>
+            <View style={{ padding: 8, borderRadius: 6, borderWidth: 0.5, borderColor: withPdfAlpha(primaryColor, 0.1), backgroundColor: withPdfAlpha(primaryColor, 0.01) }}>
               <Text style={styles.summaryText}>{data.theme.professionalPitch}</Text>
             </View>
           </View>
