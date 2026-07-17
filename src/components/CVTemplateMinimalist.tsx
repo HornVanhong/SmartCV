@@ -112,8 +112,8 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                 {t("careerObjective", lang)}
               </h2>
               <div 
-                className="p-3 rounded-lg border text-xs sm:text-sm text-slate-700 leading-relaxed text-justify"
-                style={{ borderColor: `${primaryColor}15`, backgroundColor: `${primaryColor}02` }}
+                className="p-3 rounded-lg text-xs sm:text-sm text-slate-700 leading-relaxed text-justify"
+                style={{ backgroundColor: `${primaryColor}03` }}
               >
                 {data.theme.professionalPitch}
               </div>
