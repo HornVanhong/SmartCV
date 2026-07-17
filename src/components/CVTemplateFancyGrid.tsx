@@ -1,7 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateFancyGridProps {
   data: CVData;
@@ -66,9 +66,7 @@ export const CVTemplateFancyGrid = React.forwardRef<HTMLDivElement, CVTemplateFa
                 <h3 className="text-xs font-extrabold uppercase tracking-widest mb-3" style={{ color: primaryColor }}>
                   {t("profile", lang)}
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed text-justify">
-                  {professionalSummary}
-                </p>
+                {renderMarkdownHTML(professionalSummary, "text-xs text-slate-600 leading-relaxed text-justify")}
               </div>
             )}
 
@@ -122,9 +120,7 @@ export const CVTemplateFancyGrid = React.forwardRef<HTMLDivElement, CVTemplateFa
                         <span className="text-[10px] text-slate-550 font-semibold shrink-0 ml-4">{exp.startDate} – {exp.endDate || t("present", lang)}</span>
                       </div>
                       {exp.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                          {exp.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                     </div>
                   ))}
@@ -147,9 +143,7 @@ export const CVTemplateFancyGrid = React.forwardRef<HTMLDivElement, CVTemplateFa
                       </div>
                       <div className="text-xs text-slate-450 font-bold">{edu.school}</div>
                       {edu.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify mt-0.5">
-                          {edu.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-650 leading-relaxed text-justify mt-0.5")}</div>
                       )}
                     </div>
                   ))}
@@ -175,9 +169,7 @@ export const CVTemplateFancyGrid = React.forwardRef<HTMLDivElement, CVTemplateFa
                         )}
                       </div>
                       {proj.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                          {proj.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                     </div>
                   ))}

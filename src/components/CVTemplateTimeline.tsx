@@ -1,7 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateTimelineProps {
   data: CVData;
@@ -55,9 +55,7 @@ export const CVTemplateTimeline = React.forwardRef<HTMLDivElement, CVTemplateTim
                 <h2 className="text-xs font-black uppercase tracking-widest text-slate-450 border-b border-slate-100 pb-1">
                   {t("profile", lang)}
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                  {professionalSummary}
-                </p>
+                {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
               </section>
             )}
 
@@ -79,9 +77,7 @@ export const CVTemplateTimeline = React.forwardRef<HTMLDivElement, CVTemplateTim
                           <span className="text-[10px] text-slate-500 font-semibold">{exp.startDate} – {exp.endDate || t("present", lang)}</span>
                         </div>
                         {exp.description && (
-                          <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                            {exp.description}
-                          </p>
+                          <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                         )}
                       </div>
                     </div>
@@ -109,9 +105,7 @@ export const CVTemplateTimeline = React.forwardRef<HTMLDivElement, CVTemplateTim
                         </div>
                         <div className="text-xs text-slate-450 font-bold">{edu.school}</div>
                         {edu.description && (
-                          <p className="text-xs text-slate-650 leading-relaxed text-justify mt-1">
-                            {edu.description}
-                          </p>
+                          <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-650 leading-relaxed text-justify mt-1")}</div>
                         )}
                       </div>
                     </div>
@@ -185,9 +179,7 @@ export const CVTemplateTimeline = React.forwardRef<HTMLDivElement, CVTemplateTim
                         </a>
                       )}
                       {proj.description && (
-                        <p className="text-slate-650 leading-relaxed text-justify mt-0.5">
-                          {proj.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-slate-650 leading-relaxed text-justify mt-0.5")}</div>
                       )}
                     </div>
                   ))}

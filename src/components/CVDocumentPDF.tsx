@@ -3,7 +3,88 @@ import { Document, Page, Text, View, StyleSheet, Image, Link, Svg, Circle, Path,
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
 import { getPageData } from "@/lib/page-utils";
-import { formatUrl, isLightColor } from "@/lib/utils";
+import { formatUrl, isLightColor, parseInlineMarkdown } from "@/lib/utils";
+
+const renderMarkdownPDF = (text?: string, isBoldBase = false, customStyle?: any) => {
+  if (!text) return null;
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let currentList: React.ReactNode[] = [];
+
+  const renderLineContentPDF = (lineText: string) => {
+    const tokens = parseInlineMarkdown(lineText);
+    return tokens.map((token, idx) => {
+      const isBold = token.type === "bold" || isBoldBase;
+      const isItalic = token.type === "italic";
+      const isHighlight = token.type === "highlight";
+      return (
+        <Text 
+          key={idx} 
+          style={[
+            { 
+              fontFamily: isBold ? "Helvetica-Bold" : "Helvetica",
+              fontStyle: isItalic ? "italic" : "normal"
+            },
+            isHighlight ? { backgroundColor: "#fef08a", color: "#1e293b", paddingHorizontal: 2 } : {}
+          ]}
+        >
+          {token.content}
+        </Text>
+      );
+    });
+  };
+
+  lines.forEach((line, lineIdx) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (currentList.length > 0) {
+        elements.push(
+          <View key={`list-${lineIdx}`} style={{ marginLeft: 8, marginTop: 1, marginBottom: 1, gap: 2 }}>
+            {currentList}
+          </View>
+        );
+        currentList = [];
+      }
+      return;
+    }
+
+    const bulletMatch = trimmed.match(/^[-*•]\s+(.*)/);
+    if (bulletMatch) {
+      currentList.push(
+        <View key={`li-${lineIdx}`} style={{ flexDirection: "row", alignItems: "flex-start", gap: 4, marginTop: 1 }}>
+          <Text style={{ fontSize: 7, color: "#64748b" }}>•</Text>
+          <Text style={[{ fontSize: 7.5, color: "#334155", flex: 1, lineHeight: 1.25 }, customStyle]}>
+            {renderLineContentPDF(bulletMatch[1])}
+          </Text>
+        </View>
+      );
+    } else {
+      if (currentList.length > 0) {
+        elements.push(
+          <View key={`list-${lineIdx}`} style={{ marginLeft: 8, marginTop: 1, marginBottom: 1, gap: 2 }}>
+            {currentList}
+          </View>
+        );
+        currentList = [];
+      }
+      elements.push(
+        <Text key={`p-${lineIdx}`} style={[{ fontSize: 7.5, color: "#334155", marginBottom: 2.5, lineHeight: 1.25, textAlign: "justify" }, customStyle]}>
+          {renderLineContentPDF(trimmed)}
+        </Text>
+      );
+    }
+  });
+
+  if (currentList.length > 0) {
+    elements.push(
+      <View key="list-final" style={{ marginLeft: 8, marginTop: 1, marginBottom: 1, gap: 2 }}>
+        {currentList}
+      </View>
+    );
+  }
+
+  return <View style={{ gap: 0.5 }}>{elements}</View>;
+};
 
 // Create styles mimicking templates
 const styles = StyleSheet.create({

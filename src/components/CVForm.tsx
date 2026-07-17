@@ -1,6 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  { ssr: false }
+);
 import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference, CVTheme } from "@/types/cv";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
@@ -1164,14 +1172,17 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   <Label htmlFor="summaryText" className="text-xs font-semibold text-slate-600">About Me</Label>
                   {renderHighlightButton("summaryText", data.professionalSummary, handleSummaryChange)}
                 </div>
-                <Textarea
-                  id="summaryText"
-                  rows={4}
-                  value={data.professionalSummary}
-                  onChange={(e) => handleSummaryChange(e.target.value)}
-                  placeholder="Summarize your professional experience, key strengths, and career highlights..."
-                  className="text-xs resize-none"
-                />
+                <div data-color-mode="light" className="text-xs mt-1">
+                  <MDEditor
+                    value={data.professionalSummary}
+                    onChange={(val) => handleSummaryChange(val || "")}
+                    preview="edit"
+                    height={160}
+                    textareaProps={{
+                      placeholder: "Summarize your professional experience, key strengths, and career highlights..."
+                    }}
+                  />
+                </div>
 
                 {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
                   <div className="flex items-center gap-2 pt-2">
@@ -1325,14 +1336,17 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       <Label className="text-xs font-semibold text-slate-600">Description</Label>
                       {renderHighlightButton(`exp-desc-${exp.id}`, exp.description, (val) => updateExperience(exp.id, "description", val))}
                     </div>
-                    <Textarea
-                      id={`exp-desc-${exp.id}`}
-                      rows={3}
-                      value={exp.description}
-                      onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
-                      placeholder="Detail your responsibilities, key projects, and achievements..."
-                      className="text-xs resize-none"
-                    />
+                    <div data-color-mode="light" className="text-xs mt-1">
+                      <MDEditor
+                        value={exp.description}
+                        onChange={(val) => updateExperience(exp.id, "description", val || "")}
+                        preview="edit"
+                        height={160}
+                        textareaProps={{
+                          placeholder: "Detail your responsibilities, key projects, and achievements..."
+                        }}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
@@ -1463,14 +1477,17 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       <Label className="text-xs font-semibold text-slate-600">Additional Description</Label>
                       {renderHighlightButton(`edu-desc-${edu.id}`, edu.description, (val) => updateEducation(edu.id, "description", val))}
                     </div>
-                    <Textarea
-                      id={`edu-desc-${edu.id}`}
-                      rows={2}
-                      value={edu.description}
-                      onChange={(e) => updateEducation(edu.id, "description", e.target.value)}
-                      placeholder="Graduated with honors, GPA, key courses..."
-                      className="text-xs resize-none"
-                    />
+                    <div data-color-mode="light" className="text-xs mt-1">
+                      <MDEditor
+                        value={edu.description}
+                        onChange={(val) => updateEducation(edu.id, "description", val || "")}
+                        preview="edit"
+                        height={140}
+                        textareaProps={{
+                          placeholder: "Graduated with honors, GPA, key courses..."
+                        }}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
@@ -1587,13 +1604,17 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
 
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold text-slate-600">Description</Label>
-                    <Textarea
-                      rows={2}
-                      value={proj.description}
-                      onChange={(e) => updateProject(proj.id, "description", e.target.value)}
-                      placeholder="Explain what you built, what challenge you resolved, and final results..."
-                      className="text-xs resize-none"
-                    />
+                    <div data-color-mode="light" className="text-xs mt-1">
+                      <MDEditor
+                        value={proj.description}
+                        onChange={(val) => updateProject(proj.id, "description", val || "")}
+                        preview="edit"
+                        height={140}
+                        textareaProps={{
+                          placeholder: "Explain what you built, what challenge you resolved, and final results..."
+                        }}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">

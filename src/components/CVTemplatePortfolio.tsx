@@ -1,7 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplatePortfolioProps {
   data: CVData;
@@ -77,9 +77,7 @@ export const CVTemplatePortfolio = React.forwardRef<HTMLDivElement, CVTemplatePo
               <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
                 {t("profile", lang)}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                {professionalSummary}
-              </p>
+              {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
             </section>
           )}
 
@@ -100,9 +98,7 @@ export const CVTemplatePortfolio = React.forwardRef<HTMLDivElement, CVTemplatePo
                         {exp.position} <span className="font-medium text-slate-450">at</span> {exp.company}
                       </h4>
                       {exp.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                          {exp.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                     </div>
                   </div>
@@ -128,9 +124,7 @@ export const CVTemplatePortfolio = React.forwardRef<HTMLDivElement, CVTemplatePo
                         {edu.major} <span className="font-medium text-slate-450">at</span> {edu.school}
                       </h4>
                       {edu.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                          {edu.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                     </div>
                   </div>
@@ -160,9 +154,7 @@ export const CVTemplatePortfolio = React.forwardRef<HTMLDivElement, CVTemplatePo
                     <div className="flex-1 space-y-1">
                       <h4 className="font-bold text-slate-900 leading-snug">{proj.name}</h4>
                       {proj.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                          {proj.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                     </div>
                   </div>

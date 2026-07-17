@@ -1,7 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateSimpleLeftProps {
   data: CVData;
@@ -84,9 +84,7 @@ export const CVTemplateSimpleLeft = React.forwardRef<HTMLDivElement, CVTemplateS
                       <span className="text-xs text-slate-450 font-semibold shrink-0 ml-4">{exp.startDate} – {exp.endDate || t("present", lang)}</span>
                     </div>
                     {exp.description && (
-                      <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                        {exp.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                     )}
                   </div>
                 ))}
@@ -109,9 +107,7 @@ export const CVTemplateSimpleLeft = React.forwardRef<HTMLDivElement, CVTemplateS
                     </div>
                     <div className="text-xs text-slate-500 font-bold">{edu.school}</div>
                     {edu.description && (
-                      <p className="text-xs text-slate-650 leading-relaxed text-justify mt-0.5">
-                        {edu.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-650 leading-relaxed text-justify mt-0.5")}</div>
                     )}
                   </div>
                 ))}
@@ -137,9 +133,7 @@ export const CVTemplateSimpleLeft = React.forwardRef<HTMLDivElement, CVTemplateS
                       )}
                     </div>
                     {proj.description && (
-                      <p className="text-xs text-slate-650 leading-relaxed text-justify">
-                        {proj.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs text-slate-650 leading-relaxed text-justify")}</div>
                     )}
                   </div>
                 ))}

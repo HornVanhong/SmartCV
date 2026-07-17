@@ -39,9 +39,7 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
           <h3 className="text-sm font-bold uppercase tracking-wider border-b pb-1 border-slate-200" style={{ color: primaryColor }}>
             About Me
           </h3>
-          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-            {data.professionalSummary}
-          </p>
+          {renderMarkdownHTML(data.professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
         </section>
       )}
 
@@ -58,7 +56,7 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
                   <span className="text-slate-500 font-medium text-[11px]">{exp.startDate} - {exp.endDate || "Present"}</span>
                 </div>
                 <div className="text-xs font-semibold text-slate-600">{exp.company}</div>
-                {exp.description && <p className="text-xs text-slate-500 mt-1">{exp.description}</p>}
+                {exp.description && <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs text-slate-500 mt-1")}</div>}
               </div>
             ))}
           </div>
@@ -78,7 +76,7 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
                   <span className="text-slate-500 font-medium text-[11px]">{edu.startDate} - {edu.endDate || "Present"}</span>
                 </div>
                 <div className="text-xs font-semibold text-slate-600">{edu.school}</div>
-                {edu.description && <p className="text-xs text-slate-500 mt-1">{edu.description}</p>}
+                {edu.description && <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-500 mt-1")}</div>}
               </div>
             ))}
           </div>
@@ -98,7 +96,7 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
                   {proj.link && <span className="text-blue-600 text-xs">{proj.link}</span>}
                 </div>
                 {proj.technologies && <div className="text-[10px] font-semibold text-slate-500">Tech: {proj.technologies}</div>}
-                {proj.description && <p className="text-xs text-slate-500 mt-1">{proj.description}</p>}
+                {proj.description && <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs text-slate-500 mt-1")}</div>}
               </div>
             ))}
           </div>

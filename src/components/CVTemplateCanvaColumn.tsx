@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl, isLightColor } from "@/lib/utils";
+import { formatUrl, isLightColor, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateCanvaColumnProps {
   data: CVData;
@@ -311,9 +311,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                 >
                   {t("professionalSummary", lang)}
                 </div>
-                <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                  {professionalSummary}
-                </p>
+                {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
               </section>
             )}
 
@@ -374,7 +372,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                                   ))}
                               </ul>
                             ) : (
-                              <p>{exp.description}</p>
+                              renderMarkdownHTML(exp.description, "text-xs text-slate-700")
                             )}
                           </div>
                         )}
@@ -421,7 +419,7 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                       )}
                       
                       {proj.description && (
-                        <p className="text-xs text-slate-650 leading-relaxed text-justify mt-0.5">{proj.description}</p>
+                        <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs text-slate-650 leading-relaxed text-justify mt-0.5")}</div>
                       )}
                     </div>
                   ))}

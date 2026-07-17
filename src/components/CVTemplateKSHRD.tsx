@@ -1,5 +1,6 @@
 import React from "react";
 import { CVData } from "@/types/cv";
+import { parseInlineMarkdown, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateKSHRDProps {
   data: CVData;
@@ -25,16 +26,22 @@ export const CVTemplateKSHRD: React.FC<CVTemplateKSHRDProps> = ({ data, pageNumb
   // Helper to parse highlight text (wrapping ==text== in span)
   const parseHighlightHTML = (text: string | undefined): React.ReactNode => {
     if (!text) return "";
-    const parts = text.split("==");
-    return parts.map((part, idx) => {
-      if (idx % 2 === 1) {
+    const tokens = parseInlineMarkdown(text);
+    return tokens.map((token, idx) => {
+      if (token.type === "bold") {
+        return <strong key={idx} className="font-bold text-slate-900">{token.content}</strong>;
+      }
+      if (token.type === "italic") {
+        return <em key={idx} className="italic">{token.content}</em>;
+      }
+      if (token.type === "highlight") {
         return (
           <span key={idx} className="bg-yellow-250 px-1 py-0.5 rounded font-bold text-slate-900 mx-0.5 inline-block">
-            {part}
+            {token.content}
           </span>
         );
       }
-      return part;
+      return token.content;
     });
   };
 
@@ -282,7 +289,7 @@ export const CVTemplateKSHRD: React.FC<CVTemplateKSHRDProps> = ({ data, pageNumb
                 <span className="text-center text-slate-700 font-bold">:</span>
                 <div className="text-slate-800">
                   <span className="font-bold">{parseHighlightHTML(edu.major)}</span> at <span className="font-semibold text-slate-700">{parseHighlightHTML(edu.school)}</span>
-                  {edu.description && <p className="text-xs text-slate-500 mt-0.5">{parseHighlightHTML(edu.description)}</p>}
+                  {edu.description && <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-500")}</div>}
                 </div>
               </div>
             ))
@@ -316,7 +323,7 @@ export const CVTemplateKSHRD: React.FC<CVTemplateKSHRDProps> = ({ data, pageNumb
                   {exp.description && (
                     <div className="text-xs mt-1 text-slate-700 pl-4 border-l border-slate-200 font-serif">
                       <span className="font-bold text-slate-800 block text-[11px] uppercase tracking-wider mb-0.5">Responsibly:</span>
-                      <div className="text-slate-600 leading-relaxed">{parseHighlightHTML(exp.description)}</div>
+                      <div className="text-slate-600 leading-relaxed">{renderMarkdownHTML(exp.description, "text-xs text-slate-600")}</div>
                     </div>
                   )}
                 </div>

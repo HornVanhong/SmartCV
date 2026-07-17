@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateMinimalistProps {
   data: CVData;
@@ -101,9 +101,7 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
               <h2 className="text-xs font-bold tracking-wider uppercase border-b pb-1" style={{ color: primaryColor, borderColor: `${primaryColor}30` }}>
                 {t("professionalSummary", lang)}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                {professionalSummary}
-              </p>
+              {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650")}
             </section>
           )}
 
@@ -141,9 +139,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                         </div>
                         <div className="text-xs text-slate-600 font-semibold">{edu.school}</div>
                         {edu.description && (
-                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
-                            {edu.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(edu.description, "text-xs text-slate-500")}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -176,9 +174,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                           )}
                         </div>
                         {proj.description && (
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
-                            {proj.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(proj.description, "text-xs sm:text-sm text-slate-600")}
+                          </div>
                         )}
                         {proj.technologies && (
                           <div className="text-xs text-slate-500 font-medium mt-0.5">
@@ -209,9 +207,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                           </span>
                         </div>
                         {exp.description && (
-                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
-                            {exp.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(exp.description, "text-xs sm:text-sm text-slate-650")}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -239,9 +237,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                           </span>
                         </div>
                         {exp.description && (
-                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
-                            {exp.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(exp.description, "text-xs sm:text-sm text-slate-650")}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -266,9 +264,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                         </div>
                         <div className="text-xs text-slate-600 font-semibold">{edu.school}</div>
                         {edu.description && (
-                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
-                            {edu.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(edu.description, "text-xs text-slate-500")}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -301,9 +299,9 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
                           )}
                         </div>
                         {proj.description && (
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify">
-                            {proj.description}
-                          </p>
+                          <div className="mt-0.5">
+                            {renderMarkdownHTML(proj.description, "text-xs sm:text-sm text-slate-650")}
+                          </div>
                         )}
                         {proj.technologies && (
                           <div className="text-xs text-slate-500 font-medium mt-0.5">

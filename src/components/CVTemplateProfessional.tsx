@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Calendar, Flag, Briefcase, Award, BookOpen, User } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateProfessionalProps {
   data: CVData;
@@ -160,9 +160,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                   <User className="h-4.5 w-4.5" style={{ color: primaryColor }} />
                   {t("profile", lang)}
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                  {professionalSummary}
-                </p>
+                {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
               </section>
             )}
 
@@ -186,9 +184,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                           {exp.position} at <span className="font-semibold text-slate-700">{exp.company}</span>
                         </h4>
                         {exp.description && (
-                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify">
-                            {exp.description}
-                          </p>
+                          <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line text-justify")}</div>
                         )}
                       </div>
                     </div>
@@ -216,9 +212,7 @@ export const CVTemplateProfessional = React.forwardRef<HTMLDivElement, CVTemplat
                         )}
                       </h4>
                       {proj.description && (
-                        <p className="text-slate-650 leading-relaxed text-justify">
-                          {proj.description}
-                        </p>
+                        <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-slate-650 leading-relaxed text-justify")}</div>
                       )}
                       {proj.technologies && (
                         <div className="text-[10px] text-slate-500 font-medium">

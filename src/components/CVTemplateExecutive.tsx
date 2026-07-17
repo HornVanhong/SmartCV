@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
 import { Mail, Phone, MapPin, Calendar, Flag } from "lucide-react";
-import { formatUrl, isLightColor } from "@/lib/utils";
+import { formatUrl, isLightColor, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateExecutiveProps {
   data: CVData;
@@ -148,9 +148,7 @@ export const CVTemplateExecutive = React.forwardRef<HTMLDivElement, CVTemplateEx
               <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 border-b pb-1" style={{ borderColor: `${primaryColor}20`, color: primaryColor }}>
                 {t("profile", lang)}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                {professionalSummary}
-              </p>
+              {renderMarkdownHTML(professionalSummary, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}
             </section>
           )}
 
@@ -172,9 +170,7 @@ export const CVTemplateExecutive = React.forwardRef<HTMLDivElement, CVTemplateEx
                       </span>
                     </div>
                     {exp.description && (
-                      <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                        {exp.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(exp.description, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}</div>
                     )}
                   </div>
                 ))}
@@ -199,9 +195,7 @@ export const CVTemplateExecutive = React.forwardRef<HTMLDivElement, CVTemplateEx
                     </div>
                     <div className="text-xs text-slate-500 font-semibold">{edu.school}</div>
                     {edu.description && (
-                      <p className="text-xs text-slate-650 leading-relaxed text-justify mt-0.5">
-                        {edu.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(edu.description, "text-xs text-slate-650 leading-relaxed text-justify mt-0.5")}</div>
                     )}
                   </div>
                 ))}
@@ -227,9 +221,7 @@ export const CVTemplateExecutive = React.forwardRef<HTMLDivElement, CVTemplateEx
                       )}
                     </div>
                     {proj.description && (
-                      <p className="text-xs sm:text-sm text-slate-650 leading-relaxed text-justify">
-                        {proj.description}
-                      </p>
+                      <div className="mt-0.5">{renderMarkdownHTML(proj.description, "text-xs sm:text-sm text-slate-650 leading-relaxed text-justify")}</div>
                     )}
                   </div>
                 ))}
