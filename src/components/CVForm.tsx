@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette } from "lucide-react";
 import { translations } from "@/lib/translations";
+import { getLinkInfo } from "@/lib/utils";
 
 const STANDARD_GOOGLE_FONTS = ["Inter", "Poppins", "Roboto", "Lora", "Playfair Display", "Noto Sans Khmer"];
 const KHMER_GOOGLE_FONT_SUGGESTIONS = [
@@ -114,6 +115,22 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
         [field]: value,
       },
     });
+  };
+
+  const parseField = (value: string | undefined | null) => {
+    const info = getLinkInfo(value);
+    const hasCustom = value ? (value.includes("|") || value.startsWith("[")) : false;
+    return {
+      label: hasCustom ? info.label : "",
+      url: info.url
+    };
+  };
+
+  const handleLinkChange = (field: "github" | "linkedin" | "portfolio", labelVal: string, urlVal: string) => {
+    const trimmedUrl = urlVal.trim();
+    const trimmedLabel = labelVal.trim();
+    const combined = trimmedLabel ? `${trimmedLabel} | ${trimmedUrl}` : trimmedUrl;
+    handlePersonalInfoChange(field, combined);
   };
 
   // Summary helper
@@ -1124,35 +1141,79 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="github" className="text-xs font-semibold text-slate-600">GitHub Profile</Label>
-                  <Input
-                    id="github"
-                    value={data.personalInfo.github}
-                    onChange={(e) => handlePersonalInfoChange("github", e.target.value)}
-                    placeholder="github.com/username"
-                    className="h-9 text-xs"
-                  />
+                {/* GitHub */}
+                <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
+                  <span className="text-xs font-bold text-slate-700 block">GitHub Profile</span>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="github-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
+                    <Input
+                      id="github-label"
+                      value={parseField(data.personalInfo.github).label}
+                      onChange={(e) => handleLinkChange("github", e.target.value, parseField(data.personalInfo.github).url)}
+                      placeholder="e.g. GitHub"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="github" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Address / Link</Label>
+                    <Input
+                      id="github"
+                      value={parseField(data.personalInfo.github).url}
+                      onChange={(e) => handleLinkChange("github", parseField(data.personalInfo.github).label, e.target.value)}
+                      placeholder="github.com/username"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="linkedin" className="text-xs font-semibold text-slate-600">LinkedIn Profile</Label>
-                  <Input
-                    id="linkedin"
-                    value={data.personalInfo.linkedin}
-                    onChange={(e) => handlePersonalInfoChange("linkedin", e.target.value)}
-                    placeholder="linkedin.com/in/username"
-                    className="h-9 text-xs"
-                  />
+
+                {/* LinkedIn */}
+                <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
+                  <span className="text-xs font-bold text-slate-700 block">LinkedIn Profile</span>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="linkedin-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
+                    <Input
+                      id="linkedin-label"
+                      value={parseField(data.personalInfo.linkedin).label}
+                      onChange={(e) => handleLinkChange("linkedin", e.target.value, parseField(data.personalInfo.linkedin).url)}
+                      placeholder="e.g. LinkedIn"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="linkedin" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Address / Link</Label>
+                    <Input
+                      id="linkedin"
+                      value={parseField(data.personalInfo.linkedin).url}
+                      onChange={(e) => handleLinkChange("linkedin", parseField(data.personalInfo.linkedin).label, e.target.value)}
+                      placeholder="linkedin.com/in/username"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="portfolio" className="text-xs font-semibold text-slate-600">Portfolio URL</Label>
-                  <Input
-                    id="portfolio"
-                    value={data.personalInfo.portfolio}
-                    onChange={(e) => handlePersonalInfoChange("portfolio", e.target.value)}
-                    placeholder="portfolio.com"
-                    className="h-9 text-xs"
-                  />
+
+                {/* Portfolio / Custom Link */}
+                <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
+                  <span className="text-xs font-bold text-slate-700 block">Portfolio / Custom Link</span>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="portfolio-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
+                    <Input
+                      id="portfolio-label"
+                      value={parseField(data.personalInfo.portfolio).label}
+                      onChange={(e) => handleLinkChange("portfolio", e.target.value, parseField(data.personalInfo.portfolio).url)}
+                      placeholder="e.g. Portfolio"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="portfolio" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Address / Link</Label>
+                    <Input
+                      id="portfolio"
+                      value={parseField(data.personalInfo.portfolio).url}
+                      onChange={(e) => handleLinkChange("portfolio", parseField(data.personalInfo.portfolio).label, e.target.value)}
+                      placeholder="portfolio.com"
+                      className="h-8 text-xs bg-white"
+                    />
+                  </div>
                 </div>
               </div>
             </AccordionContent>

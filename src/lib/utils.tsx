@@ -5,9 +5,33 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getLinkInfo(val: string | undefined | null): { label: string; url: string } {
+  if (!val) return { label: "", url: "" };
+  const trimmed = val.trim();
+  const index = trimmed.indexOf("|");
+  if (index !== -1) {
+    const label = trimmed.substring(0, index).trim();
+    const url = trimmed.substring(index + 1).trim();
+    return { label, url };
+  }
+  // Check if it's in markdown format [Label](URL)
+  const mdMatch = trimmed.match(/^\[(.*?)\]\((.*?)\)$/);
+  if (mdMatch) {
+    return { label: mdMatch[1].trim(), url: mdMatch[2].trim() };
+  }
+  
+  return { label: trimmed.replace(/^(https?:\/\/)?(www\.)?/, ""), url: trimmed };
+}
+
+export function getLinkLabel(val: string | undefined | null): string {
+  if (!val) return "";
+  return getLinkInfo(val).label;
+}
+
 export function formatUrl(url: string | undefined | null): string {
   if (!url) return "";
-  const trimmed = url.trim();
+  const { url: actualUrl } = getLinkInfo(url);
+  const trimmed = actualUrl.trim();
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
   }

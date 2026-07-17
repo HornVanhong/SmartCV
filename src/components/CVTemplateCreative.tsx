@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl, isLightColor, renderMarkdownHTML } from "@/lib/utils";
+import { formatUrl, getLinkLabel, isLightColor, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateCreativeProps {
   data: CVData;
@@ -99,19 +99,19 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
               {personalInfo.github && (
                 <a href={formatUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
                   <Github className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
-                  <span className="truncate">{personalInfo.github.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                  <span className="truncate">{getLinkLabel(personalInfo.github)}</span>
                 </a>
               )}
               {personalInfo.linkedin && (
                 <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
                   <Linkedin className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
-                  <span className="truncate">{personalInfo.linkedin.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                  <span className="truncate">{getLinkLabel(personalInfo.linkedin)}</span>
                 </a>
               )}
               {personalInfo.portfolio && (
                 <a href={formatUrl(personalInfo.portfolio)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
                   <Globe className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
-                  <span className="truncate">{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                  <span className="truncate">{getLinkLabel(personalInfo.portfolio)}</span>
                 </a>
               )}
             </div>

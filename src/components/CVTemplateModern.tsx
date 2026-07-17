@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
+import { formatUrl, getLinkLabel, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateModernProps {
   data: CVData;
@@ -78,19 +78,19 @@ export const CVTemplateModern = React.forwardRef<HTMLDivElement, CVTemplateModer
                   {personalInfo.github && (
                     <a href={formatUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                       <Github className="h-3 w-3 print:hidden" />
-                      <span>{personalInfo.github.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                      <span>{getLinkLabel(personalInfo.github)}</span>
                     </a>
                   )}
                   {personalInfo.linkedin && (
                     <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                       <Linkedin className="h-3 w-3 print:hidden" />
-                      <span>{personalInfo.linkedin.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                      <span>{getLinkLabel(personalInfo.linkedin)}</span>
                     </a>
                   )}
                   {personalInfo.portfolio && (
                     <a href={formatUrl(personalInfo.portfolio)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-slate-900 transition-colors">
                       <Globe className="h-3 w-3 print:hidden" />
-                      <span>{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
+                      <span>{getLinkLabel(personalInfo.portfolio)}</span>
                     </a>
                   )}
                 </div>

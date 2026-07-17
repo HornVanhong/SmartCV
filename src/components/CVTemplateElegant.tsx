@@ -1,7 +1,7 @@
 import React from "react";
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
-import { formatUrl, renderMarkdownHTML } from "@/lib/utils";
+import { formatUrl, getLinkLabel, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateElegantProps {
   data: CVData;
@@ -49,7 +49,19 @@ export const CVTemplateElegant = React.forwardRef<HTMLDivElement, CVTemplateEleg
             {personalInfo.email && <span className="hover:underline">{personalInfo.email}</span>}
             {personalInfo.phone && <span>• {personalInfo.phone}</span>}
             {personalInfo.location && <span>• {personalInfo.location}</span>}
-            {personalInfo.portfolio && <span>• {personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>}
+            {personalInfo.portfolio && (
+              <span>
+                •{" "}
+                <a 
+                  href={formatUrl(personalInfo.portfolio)} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:underline"
+                >
+                  {getLinkLabel(personalInfo.portfolio)}
+                </a>
+              </span>
+            )}
           </div>
         </header>
 

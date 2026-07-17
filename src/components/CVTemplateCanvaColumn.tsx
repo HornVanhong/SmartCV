@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl, isLightColor, renderMarkdownHTML } from "@/lib/utils";
+import { formatUrl, getLinkLabel, isLightColor, renderMarkdownHTML } from "@/lib/utils";
 
 interface CVTemplateCanvaColumnProps {
   data: CVData;
@@ -158,14 +158,19 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                 </div>
               )}
               {personalInfo.portfolio && (
-                <div className={`flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white/95"}`}>
+                <a 
+                  href={formatUrl(personalInfo.portfolio)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-3 ${isLight ? "text-slate-800 hover:underline" : "text-white/95 hover:underline"}`}
+                >
                   <div className={`h-6 w-6 rounded-full border flex items-center justify-center shrink-0 ${isLight ? "border-slate-300 bg-slate-100" : "border-white bg-white/5"}`}>
                     <Globe className="h-3 w-3" style={{ color: iconColor }} />
                   </div>
                   <span className="break-all truncate">
-                    {personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}
+                    {getLinkLabel(personalInfo.portfolio)}
                   </span>
-                </div>
+                </a>
               )}
             </div>
           </div>

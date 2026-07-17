@@ -86,6 +86,23 @@ const renderMarkdownPDF = (text?: string, isBoldBase = false, customStyle?: any)
   return <View style={{ gap: 0.5 }}>{elements}</View>;
 };
 
+// React-PDF does not reliably render the CSS-style 8-digit hex values used by
+// the browser preview (for example, #2563eb20). Convert those to rgba instead.
+const withPdfAlpha = (color: string, opacity: number) => {
+  const hex = color.replace("#", "");
+  if (/^[\da-f]{3}$/i.test(hex)) {
+    const [r, g, b] = hex.split("").map((part) => parseInt(part + part, 16));
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+  if (/^[\da-f]{6}$/i.test(hex)) {
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+  return color;
+};
+
 // Create styles mimicking templates
 const styles = StyleSheet.create({
   page: {
@@ -334,20 +351,20 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   creativeSidebarColumn: {
-    width: 165,
+    width: 190,
     borderRightWidth: 0.8,
     borderRightColor: "#cbd5e1",
-    paddingTop: 28,
-    paddingBottom: 28,
+    paddingTop: 22,
+    paddingBottom: 22,
     paddingLeft: 20,
     paddingRight: 16,
   },
   creativeMainColumn: {
     flex: 1,
-    paddingTop: 28,
-    paddingBottom: 28,
-    paddingLeft: 20,
-    paddingRight: 24,
+    paddingTop: 22,
+    paddingBottom: 22,
+    paddingLeft: 18,
+    paddingRight: 20,
   },
   sidebarSection: {
     marginBottom: 15,
@@ -386,6 +403,15 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
   const lang = data.theme?.language || "en";
 
   const cleanLink = (url: string) => {
+    if (!url) return "";
+    const index = url.indexOf("|");
+    if (index !== -1) {
+      return url.substring(0, index).trim();
+    }
+    const mdMatch = url.match(/^\[(.*?)\]\((.*?)\)$/);
+    if (mdMatch) {
+      return mdMatch[1].trim();
+    }
     return url.replace(/^(https?:\/\/)?(www\.)?/, "");
   };
 
@@ -411,7 +437,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             <Text style={styles.name}>{personalInfo.fullName || "Your Name"}</Text>
             <Text style={styles.title}>{personalInfo.jobTitle || "Professional Title"}</Text>
             {personalInfo.targetRole ? (
-              <Text style={[styles.targetRole, { color: primaryColor }]}>Applied for: {personalInfo.targetRole}</Text>
+              <Text style={[styles.targetRole, { color: primaryColor }]}>{t("appliedFor", lang)}: {personalInfo.targetRole}</Text>
             ) : null}
           </View>
           
@@ -455,7 +481,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {professionalSummary ? (
         <View style={styles.section} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Professional Summary
+            {t("professionalSummary", lang)}
           </Text>
           <Text style={styles.summaryText}>{professionalSummary}</Text>
         </View>
@@ -465,7 +491,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {experience && experience.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Work Experience
+            {t("workExperience", lang)}
           </Text>
           {experience.map((exp) => (
             <View key={exp.id} style={styles.itemContainer} wrap={false}>
@@ -473,7 +499,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                 <Text style={styles.itemTitle}>
                   {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
                 </Text>
-                <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
               </View>
               {exp.description ? (
                 <Text style={styles.itemDescription}>{exp.description}</Text>
@@ -487,13 +513,13 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {education && education.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Education
+            {t("education", lang)}
           </Text>
           {education.map((edu) => (
             <View key={edu.id} style={styles.itemContainer} wrap={false}>
               <View style={styles.itemHeader}>
                 <Text style={styles.itemTitle}>{edu.major}</Text>
-                <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
               </View>
               <Text style={styles.itemSubtitle}>{edu.school}</Text>
               {edu.description ? (
@@ -508,7 +534,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {projects && projects.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Projects
+            {t("projects", lang)}
           </Text>
           {projects.map((proj) => (
             <View key={proj.id} style={styles.itemContainer} wrap={false}>
@@ -541,7 +567,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {skills && skills.length > 0 ? (
           <View style={styles.skillsColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Skills
+              {t("skills", lang)}
             </Text>
             <View style={styles.badgeContainer}>
               {skills.map((skill, index) => (
@@ -555,7 +581,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {languages && languages.length > 0 ? (
           <View style={styles.languagesColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Languages
+              {t("languages", lang)}
             </Text>
             <View>
               {languages.map((lang) => (
@@ -573,7 +599,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {references && references.length > 0 ? (
         <View style={[styles.section, { marginTop: 12 }]} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            References
+            {t("references", lang)}
           </Text>
           <View style={styles.referencesGrid}>
             {references.map((ref) => (
@@ -626,7 +652,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         </Text>
         {personalInfo.targetRole ? (
           <Text style={{ fontSize: 7.5, color: "#64748b", textTransform: "uppercase", marginTop: 2, letterSpacing: 0.5 }}>
-            Applied for: {personalInfo.targetRole}
+            {t("appliedFor", lang)}: {personalInfo.targetRole}
           </Text>
         ) : null}
 
@@ -647,7 +673,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {professionalSummary ? (
         <View style={styles.section} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            Professional Summary
+            {t("professionalSummary", lang)}
           </Text>
           <Text style={styles.summaryText}>{professionalSummary}</Text>
         </View>
@@ -672,13 +698,13 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {education && education.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Education
+                {t("education", lang)}
               </Text>
               {education.map((edu) => (
                 <View key={edu.id} style={styles.itemContainer} wrap={false}>
                   <View style={styles.itemHeader}>
                     <Text style={styles.itemTitle}>{edu.major}</Text>
-                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
                   </View>
                   <Text style={styles.itemSubtitle}>{edu.school}</Text>
                   {edu.description ? (
@@ -693,7 +719,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {projects && projects.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Projects
+                {t("projects", lang)}
               </Text>
               {projects.map((proj) => (
                 <View key={proj.id} style={styles.itemContainer} wrap={false}>
@@ -722,7 +748,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {experience && experience.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Work Experience
+                {t("workExperience", lang)}
               </Text>
               {experience.map((exp) => (
                 <View key={exp.id} style={styles.itemContainer} wrap={false}>
@@ -730,7 +756,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                     <Text style={styles.itemTitle}>
                       {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
                     </Text>
-                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
                   </View>
                   {exp.description ? (
                     <Text style={styles.itemDescription}>{exp.description}</Text>
@@ -746,7 +772,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {experience && experience.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Work Experience
+                {t("workExperience", lang)}
               </Text>
               {experience.map((exp) => (
                 <View key={exp.id} style={styles.itemContainer} wrap={false}>
@@ -754,7 +780,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                     <Text style={styles.itemTitle}>
                       {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
                     </Text>
-                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                    <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
                   </View>
                   {exp.description ? (
                     <Text style={styles.itemDescription}>{exp.description}</Text>
@@ -768,13 +794,13 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {education && education.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Education
+                {t("education", lang)}
               </Text>
               {education.map((edu) => (
                 <View key={edu.id} style={styles.itemContainer} wrap={false}>
                   <View style={styles.itemHeader}>
                     <Text style={styles.itemTitle}>{edu.major}</Text>
-                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                    <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
                   </View>
                   <Text style={styles.itemSubtitle}>{edu.school}</Text>
                   {edu.description ? (
@@ -789,7 +815,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {projects && projects.length > 0 ? (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                Projects
+                {t("projects", lang)}
               </Text>
               {projects.map((proj) => (
                 <View key={proj.id} style={styles.itemContainer} wrap={false}>
@@ -821,7 +847,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {skills && skills.length > 0 ? (
           <View style={styles.skillsColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Skills
+              {t("skills", lang)}
             </Text>
             <View style={styles.badgeContainer}>
               {skills.map((skill, index) => (
@@ -834,7 +860,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {languages && languages.length > 0 ? (
           <View style={styles.languagesColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Languages
+              {t("languages", lang)}
             </Text>
             <View>
               {languages.map((lang) => (
@@ -852,7 +878,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {references && references.length > 0 ? (
         <View style={[styles.section, { marginTop: 12 }]} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            References
+            {t("references", lang)}
           </Text>
           <View style={styles.referencesGrid}>
             {references.map((ref) => (
@@ -891,6 +917,16 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
     const textBodyColor = isLight ? "#334155" : "rgba(255, 255, 255, 0.85)";
     const textMutedColor = isLight ? "#64748b" : "rgba(255, 255, 255, 0.55)";
     const borderBottomColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)";
+    const creativeSectionTitleStyle = [
+      styles.sectionTitle,
+      { 
+        color: "#0f172a", 
+        borderBottomColor: primaryColor,
+        fontSize: 9,
+        marginBottom: 4,
+        paddingBottom: 2
+      }
+    ];
 
     return (
       <View style={styles.creativeSplitLayout}>
@@ -916,14 +952,14 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             </Text>
             {personalInfo.targetRole ? (
               <Text style={{ fontSize: 7, color: textMutedColor, textTransform: "uppercase", marginTop: 2 }}>
-                Target: {personalInfo.targetRole}
+                {t("appliedFor", lang)}: {personalInfo.targetRole}
               </Text>
             ) : null}
           </View>
 
           {/* Contact info block */}
-          <View style={styles.sidebarSection}>
-            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Contact</Text>
+          <View style={[styles.sidebarSection, { marginBottom: 10 }]}>
+            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>{t("contact", lang)}</Text>
             {personalInfo.email ? (
               <Link src={`mailto:${personalInfo.email}`} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
                 <Text>{personalInfo.email}</Text>
@@ -934,8 +970,8 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </View>
 
           {/* Socials block */}
-          <View style={styles.sidebarSection}>
-            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Socials</Text>
+          <View style={[styles.sidebarSection, { marginBottom: 10 }]}>
+            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>{t("socials", lang)}</Text>
             {personalInfo.portfolio ? (
               <Link src={formatUrl(personalInfo.portfolio)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
                 <Text>{cleanLink(personalInfo.portfolio)}</Text>
@@ -955,8 +991,8 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
           {/* Skills Block */}
           {skills && skills.length > 0 ? (
-            <View style={styles.sidebarSection}>
-              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Skills</Text>
+            <View style={[styles.sidebarSection, { marginBottom: 10 }]}>
+              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>{t("skills", lang)}</Text>
               <View style={styles.badgeContainer}>
                 {skills.map((skill, index) => (
                   <Text 
@@ -967,8 +1003,8 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                         fontSize: 7, 
                         paddingHorizontal: 4, 
                         paddingVertical: 1.5, 
-                        borderColor: isLight ? `${primaryColor}25` : "rgba(255, 255, 255, 0.15)", 
-                        backgroundColor: isLight ? `${primaryColor}08` : "rgba(255, 255, 255, 0.08)", 
+                        borderColor: isLight ? withPdfAlpha(primaryColor, 0.15) : "rgba(255, 255, 255, 0.15)",
+                        backgroundColor: isLight ? withPdfAlpha(primaryColor, 0.03) : "rgba(255, 255, 255, 0.08)",
                         color: isLight ? primaryColor : "#ffffff" 
                       }
                     ]}
@@ -982,12 +1018,12 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
           {/* Languages Block */}
           {languages && languages.length > 0 ? (
-            <View style={styles.sidebarSection}>
-              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Languages</Text>
-              {languages.map((lang) => (
-                <View key={lang.id} style={[styles.languageRow, { borderBottomColor }]}>
-                  <Text style={[styles.languageName, { fontSize: 8, color: textNameColor }]}>{lang.name}</Text>
-                  <Text style={[styles.languageLevel, { fontSize: 7.5, color: textMutedColor }]}>{lang.level}</Text>
+            <View style={[styles.sidebarSection, { marginBottom: 10 }]}>
+              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>{t("languages", lang)}</Text>
+              {languages.map((langItem) => (
+                <View key={langItem.id} style={[styles.languageRow, { borderBottomColor }]}>
+                  <Text style={[styles.languageName, { fontSize: 8, color: textNameColor }]}>{langItem.name}</Text>
+                  <Text style={[styles.languageLevel, { fontSize: 7.5, color: textMutedColor }]}>{langItem.level}</Text>
                 </View>
               ))}
             </View>
@@ -998,9 +1034,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       <View style={styles.creativeMainColumn}>
         {/* Professional Summary */}
         {professionalSummary ? (
-          <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              Professional Summary
+          <View style={[styles.section, { marginBottom: 9 }]} wrap={false}>
+            <Text style={creativeSectionTitleStyle}>
+              {t("professionalSummary", lang)}
             </Text>
             <Text style={styles.summaryText}>{professionalSummary}</Text>
           </View>
@@ -1008,11 +1044,11 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
         {/* Career Focus & Objective Pitch */}
         {data.theme?.showPitch && data.theme?.professionalPitch ? (
-          <View style={styles.section} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
+          <View style={[styles.section, { marginBottom: 9 }]} wrap={false}>
+            <Text style={creativeSectionTitleStyle}>
               {t("careerObjective", lang)}
             </Text>
-            <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}04` }}>
+            <View style={{ padding: 8, borderRadius: 6, borderWidth: 1, borderStyle: "dashed", borderColor: withPdfAlpha(primaryColor, 0.25), backgroundColor: withPdfAlpha(primaryColor, 0.02) }}>
               <Text style={styles.summaryText}>{data.theme.professionalPitch}</Text>
             </View>
           </View>
@@ -1023,19 +1059,19 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           <>
             {/* Education */}
             {education && education.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Education
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("education", lang)}
                 </Text>
                 {education.map((edu) => (
-                  <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                  <View key={edu.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemTitle}>{edu.major}</Text>
-                      <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                      <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
                     </View>
                     <Text style={styles.itemSubtitle}>{edu.school}</Text>
                     {edu.description ? (
-                      <Text style={styles.itemDescription}>{edu.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{edu.description}</Text>
                     ) : null}
                   </View>
                 ))}
@@ -1044,12 +1080,12 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
             {/* Projects */}
             {projects && projects.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Projects
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("projects", lang)}
                 </Text>
                 {projects.map((proj) => (
-                  <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                  <View key={proj.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.projectHeader}>
                       <Text style={styles.itemTitle}>{proj.name}</Text>
                       {proj.link ? (
@@ -1059,7 +1095,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                       ) : null}
                     </View>
                     {proj.description ? (
-                      <Text style={styles.itemDescription}>{proj.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{proj.description}</Text>
                     ) : null}
                     {proj.technologies ? (
                       <Text style={styles.techsUsed}>
@@ -1073,20 +1109,20 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
             {/* Work Experience */}
             {experience && experience.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Work Experience
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("workExperience", lang)}
                 </Text>
                 {experience.map((exp) => (
-                  <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                  <View key={exp.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemTitle}>
                         {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
                       </Text>
-                      <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                      <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
                     </View>
                     {exp.description ? (
-                      <Text style={styles.itemDescription}>{exp.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{exp.description}</Text>
                     ) : null}
                   </View>
                 ))}
@@ -1097,20 +1133,20 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           <>
             {/* Work Experience */}
             {experience && experience.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Work Experience
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("workExperience", lang)}
                 </Text>
                 {experience.map((exp) => (
-                  <View key={exp.id} style={styles.itemContainer} wrap={false}>
+                  <View key={exp.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemTitle}>
                         {exp.position} <Text style={{ fontFamily: "Helvetica", color: "#94a3b8" }}>at</Text> {exp.company}
                       </Text>
-                      <Text style={styles.itemDate}>{exp.startDate} – {exp.endDate || "Present"}</Text>
+                      <Text style={{ fontSize: 8, color: "#64748b" }}>{exp.startDate} – {exp.endDate || t("present", lang)}</Text>
                     </View>
                     {exp.description ? (
-                      <Text style={styles.itemDescription}>{exp.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{exp.description}</Text>
                     ) : null}
                   </View>
                 ))}
@@ -1119,19 +1155,19 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
             {/* Education */}
             {education && education.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Education
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("education", lang)}
                 </Text>
                 {education.map((edu) => (
-                  <View key={edu.id} style={styles.itemContainer} wrap={false}>
+                  <View key={edu.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemTitle}>{edu.major}</Text>
-                      <Text style={styles.itemDate}>{edu.startDate} – {edu.endDate || "Present"}</Text>
+                      <Text style={{ fontSize: 8, color: "#64748b" }}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
                     </View>
                     <Text style={styles.itemSubtitle}>{edu.school}</Text>
                     {edu.description ? (
-                      <Text style={styles.itemDescription}>{edu.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{edu.description}</Text>
                     ) : null}
                   </View>
                 ))}
@@ -1140,12 +1176,12 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
             {/* Projects */}
             {projects && projects.length > 0 ? (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-                  Projects
+              <View style={[styles.section, { marginBottom: 9 }]}>
+                <Text style={creativeSectionTitleStyle}>
+                  {t("projects", lang)}
                 </Text>
                 {projects.map((proj) => (
-                  <View key={proj.id} style={styles.itemContainer} wrap={false}>
+                  <View key={proj.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
                     <View style={styles.projectHeader}>
                       <Text style={styles.itemTitle}>{proj.name}</Text>
                       {proj.link ? (
@@ -1155,7 +1191,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                       ) : null}
                     </View>
                     {proj.description ? (
-                      <Text style={styles.itemDescription}>{proj.description}</Text>
+                      <Text style={[styles.itemDescription, { fontSize: 8, lineHeight: 1.25 }]}>{proj.description}</Text>
                     ) : null}
                     {proj.technologies ? (
                       <Text style={styles.techsUsed}>
@@ -1171,9 +1207,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
         {/* References */}
         {references && references.length > 0 ? (
-          <View style={[styles.section, { marginTop: 12 }]} wrap={false}>
-            <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              References
+          <View style={[styles.section, { marginTop: 6, marginBottom: 0 }]} wrap={false}>
+            <Text style={creativeSectionTitleStyle}>
+              {t("references", lang)}
             </Text>
             <View style={styles.referencesGrid}>
               {references.map((ref) => (
@@ -1229,7 +1265,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </Text>
           {personalInfo.targetRole ? (
             <Text style={{ fontSize: 7.5, color: "#cbd5e1", textTransform: "uppercase", marginTop: 2, letterSpacing: 0.5 }}>
-              Applied for: {personalInfo.targetRole}
+              {t("appliedFor", lang)}: {personalInfo.targetRole}
             </Text>
           ) : null}
         </View>
@@ -2352,7 +2388,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                   <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: isSidebarLight ? "rgba(0,0,0,0.2)" : "#ffffff", alignItems: "center", justifyContent: "center" }}>
                     <Text style={{ fontSize: 6, color: isSidebarLight ? localPrimaryColor : "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>W</Text>
                   </View>
-                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</Text>
+                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{cleanLink(personalInfo.portfolio)}</Text>
                 </View>
               ) : null}
             </View>
