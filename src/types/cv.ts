@@ -92,6 +92,7 @@ export interface CVTheme {
   showPitch?: boolean;
   professionalPitch?: string;
   backgroundColor?: string;
+  sidebarBackgroundColor?: string;
 }
 
 export interface CVData {

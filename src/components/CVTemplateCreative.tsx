@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Github, Linkedin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, isLightColor } from "@/lib/utils";
 
 interface CVTemplateCreativeProps {
   data: CVData;
@@ -13,6 +13,15 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
     const { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
     const primaryColor = data.theme?.primaryColor || "#2563eb";
     const lang = data.theme?.language || "en";
+    
+    const isLight = !data.theme?.sidebarBackgroundColor || isLightColor(data.theme.sidebarBackgroundColor);
+    const textNameClass = isLight ? "text-slate-900" : "text-white";
+    const textTitleClass = isLight ? "text-slate-500" : "text-slate-300";
+    const textHeaderClass = isLight ? "text-slate-400" : "text-white/60";
+    const textBodyClass = isLight ? "text-slate-650" : "text-slate-200/90";
+    const textMutedClass = isLight ? "text-slate-500" : "text-slate-300";
+    const borderClass = isLight ? "border-slate-200/60" : "border-white/15";
+    const sidebarBg = data.theme?.sidebarBackgroundColor || "rgba(241, 245, 249, 0.7)";
 
     return (
       <div
@@ -21,15 +30,20 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
         style={{ boxSizing: "border-box", backgroundColor: data.theme?.backgroundColor || "#ffffff" }}
       >
         {/* Left Sidebar */}
-        <aside className="w-full sm:w-[280px] print:w-[260px] bg-slate-50/70 border-r border-slate-200/60 p-6 sm:p-8 print:p-8 flex flex-col gap-6 shrink-0">
+        <aside 
+          className={`w-full sm:w-[280px] print:w-[260px] border-r p-6 sm:p-8 print:p-8 flex flex-col gap-6 shrink-0`}
+          style={{ boxSizing: "border-box", backgroundColor: sidebarBg, borderColor: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.1)" }}
+        >
           
           {/* Profile Photo */}
           {personalInfo.photo && (
-            <div className={`rounded-2xl overflow-hidden border border-slate-200 shadow-xs mx-auto shrink-0 ${
+            <div className={`rounded-2xl overflow-hidden border shadow-xs mx-auto shrink-0 ${
               data.theme?.photoAspectRatio === "4:6"
                 ? "h-36 w-24"
                 : "h-32 w-24"
-            }`}>
+            }`}
+            style={{ borderColor: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)" }}
+            >
               <img
                 src={personalInfo.photo}
                 alt={personalInfo.fullName}
@@ -40,38 +54,38 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
 
           {/* Name & Title */}
           <div className="text-center sm:text-left print:text-left space-y-1">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+            <h1 className={`text-xl sm:text-2xl font-black tracking-tight leading-tight ${textNameClass}`}>
               {personalInfo.fullName || "Your Name"}
             </h1>
             <p className="text-xs font-bold uppercase tracking-wider" style={{ color: primaryColor }}>
               {personalInfo.jobTitle || "Professional Title"}
             </p>
             {personalInfo.targetRole && (
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pt-0.5">
+              <p className={`text-[10px] font-bold uppercase tracking-widest pt-0.5 ${textMutedClass}`}>
                 {t("appliedFor", lang)}: {personalInfo.targetRole}
               </p>
             )}
           </div>
  
           {/* Contact Details */}
-          <div className="space-y-3 pt-2 border-t border-slate-200/60">
-            <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{t("contact", lang)}</h3>
-            <div className="space-y-2 text-xs text-slate-650">
+          <div className={`space-y-3 pt-2 border-t ${borderClass}`}>
+            <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${textHeaderClass}`}>{t("contact", lang)}</h3>
+            <div className={`space-y-2 text-xs ${textBodyClass}`}>
               {personalInfo.email && (
-                <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-2 hover:text-slate-950 transition-colors">
-                  <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a href={`mailto:${personalInfo.email}`} className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
+                  <Mail className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span className="truncate">{personalInfo.email}</span>
                 </a>
               )}
               {personalInfo.phone && (
                 <div className="flex items-center gap-2">
-                  <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <Phone className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span>{personalInfo.phone}</span>
                 </div>
               )}
               {personalInfo.location && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <MapPin className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span>{personalInfo.location}</span>
                 </div>
               )}
@@ -79,24 +93,24 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
           </div>
  
           {/* Social Links */}
-          <div className="space-y-3 pt-2 border-t border-slate-200/60">
-            <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Socials</h3>
-            <div className="space-y-2 text-xs text-slate-650">
+          <div className={`space-y-3 pt-2 border-t ${borderClass}`}>
+            <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${textHeaderClass}`}>Socials</h3>
+            <div className={`space-y-2 text-xs ${textBodyClass}`}>
               {personalInfo.github && (
-                <a href={formatUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-slate-950 transition-colors">
-                  <Github className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a href={formatUrl(personalInfo.github)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
+                  <Github className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span className="truncate">{personalInfo.github.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
                 </a>
               )}
               {personalInfo.linkedin && (
-                <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-slate-950 transition-colors">
-                  <Linkedin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a href={formatUrl(personalInfo.linkedin)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
+                  <Linkedin className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span className="truncate">{personalInfo.linkedin.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
                 </a>
               )}
               {personalInfo.portfolio && (
-                <a href={formatUrl(personalInfo.portfolio)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-slate-950 transition-colors">
-                  <Globe className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a href={formatUrl(personalInfo.portfolio)} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${isLight ? "hover:text-slate-950" : "hover:text-white"}`}>
+                  <Globe className={`h-3.5 w-3.5 shrink-0 ${isLight ? "text-slate-400" : "text-slate-350"}`} />
                   <span className="truncate">{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</span>
                 </a>
               )}
@@ -105,14 +119,18 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
  
           {/* Skills */}
           {skills && skills.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-slate-200/60">
-              <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{t("skills", lang)}</h3>
+            <div className={`space-y-3 pt-2 border-t ${borderClass}`}>
+              <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${textHeaderClass}`}>{t("skills", lang)}</h3>
               <div className="flex flex-wrap gap-1">
                 {skills.map((skill, index) => (
                   <span
                     key={index}
                     className="px-2 py-0.5 rounded text-[10px] font-semibold border"
-                    style={{ borderColor: `${primaryColor}20`, backgroundColor: `${primaryColor}06`, color: primaryColor }}
+                    style={{ 
+                      borderColor: isLight ? `${primaryColor}20` : "rgba(255, 255, 255, 0.15)", 
+                      backgroundColor: isLight ? `${primaryColor}06` : "rgba(255, 255, 255, 0.08)", 
+                      color: isLight ? primaryColor : "#ffffff" 
+                    }}
                   >
                     {skill}
                   </span>
@@ -123,13 +141,13 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
  
           {/* Languages */}
           {languages && languages.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-slate-200/60">
-              <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{t("languages", lang)}</h3>
+            <div className={`space-y-3 pt-2 border-t ${borderClass}`}>
+              <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${textHeaderClass}`}>{t("languages", lang)}</h3>
               <div className="space-y-1.5">
                 {languages.map((langItem) => (
-                  <div key={langItem.id} className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-700">{langItem.name}</span>
-                    <span className="text-slate-500 font-medium italic text-[11px]">{langItem.level}</span>
+                  <div key={langItem.id} className={`flex justify-between items-center text-xs`}>
+                    <span className={`font-bold ${isLight ? "text-slate-700" : "text-slate-200"}`}>{langItem.name}</span>
+                    <span className={`font-medium italic text-[11px] ${textMutedClass}`}>{langItem.level}</span>
                   </div>
                 ))}
               </div>

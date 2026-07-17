@@ -2,7 +2,7 @@ import React from "react";
 import { CVData } from "@/types/cv";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { t } from "@/lib/translations";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, isLightColor } from "@/lib/utils";
 
 interface CVTemplateCanvaColumnProps {
   data: CVData;
@@ -90,20 +90,28 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
       
     const lang = data.theme?.language || "en";
 
+    const sidebarBg = data.theme?.sidebarBackgroundColor || primaryColor;
+    const isLight = isLightColor(sidebarBg);
+    const textNameClass = isLight ? "text-slate-900" : "text-white";
+    const textBodyClass = isLight ? "text-slate-700" : "text-white/90";
+    const textMutedClass = isLight ? "text-slate-500" : "text-white/60";
+    const borderClass = isLight ? "border-slate-300" : "border-white/20";
+    const iconColor = isLight ? primaryColor : "#ffffff";
+
     return (
       <div
         ref={ref}
         className="w-full text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row"
         style={{ boxSizing: "border-box" }}
       >
-        {/* Left Sidebar (Dark Navy Background) */}
+        {/* Left Sidebar */}
         <aside 
-          className="w-full sm:w-[280px] print:w-[260px] text-white p-6 sm:p-8 print:p-8 flex flex-col gap-6 shrink-0" 
-          style={{ backgroundColor: primaryColor }}
+          className="w-full sm:w-[280px] print:w-[260px] p-6 sm:p-8 print:p-8 flex flex-col gap-6 shrink-0" 
+          style={{ backgroundColor: sidebarBg }}
         >
-          {/* Circular Photo with white border */}
+          {/* Circular Photo with border */}
           {personalInfo.photo && (
-            <div className="mx-auto rounded-full overflow-hidden border-4 border-white shadow-md h-32 w-32 shrink-0">
+            <div className={`mx-auto rounded-full overflow-hidden border-4 shadow-md h-32 w-32 shrink-0 ${isLight ? "border-slate-300" : "border-white"}`}>
               <img
                 src={personalInfo.photo}
                 alt={personalInfo.fullName}
@@ -115,43 +123,46 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
           {/* CONTACT SECTION */}
           <div className="space-y-4">
             <div 
-              className="bg-white text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
-              style={{ color: primaryColor }}
+              className="text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
+              style={{ 
+                backgroundColor: isLight ? primaryColor : "#ffffff", 
+                color: isLight ? "#ffffff" : primaryColor 
+              }}
             >
               {t("contact", lang)}
             </div>
             
             <div className="space-y-3 text-xs">
               {personalInfo.phone && (
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full border border-white flex items-center justify-center shrink-0">
-                    <Phone className="h-3 w-3 text-white" />
+                <div className={`flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white/95"}`}>
+                  <div className={`h-6 w-6 rounded-full border flex items-center justify-center shrink-0 ${isLight ? "border-slate-300 bg-slate-100" : "border-white bg-white/5"}`}>
+                    <Phone className="h-3 w-3" style={{ color: iconColor }} />
                   </div>
-                  <span className="text-white/90 break-all">{personalInfo.phone}</span>
+                  <span className="break-all">{personalInfo.phone}</span>
                 </div>
               )}
               {personalInfo.email && (
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full border border-white flex items-center justify-center shrink-0">
-                    <Mail className="h-3 w-3 text-white" />
+                <div className={`flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white/95"}`}>
+                  <div className={`h-6 w-6 rounded-full border flex items-center justify-center shrink-0 ${isLight ? "border-slate-300 bg-slate-100" : "border-white bg-white/5"}`}>
+                    <Mail className="h-3 w-3" style={{ color: iconColor }} />
                   </div>
-                  <span className="text-white/90 break-all">{personalInfo.email}</span>
+                  <span className="break-all">{personalInfo.email}</span>
                 </div>
               )}
               {personalInfo.location && (
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full border border-white flex items-center justify-center shrink-0">
-                    <MapPin className="h-3 w-3 text-white" />
+                <div className={`flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white/95"}`}>
+                  <div className={`h-6 w-6 rounded-full border flex items-center justify-center shrink-0 ${isLight ? "border-slate-300 bg-slate-100" : "border-white bg-white/5"}`}>
+                    <MapPin className="h-3 w-3" style={{ color: iconColor }} />
                   </div>
-                  <span className="text-white/90 break-all">{personalInfo.location}</span>
+                  <span className="break-all">{personalInfo.location}</span>
                 </div>
               )}
               {personalInfo.portfolio && (
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-full border border-white flex items-center justify-center shrink-0">
-                    <Globe className="h-3 w-3 text-white" />
+                <div className={`flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white/95"}`}>
+                  <div className={`h-6 w-6 rounded-full border flex items-center justify-center shrink-0 ${isLight ? "border-slate-300 bg-slate-100" : "border-white bg-white/5"}`}>
+                    <Globe className="h-3 w-3" style={{ color: iconColor }} />
                   </div>
-                  <span className="text-white/90 break-all truncate">
+                  <span className="break-all truncate">
                     {personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}
                   </span>
                 </div>
@@ -163,8 +174,11 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
           {education && education.length > 0 && (
             <div className="space-y-4">
               <div 
-                className="bg-white text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
-                style={{ color: primaryColor }}
+                className="text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
+                style={{ 
+                  backgroundColor: isLight ? primaryColor : "#ffffff", 
+                  color: isLight ? "#ffffff" : primaryColor 
+                }}
               >
                 {t("education", lang)}
               </div>
@@ -173,20 +187,20 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                   <div key={edu.id} className={`space-y-1 text-xs break-inside-avoid ${edu.pageBreakBefore ? "page-break-before" : ""}`}>
                     {edu.pageBreakBefore && (
                       <div className="w-full flex items-center gap-2 my-4 print:hidden">
-                        <div className="flex-1 border-t border-dashed border-white/20" />
-                        <span className="text-[9px] font-bold text-white/50 bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                        <div className={`flex-1 border-t border-dashed ${isLight ? "border-slate-300" : "border-white/20"}`} />
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded border ${isLight ? "text-slate-650 bg-slate-100 border-slate-300" : "text-white/50 bg-white/10 border-white/10"}`}>
                           Page Break
                         </span>
-                        <div className="flex-1 border-t border-dashed border-white/20" />
+                        <div className={`flex-1 border-t border-dashed ${isLight ? "border-slate-300" : "border-white/20"}`} />
                       </div>
                     )}
-                    <p className="font-bold text-white leading-snug">{edu.major}</p>
-                    <p className="text-white/80 font-medium">{edu.school}</p>
-                    <p className="text-white/60 text-[10px] font-semibold">
+                    <p className={`font-bold leading-snug ${isLight ? "text-slate-900" : "text-white"}`}>{edu.major}</p>
+                    <p className={isLight ? "text-slate-700 font-medium" : "text-white/80 font-medium"}>{edu.school}</p>
+                    <p className={`text-[10px] font-semibold ${isLight ? "text-slate-500" : "text-white/60"}`}>
                       {edu.startDate} – {edu.endDate || t("present", lang)}
                     </p>
                     {edu.description && (
-                      <p className="text-white/70 text-[10px] leading-relaxed pt-0.5">{edu.description}</p>
+                      <p className={`text-[10px] leading-relaxed pt-0.5 ${isLight ? "text-slate-600" : "text-white/70"}`}>{edu.description}</p>
                     )}
                   </div>
                 ))}
@@ -198,8 +212,11 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
           {languages && languages.length > 0 && (
             <div className="space-y-4">
               <div 
-                className="bg-white text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
-                style={{ color: primaryColor }}
+                className="text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
+                style={{ 
+                  backgroundColor: isLight ? primaryColor : "#ffffff", 
+                  color: isLight ? "#ffffff" : primaryColor 
+                }}
               >
                 {t("languages", lang)}
               </div>
@@ -208,12 +225,12 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                   const percentage = parseLanguageLevel(langItem.level);
                   return (
                     <div key={langItem.id} className="space-y-1 break-inside-avoid">
-                      <div className="flex justify-between items-center text-xs text-white">
+                      <div className={`flex justify-between items-center text-xs ${isLight ? "text-slate-800" : "text-white"}`}>
                         <span className="font-bold">{langItem.name}</span>
-                        <span className="text-[10px] text-white/75 italic">{langItem.level}</span>
+                        <span className={`text-[10px] italic ${isLight ? "text-slate-500" : "text-white/75"}`}>{langItem.level}</span>
                       </div>
-                      <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${percentage}%` }} />
+                      <div className={`h-1.5 w-full rounded-full overflow-hidden ${isLight ? "bg-slate-200" : "bg-white/20"}`}>
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${percentage}%`, backgroundColor: isLight ? primaryColor : "#ffffff" }} />
                       </div>
                     </div>
                   );
@@ -226,8 +243,11 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
           {references && references.length > 0 && (
             <div className="space-y-4">
               <div 
-                className="bg-white text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
-                style={{ color: primaryColor }}
+                className="text-center font-bold tracking-wider py-1 rounded-full text-xs uppercase"
+                style={{ 
+                  backgroundColor: isLight ? primaryColor : "#ffffff", 
+                  color: isLight ? "#ffffff" : primaryColor 
+                }}
               >
                 {t("references", lang)}
               </div>
@@ -236,20 +256,20 @@ export const CVTemplateCanvaColumn = React.forwardRef<HTMLDivElement, CVTemplate
                   <div key={ref.id} className={`space-y-1 text-xs break-inside-avoid ${ref.pageBreakBefore ? "page-break-before" : ""}`}>
                     {ref.pageBreakBefore && (
                       <div className="w-full flex items-center gap-2 my-4 print:hidden">
-                        <div className="flex-1 border-t border-dashed border-white/20" />
-                        <span className="text-[9px] font-bold text-white/50 bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                        <div className={`flex-1 border-t border-dashed ${isLight ? "border-slate-300" : "border-white/20"}`} />
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded border ${isLight ? "text-slate-650 bg-slate-100 border-slate-300" : "text-white/50 bg-white/10 border-white/10"}`}>
                           Page Break
                         </span>
-                        <div className="flex-1 border-t border-dashed border-white/20" />
+                        <div className={`flex-1 border-t border-dashed ${isLight ? "border-slate-300" : "border-white/20"}`} />
                       </div>
                     )}
-                    <p className="font-bold text-white">{ref.name}</p>
+                    <p className={`font-bold ${isLight ? "text-slate-900" : "text-white"}`}>{ref.name}</p>
                     {ref.relationship || ref.company ? (
-                      <p className="text-white/80 font-medium text-[10px] leading-tight">
+                      <p className={`font-medium text-[10px] leading-tight ${isLight ? "text-slate-700" : "text-white/80"}`}>
                         {ref.relationship} {ref.relationship && ref.company ? "at" : ""} {ref.company}
                       </p>
                     ) : null}
-                    <div className="text-white/60 text-[10px] space-y-0.5 pt-0.5">
+                    <div className={`text-[10px] space-y-0.5 pt-0.5 ${isLight ? "text-slate-500" : "text-white/60"}`}>
                       {ref.email && <p className="truncate">Email: {ref.email}</p>}
                       {ref.phone && <p>Tel: {ref.phone}</p>}
                     </div>

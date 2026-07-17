@@ -108,6 +108,7 @@ export const defaultCVData: CVData = {
     experienceLevel: "experienced",
     showPitch: false,
     professionalPitch: "",
-    backgroundColor: "#ffffff"
+    backgroundColor: "#ffffff",
+    sidebarBackgroundColor: ""
   }
 };

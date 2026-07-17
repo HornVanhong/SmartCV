@@ -3,7 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Link, Svg, Circle, Path,
 import { CVData } from "@/types/cv";
 import { t } from "@/lib/translations";
 import { getPageData } from "@/lib/page-utils";
-import { formatUrl } from "@/lib/utils";
+import { formatUrl, isLightColor } from "@/lib/utils";
 
 // Create styles mimicking templates
 const styles = StyleSheet.create({
@@ -800,92 +800,116 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
   );
 
   // Render Creative Split Layout
-  const renderCreative = () => (
-    <View style={styles.creativeSplitLayout}>
-      {/* Sidebar Column */}
-      <View style={[styles.creativeSidebarColumn, { backgroundColor: "rgba(241, 245, 249, 0.7)" }]}>
-        {personalInfo.photo ? (
-          <Image
-            src={personalInfo.photo}
-            style={[
-              styles.photo,
-              { borderRadius: 6, marginBottom: 12, marginLeft: "auto", marginRight: "auto" },
-              data.theme?.photoAspectRatio === "4:6"
-                ? { width: 60, height: 90 }
-                : { width: 66, height: 88 }
-            ]}
-          />
-        ) : null}
+  const renderCreative = () => {
+    const sidebarBg = data.theme?.sidebarBackgroundColor || "rgba(241, 245, 249, 0.7)";
+    const isLight = !data.theme?.sidebarBackgroundColor || isLightColor(data.theme.sidebarBackgroundColor);
+    const textNameColor = isLight ? "#0f172a" : "#ffffff";
+    const textHeaderColor = isLight ? "#64748b" : "rgba(255, 255, 255, 0.6)";
+    const textBodyColor = isLight ? "#334155" : "rgba(255, 255, 255, 0.85)";
+    const textMutedColor = isLight ? "#64748b" : "rgba(255, 255, 255, 0.55)";
+    const borderBottomColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)";
 
-        <View style={{ marginBottom: 15 }}>
-          <Text style={[styles.name, { fontSize: 14, fontFamily: "Helvetica-Bold" }]}>{personalInfo.fullName || "Your Name"}</Text>
-          <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: primaryColor, marginTop: 2, textTransform: "uppercase" }}>
-            {personalInfo.jobTitle || "Professional Title"}
-          </Text>
-          {personalInfo.targetRole ? (
-            <Text style={{ fontSize: 7, color: "#64748b", textTransform: "uppercase", marginTop: 2 }}>
-              Target: {personalInfo.targetRole}
+    return (
+      <View style={styles.creativeSplitLayout}>
+        {/* Sidebar Column */}
+        <View style={[styles.creativeSidebarColumn, { backgroundColor: sidebarBg, borderColor: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)" }]}>
+          {personalInfo.photo ? (
+            <Image
+              src={personalInfo.photo}
+              style={[
+                styles.photo,
+                { borderRadius: 6, marginBottom: 12, marginLeft: "auto", marginRight: "auto" },
+                data.theme?.photoAspectRatio === "4:6"
+                  ? { width: 60, height: 90 }
+                  : { width: 66, height: 88 }
+              ]}
+            />
+          ) : null}
+
+          <View style={{ marginBottom: 15 }}>
+            <Text style={[styles.name, { fontSize: 14, fontFamily: "Helvetica-Bold", color: textNameColor }]}>{personalInfo.fullName || "Your Name"}</Text>
+            <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: primaryColor, marginTop: 2, textTransform: "uppercase" }}>
+              {personalInfo.jobTitle || "Professional Title"}
             </Text>
-          ) : null}
-        </View>
+            {personalInfo.targetRole ? (
+              <Text style={{ fontSize: 7, color: textMutedColor, textTransform: "uppercase", marginTop: 2 }}>
+                Target: {personalInfo.targetRole}
+              </Text>
+            ) : null}
+          </View>
 
-        {/* Contact info block */}
-        <View style={styles.sidebarSection}>
-          <Text style={styles.sidebarSectionTitle}>Contact</Text>
-          {personalInfo.email ? (
-            <Link src={`mailto:${personalInfo.email}`} style={[styles.sidebarContactLink, { color: primaryColor }]}>
-              <Text>{personalInfo.email}</Text>
-            </Link>
-          ) : null}
-          {personalInfo.phone ? <Text style={styles.sidebarContactText}>{personalInfo.phone}</Text> : null}
-          {personalInfo.location ? <Text style={styles.sidebarContactText}>{personalInfo.location}</Text> : null}
-        </View>
-
-        {/* Socials block */}
-        <View style={styles.sidebarSection}>
-          <Text style={styles.sidebarSectionTitle}>Socials</Text>
-          {personalInfo.portfolio ? (
-            <Link src={formatUrl(personalInfo.portfolio)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
-              <Text>{cleanLink(personalInfo.portfolio)}</Text>
-            </Link>
-          ) : null}
-          {personalInfo.github ? (
-            <Link src={formatUrl(personalInfo.github)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
-              <Text>github: {cleanLink(personalInfo.github)}</Text>
-            </Link>
-          ) : null}
-          {personalInfo.linkedin ? (
-            <Link src={formatUrl(personalInfo.linkedin)} style={[styles.sidebarContactLink, { color: primaryColor }]}>
-              <Text>linkedin: {cleanLink(personalInfo.linkedin)}</Text>
-            </Link>
-          ) : null}
-        </View>
-
-        {/* Skills Block */}
-        {skills && skills.length > 0 ? (
+          {/* Contact info block */}
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Skills</Text>
-            <View style={styles.badgeContainer}>
-              {skills.map((skill, index) => (
-                <Text key={index} style={[styles.badge, { fontSize: 7, paddingHorizontal: 4, paddingVertical: 1.5, borderColor: `${primaryColor}25`, backgroundColor: `${primaryColor}08`, color: primaryColor }]}>{skill}</Text>
+            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Contact</Text>
+            {personalInfo.email ? (
+              <Link src={`mailto:${personalInfo.email}`} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
+                <Text>{personalInfo.email}</Text>
+              </Link>
+            ) : null}
+            {personalInfo.phone ? <Text style={[styles.sidebarContactText, { color: textBodyColor }]}>{personalInfo.phone}</Text> : null}
+            {personalInfo.location ? <Text style={[styles.sidebarContactText, { color: textBodyColor }]}>{personalInfo.location}</Text> : null}
+          </View>
+
+          {/* Socials block */}
+          <View style={styles.sidebarSection}>
+            <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Socials</Text>
+            {personalInfo.portfolio ? (
+              <Link src={formatUrl(personalInfo.portfolio)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
+                <Text>{cleanLink(personalInfo.portfolio)}</Text>
+              </Link>
+            ) : null}
+            {personalInfo.github ? (
+              <Link src={formatUrl(personalInfo.github)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
+                <Text>github: {cleanLink(personalInfo.github)}</Text>
+              </Link>
+            ) : null}
+            {personalInfo.linkedin ? (
+              <Link src={formatUrl(personalInfo.linkedin)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff" }]}>
+                <Text>linkedin: {cleanLink(personalInfo.linkedin)}</Text>
+              </Link>
+            ) : null}
+          </View>
+
+          {/* Skills Block */}
+          {skills && skills.length > 0 ? (
+            <View style={styles.sidebarSection}>
+              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Skills</Text>
+              <View style={styles.badgeContainer}>
+                {skills.map((skill, index) => (
+                  <Text 
+                    key={index} 
+                    style={[
+                      styles.badge, 
+                      { 
+                        fontSize: 7, 
+                        paddingHorizontal: 4, 
+                        paddingVertical: 1.5, 
+                        borderColor: isLight ? `${primaryColor}25` : "rgba(255, 255, 255, 0.15)", 
+                        backgroundColor: isLight ? `${primaryColor}08` : "rgba(255, 255, 255, 0.08)", 
+                        color: isLight ? primaryColor : "#ffffff" 
+                      }
+                    ]}
+                  >
+                    {skill}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          {/* Languages Block */}
+          {languages && languages.length > 0 ? (
+            <View style={styles.sidebarSection}>
+              <Text style={[styles.sidebarSectionTitle, { color: textHeaderColor, borderBottomColor }]}>Languages</Text>
+              {languages.map((lang) => (
+                <View key={lang.id} style={[styles.languageRow, { borderBottomColor }]}>
+                  <Text style={[styles.languageName, { fontSize: 8, color: textNameColor }]}>{lang.name}</Text>
+                  <Text style={[styles.languageLevel, { fontSize: 7.5, color: textMutedColor }]}>{lang.level}</Text>
+                </View>
               ))}
             </View>
-          </View>
-        ) : null}
-
-        {/* Languages Block */}
-        {languages && languages.length > 0 ? (
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Languages</Text>
-            {languages.map((lang) => (
-              <View key={lang.id} style={[styles.languageRow, { borderBottomColor: "#cbd5e1" }]}>
-                <Text style={[styles.languageName, { fontSize: 8 }]}>{lang.name}</Text>
-                <Text style={[styles.languageLevel, { fontSize: 7.5 }]}>{lang.level}</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
+          ) : null}
+        </View>
 
       {/* Main Column */}
       <View style={styles.creativeMainColumn}>
@@ -1096,6 +1120,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       </View>
     </View>
   );
+};
 
   // Render Professional Layout (Top Banner, Solid boxes)
   const renderProfessional = () => (
@@ -1430,55 +1455,77 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
   );
 
   // Render Executive Layout
-  const renderExecutive = () => (
-    <View style={{ flexDirection: "row", height: "100%" }}>
-      {/* Left Sidebar */}
-      <View style={{ width: 170, backgroundColor: primaryColor, padding: 20, color: "#ffffff" }}>
-        {personalInfo.photo ? (
-          <Image
-            src={personalInfo.photo}
-            style={[
-              styles.photo,
-              { borderRadius: 6, borderWidth: 2, borderColor: "#ffffff", marginLeft: "auto", marginRight: "auto", marginBottom: 12 },
-              data.theme?.photoAspectRatio === "4:6" ? { width: 60, height: 90 } : { width: 66, height: 88 }
-            ]}
-          />
-        ) : null}
-        <Text style={{ fontSize: 14, fontFamily: "Helvetica-Bold", color: "#ffffff", textTransform: "uppercase", textAlign: "center" }}>{personalInfo.fullName || "Your Name"}</Text>
-        <Text style={{ fontSize: 8, color: "#f1f5f9", textAlign: "center", marginTop: 2, textTransform: "uppercase" }}>{personalInfo.jobTitle || "Professional Title"}</Text>
-        
-        <View style={{ marginTop: 20, gap: 10, fontSize: 7.5 }}>
-          <Text style={{ fontFamily: "Helvetica-Bold", color: "#e2e8f0", textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: "rgba(255,255,255,0.2)", paddingBottom: 2 }}>{t("contact", lang)}</Text>
-          {personalInfo.phone ? <Text>P: {personalInfo.phone}</Text> : null}
-          {personalInfo.email ? <Text>E: {personalInfo.email}</Text> : null}
-          {personalInfo.location ? <Text>L: {personalInfo.location}</Text> : null}
-          {personalInfo.dob ? <Text>D: {personalInfo.dob}</Text> : null}
-          {personalInfo.nationality ? <Text>N: {personalInfo.nationality}</Text> : null}
-        </View>
+  const renderExecutive = () => {
+    const sidebarBg = data.theme?.sidebarBackgroundColor || primaryColor;
+    const isSidebarLight = isLightColor(sidebarBg);
+    const sidebarTextColor = isSidebarLight ? "#1e293b" : "#ffffff";
+    const sidebarMutedColor = isSidebarLight ? "#475569" : "#f1f5f9";
+    const sidebarSubMutedColor = isSidebarLight ? "#64748b" : "#e2e8f0";
+    const borderBottomColor = isSidebarLight ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.2)";
 
-        {skills && skills.length > 0 ? (
-          <View style={{ marginTop: 20, gap: 6 }}>
-            <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#e2e8f0", textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: "rgba(255,255,255,0.2)", paddingBottom: 2 }}>{t("skills", lang)}</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
-              {skills.map((skill, idx) => (
-                <Text key={idx} style={{ fontSize: 7, paddingHorizontal: 3, paddingVertical: 1, backgroundColor: "rgba(255,255,255,0.15)", color: "#ffffff", borderRadius: 2 }}>{skill}</Text>
+    return (
+      <View style={{ flexDirection: "row", height: "100%" }}>
+        {/* Left Sidebar */}
+        <View style={{ width: 170, backgroundColor: sidebarBg, padding: 20, color: sidebarTextColor }}>
+          {personalInfo.photo ? (
+            <Image
+              src={personalInfo.photo}
+              style={[
+                styles.photo,
+                { borderRadius: 6, borderWidth: 2, borderColor: isSidebarLight ? "rgba(0,0,0,0.1)" : "#ffffff", marginLeft: "auto", marginRight: "auto", marginBottom: 12 },
+                data.theme?.photoAspectRatio === "4:6" ? { width: 60, height: 90 } : { width: 66, height: 88 }
+              ]}
+            />
+          ) : null}
+          <Text style={{ fontSize: 14, fontFamily: "Helvetica-Bold", color: sidebarTextColor, textTransform: "uppercase", textAlign: "center" }}>{personalInfo.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: 8, color: sidebarMutedColor, textAlign: "center", marginTop: 2, textTransform: "uppercase" }}>{personalInfo.jobTitle || "Professional Title"}</Text>
+          
+          <View style={{ marginTop: 20, gap: 10, fontSize: 7.5 }}>
+            <Text style={{ fontFamily: "Helvetica-Bold", color: sidebarSubMutedColor, textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: borderBottomColor, paddingBottom: 2 }}>{t("contact", lang)}</Text>
+            {personalInfo.phone ? <Text style={{ color: sidebarTextColor }}>P: {personalInfo.phone}</Text> : null}
+            {personalInfo.email ? <Text style={{ color: sidebarTextColor }}>E: {personalInfo.email}</Text> : null}
+            {personalInfo.location ? <Text style={{ color: sidebarTextColor }}>L: {personalInfo.location}</Text> : null}
+            {personalInfo.dob ? <Text style={{ color: sidebarTextColor }}>D: {personalInfo.dob}</Text> : null}
+            {personalInfo.nationality ? <Text style={{ color: sidebarTextColor }}>N: {personalInfo.nationality}</Text> : null}
+          </View>
+  
+          {skills && skills.length > 0 ? (
+            <View style={{ marginTop: 20, gap: 6 }}>
+              <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: sidebarSubMutedColor, textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: borderBottomColor, paddingBottom: 2 }}>{t("skills", lang)}</Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
+                {skills.map((skill, idx) => (
+                  <Text 
+                    key={idx} 
+                    style={{ 
+                      fontSize: 7, 
+                      paddingHorizontal: 3, 
+                      paddingVertical: 1, 
+                      backgroundColor: isSidebarLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.15)", 
+                      color: sidebarTextColor, 
+                      borderRadius: 2,
+                      borderWidth: isSidebarLight ? 0.5 : 0,
+                      borderColor: isSidebarLight ? "rgba(0,0,0,0.08)" : "transparent"
+                    }}
+                  >
+                    {skill}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          ) : null}
+  
+          {languages && languages.length > 0 ? (
+            <View style={{ marginTop: 20, gap: 4, fontSize: 7.5 }}>
+              <Text style={{ fontFamily: "Helvetica-Bold", color: sidebarSubMutedColor, textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: borderBottomColor, paddingBottom: 2 }}>{t("languages", lang)}</Text>
+              {languages.map((langItem) => (
+                <View key={langItem.id} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <Text style={{ color: sidebarTextColor }}>{langItem.name}</Text>
+                  <Text style={{ color: sidebarMutedColor }}>{langItem.level}</Text>
+                </View>
               ))}
             </View>
-          </View>
-        ) : null}
-
-        {languages && languages.length > 0 ? (
-          <View style={{ marginTop: 20, gap: 4, fontSize: 7.5 }}>
-            <Text style={{ fontFamily: "Helvetica-Bold", color: "#e2e8f0", textTransform: "uppercase", borderBottomWidth: 0.5, borderBottomColor: "rgba(255,255,255,0.2)", paddingBottom: 2 }}>{t("languages", lang)}</Text>
-            {languages.map((langItem) => (
-              <View key={langItem.id} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={{ color: "#ffffff" }}>{langItem.name}</Text>
-                <Text style={{ color: "#cbd5e1" }}>{langItem.level}</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
+          ) : null}
+        </View>
 
       {/* Right Column */}
       <View style={{ flex: 1, padding: 25, gap: 15 }}>
@@ -1556,6 +1603,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       </View>
     </View>
   );
+};
 
   // Render Fancy Grid Layout
   const renderFancyGrid = () => (
@@ -2160,10 +2208,16 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       ? `${data.theme.primaryColor}dd`
       : "#3f5c80";
 
+    const localSidebarBg = data.theme?.sidebarBackgroundColor || localPrimaryColor;
+    const isSidebarLight = isLightColor(localSidebarBg);
+    const sidebarTextColor = isSidebarLight ? "#1e293b" : "#ffffff";
+    const sidebarMutedColor = isSidebarLight ? "#475569" : "#cbd5e1";
+    const sidebarSubMutedColor = isSidebarLight ? "#64748b" : "#94a3b8";
+
     return (
       <View style={{ flexDirection: "row", height: "100%" }}>
         {/* Left Sidebar */}
-        <View style={{ width: 170, backgroundColor: localPrimaryColor, padding: 15, color: "#ffffff" }}>
+        <View style={{ width: 170, backgroundColor: localSidebarBg, padding: 15, color: sidebarTextColor }}>
           {personalInfo.photo ? (
             <Image
               src={personalInfo.photo}
@@ -2172,7 +2226,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                 height: 76,
                 borderRadius: 38,
                 borderWidth: 2,
-                borderColor: "#ffffff",
+                borderColor: isSidebarLight ? "rgba(0,0,0,0.15)" : "#ffffff",
                 alignSelf: "center",
                 marginBottom: 15,
                 objectFit: "cover"
@@ -2182,40 +2236,40 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
           {/* CONTACT */}
           <View style={{ marginBottom: 12 }}>
-            <View style={{ backgroundColor: "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
-              <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("contact", lang)}</Text>
+            <View style={{ backgroundColor: isSidebarLight ? localPrimaryColor : "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
+              <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: isSidebarLight ? "#ffffff" : localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("contact", lang)}</Text>
             </View>
             <View style={{ gap: 6 }}>
               {personalInfo.phone ? (
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: "#ffffff", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 6, color: "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>P</Text>
+                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: isSidebarLight ? "rgba(0,0,0,0.2)" : "#ffffff", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 6, color: isSidebarLight ? localPrimaryColor : "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>P</Text>
                   </View>
-                  <Text style={{ fontSize: 7.5, color: "#ffffff", flex: 1, lineHeight: 1 }}>{personalInfo.phone}</Text>
+                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{personalInfo.phone}</Text>
                 </View>
               ) : null}
               {personalInfo.email ? (
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: "#ffffff", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 6, color: "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>E</Text>
+                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: isSidebarLight ? "rgba(0,0,0,0.2)" : "#ffffff", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 6, color: isSidebarLight ? localPrimaryColor : "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>E</Text>
                   </View>
-                  <Text style={{ fontSize: 7.5, color: "#ffffff", flex: 1, lineHeight: 1 }}>{personalInfo.email}</Text>
+                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{personalInfo.email}</Text>
                 </View>
               ) : null}
               {personalInfo.location ? (
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: "#ffffff", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 6, color: "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>L</Text>
+                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: isSidebarLight ? "rgba(0,0,0,0.2)" : "#ffffff", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 6, color: isSidebarLight ? localPrimaryColor : "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>L</Text>
                   </View>
-                  <Text style={{ fontSize: 7.5, color: "#ffffff", flex: 1, lineHeight: 1 }}>{personalInfo.location}</Text>
+                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{personalInfo.location}</Text>
                 </View>
               ) : null}
               {personalInfo.portfolio ? (
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: "#ffffff", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 6, color: "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>W</Text>
+                  <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 0.5, borderColor: isSidebarLight ? "rgba(0,0,0,0.2)" : "#ffffff", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 6, color: isSidebarLight ? localPrimaryColor : "#ffffff", fontFamily: "Helvetica-Bold", lineHeight: 1 }}>W</Text>
                   </View>
-                  <Text style={{ fontSize: 7.5, color: "#ffffff", flex: 1, lineHeight: 1 }}>{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</Text>
+                  <Text style={{ fontSize: 7.5, color: sidebarTextColor, flex: 1, lineHeight: 1 }}>{personalInfo.portfolio.replace(/^(https?:\/\/)?(www\.)?/, "")}</Text>
                 </View>
               ) : null}
             </View>
@@ -2224,15 +2278,15 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* EDUCATION */}
           {education && education.length > 0 ? (
             <View style={{ marginBottom: 12 }}>
-              <View style={{ backgroundColor: "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
-                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("education", lang)}</Text>
+              <View style={{ backgroundColor: isSidebarLight ? localPrimaryColor : "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
+                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: isSidebarLight ? "#ffffff" : localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("education", lang)}</Text>
               </View>
               <View style={{ gap: 6 }}>
                 {education.map((edu) => (
                   <View key={edu.id} style={{ gap: 1 }} wrap={false} break={edu.pageBreakBefore}>
-                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#ffffff" }}>{edu.major}</Text>
-                    <Text style={{ fontSize: 7, color: "#cbd5e1" }}>{edu.school}</Text>
-                    <Text style={{ fontSize: 6.5, color: "#94a3b8" }}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
+                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: sidebarTextColor }}>{edu.major}</Text>
+                    <Text style={{ fontSize: 7, color: sidebarMutedColor }}>{edu.school}</Text>
+                    <Text style={{ fontSize: 6.5, color: sidebarSubMutedColor }}>{edu.startDate} – {edu.endDate || t("present", lang)}</Text>
                   </View>
                 ))}
               </View>
@@ -2242,8 +2296,8 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* LANGUAGES */}
           {languages && languages.length > 0 ? (
             <View style={{ marginBottom: 12 }}>
-              <View style={{ backgroundColor: "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
-                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("languages", lang)}</Text>
+              <View style={{ backgroundColor: isSidebarLight ? localPrimaryColor : "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
+                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: isSidebarLight ? "#ffffff" : localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("languages", lang)}</Text>
               </View>
               <View style={{ gap: 5 }}>
                 {languages.map((langItem) => {
@@ -2251,11 +2305,11 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
                   return (
                     <View key={langItem.id} style={{ gap: 2 }} wrap={false}>
                       <View style={{ flexDirection: "row", justifyContent: "space-between", fontSize: 7 }}>
-                        <Text style={{ fontFamily: "Helvetica-Bold", color: "#ffffff" }}>{langItem.name}</Text>
-                        <Text style={{ color: "#cbd5e1", fontStyle: "italic" }}>{langItem.level}</Text>
+                        <Text style={{ fontFamily: "Helvetica-Bold", color: sidebarTextColor }}>{langItem.name}</Text>
+                        <Text style={{ color: sidebarMutedColor, fontStyle: "italic" }}>{langItem.level}</Text>
                       </View>
-                      <View style={{ height: 3, backgroundColor: "rgba(255, 255, 255, 0.2)", borderRadius: 1.5, overflow: "hidden" }}>
-                        <View style={{ height: 3, width: `${percentage}%`, backgroundColor: "#ffffff", borderRadius: 1.5 }} />
+                      <View style={{ height: 3, backgroundColor: isSidebarLight ? "rgba(0,0,0,0.06)" : "rgba(255, 255, 255, 0.2)", borderRadius: 1.5, overflow: "hidden" }}>
+                        <View style={{ height: 3, width: `${percentage}%`, backgroundColor: isSidebarLight ? localPrimaryColor : "#ffffff", borderRadius: 1.5 }} />
                       </View>
                     </View>
                   );
@@ -2267,18 +2321,18 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           {/* REFERENCES */}
           {references && references.length > 0 ? (
             <View style={{ marginBottom: 12 }}>
-              <View style={{ backgroundColor: "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
-                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("references", lang)}</Text>
+              <View style={{ backgroundColor: isSidebarLight ? localPrimaryColor : "#ffffff", paddingVertical: 2.5, borderRadius: 10, marginBottom: 8 }}>
+                <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: isSidebarLight ? "#ffffff" : localPrimaryColor, textAlign: "center", textTransform: "uppercase" }}>{t("references", lang)}</Text>
               </View>
               <View style={{ gap: 6 }}>
                 {references.map((ref) => (
                   <View key={ref.id} style={{ gap: 1 }} wrap={false} break={ref.pageBreakBefore}>
-                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: "#ffffff" }}>{ref.name}</Text>
+                    <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: sidebarTextColor }}>{ref.name}</Text>
                     {ref.relationship || ref.company ? (
-                      <Text style={{ fontSize: 6.5, color: "#cbd5e1" }}>{ref.relationship} {ref.company ? `at ${ref.company}` : ""}</Text>
+                      <Text style={{ fontSize: 6.5, color: sidebarMutedColor }}>{ref.relationship} {ref.company ? `at ${ref.company}` : ""}</Text>
                     ) : null}
-                    {ref.email ? <Text style={{ fontSize: 6, color: "#94a3b8" }}>{ref.email}</Text> : null}
-                    {ref.phone ? <Text style={{ fontSize: 6, color: "#94a3b8" }}>{ref.phone}</Text> : null}
+                    {ref.email ? <Text style={{ fontSize: 6, color: sidebarSubMutedColor }}>{ref.email}</Text> : null}
+                    {ref.phone ? <Text style={{ fontSize: 6, color: sidebarSubMutedColor }}>{ref.phone}</Text> : null}
                   </View>
                 ))}
               </View>
