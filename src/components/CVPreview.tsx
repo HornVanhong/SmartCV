@@ -13,6 +13,7 @@ import { CVTemplatePortfolio } from "@/components/CVTemplatePortfolio";
 import { CVTemplateCanvaColumn } from "@/components/CVTemplateCanvaColumn";
 import { CVTemplateKSHRD } from "@/components/CVTemplateKSHRD";
 import { getPageData, duplicatePageContent, deletePageContent } from "@/lib/page-utils";
+import { renderMarkdownHTML } from "@/lib/utils";
 import { Copy, Trash2, Plus, ChevronUp, ChevronDown, Eye, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
