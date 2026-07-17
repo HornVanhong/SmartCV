@@ -600,6 +600,54 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                 </div>
               </div>
 
+              {/* Document Background Color */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <Label className="text-xs font-bold text-slate-700">Document Background Color</Label>
+                
+                {/* Presets */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { hex: "#ffffff", name: "White" },
+                    { hex: "#faf8f5", name: "Warm Cream" },
+                    { hex: "#f0f9ff", name: "Baby Blue" },
+                    { hex: "#fdf2f8", name: "Baby Pink" },
+                    { hex: "#faf5ff", name: "Lavender" },
+                    { hex: "#f0fdf4", name: "Soft Mint" },
+                    { hex: "#f8fafc", name: "Pale Slate" }
+                  ].map((color) => {
+                    const active = (data.theme?.backgroundColor || "#ffffff") === color.hex;
+                    return (
+                      <button
+                        key={color.hex}
+                        type="button"
+                        onClick={() => handleThemeChange("backgroundColor", color.hex)}
+                        title={color.name}
+                        style={{ backgroundColor: color.hex }}
+                        className={`h-7 w-7 rounded-full border transition-all cursor-pointer shadow-xs ${
+                          active 
+                            ? "ring-2 ring-offset-2 ring-indigo-650 scale-110 border-indigo-400" 
+                            : "border-slate-200 hover:scale-105"
+                        }`}
+                      />
+                    );
+                  })}
+
+                  {/* Custom Picker */}
+                  <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                    <input
+                      type="color"
+                      id="customBgColorPicker"
+                      value={data.theme?.backgroundColor || "#ffffff"}
+                      onChange={(e) => handleThemeChange("backgroundColor", e.target.value)}
+                      className="h-7 w-7 rounded-full border border-slate-200 cursor-pointer overflow-hidden p-0 bg-transparent"
+                    />
+                    <Label htmlFor="customBgColorPicker" className="text-[10px] font-semibold text-slate-500 cursor-pointer">
+                      Custom
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-3 border-t border-slate-100 pt-4">
                 <Label className="text-xs font-bold text-slate-700">Document Typography</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -91,6 +91,7 @@ export interface CVTheme {
   experienceLevel?: "experienced" | "entry";
   showPitch?: boolean;
   professionalPitch?: string;
+  backgroundColor?: string;
 }
 
 export interface CVData {

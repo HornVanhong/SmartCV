@@ -17,8 +17,8 @@ export const CVTemplateCreative = React.forwardRef<HTMLDivElement, CVTemplateCre
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row"
-        style={{ boxSizing: "border-box" }}
+        className="w-full text-slate-800 font-sans selection:bg-slate-100 min-h-[inherit] flex flex-col sm:flex-row print:flex-row"
+        style={{ boxSizing: "border-box", backgroundColor: data.theme?.backgroundColor || "#ffffff" }}
       >
         {/* Left Sidebar */}
         <aside className="w-full sm:w-[280px] print:w-[260px] bg-slate-50/70 border-r border-slate-200/60 p-6 sm:p-8 print:p-8 flex flex-col gap-6 shrink-0">

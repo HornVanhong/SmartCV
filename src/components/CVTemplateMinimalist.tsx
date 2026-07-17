@@ -17,8 +17,8 @@ export const CVTemplateMinimalist = React.forwardRef<HTMLDivElement, CVTemplateM
     return (
       <div
         ref={ref}
-        className="w-full bg-white text-slate-850 p-8 sm:p-12 font-sans selection:bg-slate-100 print:p-16"
-        style={{ boxSizing: "border-box" }}
+        className="w-full text-slate-855 p-8 sm:p-12 font-sans selection:bg-slate-100 print:p-16"
+        style={{ boxSizing: "border-box", backgroundColor: data.theme?.backgroundColor || "#ffffff" }}
       >
         {/* Header - Centered */}
         <header className="flex flex-col items-center text-center border-b pb-6 mb-6" style={{ borderColor: primaryColor }}>

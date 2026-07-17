@@ -245,6 +245,27 @@ const styles = StyleSheet.create({
   mainColumn: {
     flex: 1,
   },
+  creativeSplitLayout: {
+    flexDirection: "row",
+    height: "100%",
+    width: "100%",
+  },
+  creativeSidebarColumn: {
+    width: 165,
+    borderRightWidth: 0.8,
+    borderRightColor: "#cbd5e1",
+    paddingTop: 28,
+    paddingBottom: 28,
+    paddingLeft: 20,
+    paddingRight: 16,
+  },
+  creativeMainColumn: {
+    flex: 1,
+    paddingTop: 28,
+    paddingBottom: 28,
+    paddingLeft: 20,
+    paddingRight: 24,
+  },
   sidebarSection: {
     marginBottom: 15,
   },
@@ -780,9 +801,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
 
   // Render Creative Split Layout
   const renderCreative = () => (
-    <View style={[styles.splitLayout, { padding: 36 }]}>
+    <View style={styles.creativeSplitLayout}>
       {/* Sidebar Column */}
-      <View style={styles.sidebarColumn}>
+      <View style={[styles.creativeSidebarColumn, { backgroundColor: "rgba(241, 245, 249, 0.7)" }]}>
         {personalInfo.photo ? (
           <Image
             src={personalInfo.photo}
@@ -867,7 +888,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       </View>
 
       {/* Main Column */}
-      <View style={styles.mainColumn}>
+      <View style={styles.creativeMainColumn}>
         {/* Professional Summary */}
         {professionalSummary ? (
           <View style={styles.section} wrap={false}>
@@ -2902,7 +2923,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
   return (
     <Document title={`${(personalInfo.fullName || "CV").replace(/\s+/g, "_")}_CV`}>
       {Array.from({ length: pagesCount }).map((_, idx) => (
-        <Page key={idx + 1} size="A4" style={styles.page}>
+        <Page key={idx + 1} size="A4" style={[styles.page, { backgroundColor: data.theme?.backgroundColor || "#ffffff" }]}>
           {renderPageLayout(idx + 1)}
         </Page>
       ))}
