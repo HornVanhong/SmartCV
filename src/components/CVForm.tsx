@@ -9,14 +9,14 @@ const MDEditor = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default),
   { ssr: false }
 );
-import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference, CVTheme } from "@/types/cv";
+import { CVData, PersonalInfo, Education, Experience, Project, Language, Reference, CVTheme, CustomSection, CustomSectionItem } from "@/types/cv";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette } from "lucide-react";
+import { Plus, Trash2, X, GraduationCap, Briefcase, FolderGit2, Languages, User, Award, FileText, Upload, UserCheck, Palette, ChevronUp, ChevronDown } from "lucide-react";
 import { translations } from "@/lib/translations";
 import { getLinkInfo } from "@/lib/utils";
 
@@ -61,6 +61,9 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
   const [filterCategory, setFilterCategory] = useState<string>("All");
   const [filterStyle, setFilterStyle] = useState<string>("All");
   const [filterLanguage, setFilterLanguage] = useState<string>("All");
+
+  // Controlled Accordion State
+  const [openSections, setOpenSections] = useState<string[]>(["theme", "personal"]);
 
   // Photo handlers
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -314,6 +317,370 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     });
   };
 
+  // Reordering helpers
+  const moveEducation = (id: string, direction: "up" | "down") => {
+    const list = data.education;
+    const index = list.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const newList = [...list];
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    onChange({ ...data, education: newList });
+  };
+
+  const moveExperience = (id: string, direction: "up" | "down") => {
+    const list = data.experience;
+    const index = list.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const newList = [...list];
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    onChange({ ...data, experience: newList });
+  };
+
+  const moveProject = (id: string, direction: "up" | "down") => {
+    const list = data.projects;
+    const index = list.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const newList = [...list];
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    onChange({ ...data, projects: newList });
+  };
+
+  const moveLanguage = (id: string, direction: "up" | "down") => {
+    const list = data.languages;
+    const index = list.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const newList = [...list];
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    onChange({ ...data, languages: newList });
+  };
+
+  const moveReference = (id: string, direction: "up" | "down") => {
+    const list = data.references || [];
+    const index = list.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const newList = [...list];
+    const temp = newList[index];
+    newList[index] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    onChange({ ...data, references: newList });
+  };
+
+  const updateSectionName = (key: string, newName: string) => {
+    onChange({
+      ...data,
+      theme: {
+        ...data.theme,
+        templateId: data.theme?.templateId || "modern",
+        primaryColor: data.theme?.primaryColor || "#2563eb",
+        sectionNames: {
+          ...(data.theme?.sectionNames || {}),
+          [key]: newName
+        }
+      }
+    });
+  };
+
+  // Custom Section handlers
+  const addCustomSection = (name: string) => {
+    const sectionId = `csec-${Date.now()}`;
+    const newSection: CustomSection = {
+      id: sectionId,
+      name,
+      items: [
+        {
+          id: `citem-${Date.now()}`,
+          title: "",
+          subtitle: "",
+          startDate: "",
+          endDate: "",
+          description: ""
+        }
+      ]
+    };
+    onChange({
+      ...data,
+      customSections: [...(data.customSections || []), newSection]
+    });
+    setOpenSections((prev) => [...prev, `customSections.${sectionId}`]);
+  };
+
+  const removeCustomSection = (sectionId: string) => {
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).filter((sec) => sec.id !== sectionId)
+    });
+  };
+
+  const updateCustomSectionName = (sectionId: string, newName: string) => {
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).map((sec) => 
+        sec.id === sectionId ? { ...sec, name: newName } : sec
+      )
+    });
+  };
+
+  const addCustomSectionItem = (sectionId: string) => {
+    const newId = `citem-${Date.now()}`;
+    const newItem: CustomSectionItem = {
+      id: newId,
+      title: "",
+      subtitle: "",
+      startDate: "",
+      endDate: "",
+      description: ""
+    };
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).map((sec) => 
+        sec.id === sectionId ? { ...sec, items: [...sec.items, newItem] } : sec
+      )
+    });
+  };
+
+  const updateCustomSectionItem = (sectionId: string, itemId: string, field: keyof CustomSectionItem, value: any) => {
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).map((sec) => {
+        if (sec.id === sectionId) {
+          return {
+            ...sec,
+            items: sec.items.map((item) => 
+              item.id === itemId ? { ...item, [field]: value } : item
+            )
+          };
+        }
+        return sec;
+      })
+    });
+  };
+
+  const removeCustomSectionItem = (sectionId: string, itemId: string) => {
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).map((sec) => {
+        if (sec.id === sectionId) {
+          return {
+            ...sec,
+            items: sec.items.filter((item) => item.id !== itemId)
+          };
+        }
+        return sec;
+      })
+    });
+  };
+
+  const moveCustomSectionItem = (sectionId: string, itemId: string, direction: "up" | "down") => {
+    onChange({
+      ...data,
+      customSections: (data.customSections || []).map((sec) => {
+        if (sec.id === sectionId) {
+          const list = sec.items;
+          const index = list.findIndex((item) => item.id === itemId);
+          if (index === -1) return sec;
+          const targetIndex = direction === "up" ? index - 1 : index + 1;
+          if (targetIndex < 0 || targetIndex >= list.length) return sec;
+          const newList = [...list];
+          const temp = newList[index];
+          newList[index] = newList[targetIndex];
+          newList[targetIndex] = temp;
+          return { ...sec, items: newList };
+        }
+        return sec;
+      })
+    });
+  };
+
+  // Event Listeners for Preview Interactions
+  React.useEffect(() => {
+    const handleFocusField = (e: Event) => {
+      const customEvent = e as CustomEvent<{ path: string }>;
+      const { path } = customEvent.detail;
+      if (!path) return;
+      
+      const parts = path.split(".");
+      const section = parts[0];
+      let accordionValue = section === "personalInfo" ? "personal" : (section === "professionalSummary" ? "summary" : section);
+
+      if (section === "customSections") {
+        accordionValue = `customSections.${parts[1]}`;
+      }
+
+      setOpenSections((prev) => {
+        if (prev.includes(accordionValue)) return prev;
+        return [...prev, accordionValue];
+      });
+
+      let searchId = path;
+      if (section === "personalInfo") {
+        searchId = parts[1];
+      } else if (path === "professionalSummary") {
+        searchId = "professionalSummary";
+      }
+
+      setTimeout(() => {
+        const element = document.getElementById(searchId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.focus();
+          element.classList.add("focus-highlight");
+          setTimeout(() => {
+            element.classList.remove("focus-highlight");
+          }, 1500);
+        }
+      }, 200);
+    };
+
+    const handleAddCvItem = (e: Event) => {
+      const customEvent = e as CustomEvent<{ section: string }>;
+      const { section } = customEvent.detail;
+      
+      if (section.startsWith("customSections.")) {
+        const sectionId = section.replace("customSections.", "");
+        const newId = `citem-${Date.now()}`;
+        
+        onChange({
+          ...data,
+          customSections: (data.customSections || []).map((sec) => {
+            if (sec.id === sectionId) {
+              const newItem: CustomSectionItem = {
+                id: newId,
+                title: "",
+                subtitle: "",
+                startDate: "",
+                endDate: "",
+                description: ""
+              };
+              return {
+                ...sec,
+                items: [...sec.items, newItem]
+              };
+            }
+            return sec;
+          })
+        });
+
+        setOpenSections((prev) => {
+          if (prev.includes(section)) return prev;
+          return [...prev, section];
+        });
+
+        setTimeout(() => {
+          const inputId = `${section}.${newId}.title`;
+          const element = document.getElementById(inputId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.focus();
+            element.classList.add("focus-highlight");
+            setTimeout(() => element.classList.remove("focus-highlight"), 1500);
+          }
+        }, 250);
+        return;
+      }
+      
+      let newId = "";
+      if (section === "experience") {
+        newId = `exp-${Date.now()}`;
+        const newExp = { id: newId, company: "", position: "", startDate: "", endDate: "", description: "" };
+        onChange({ ...data, experience: [...data.experience, newExp] });
+      } else if (section === "education") {
+        newId = `edu-${Date.now()}`;
+        const newEdu = { id: newId, school: "", major: "", startDate: "", endDate: "", description: "" };
+        onChange({ ...data, education: [...data.education, newEdu] });
+      } else if (section === "projects") {
+        newId = `proj-${Date.now()}`;
+        const newProj = { id: newId, name: "", description: "", technologies: "", link: "" };
+        onChange({ ...data, projects: [...data.projects, newProj] });
+      } else if (section === "languages") {
+        newId = `lang-${Date.now()}`;
+        const newLang = { id: newId, name: "", level: "" };
+        onChange({ ...data, languages: [...data.languages, newLang] });
+      } else if (section === "references") {
+        newId = `ref-${Date.now()}`;
+        const newRef = { id: newId, name: "", relationship: "", company: "", email: "", phone: "" };
+        onChange({ ...data, references: [...(data.references || []), newRef] });
+      }
+
+      if (newId) {
+        setOpenSections((prev) => {
+          if (prev.includes(section)) return prev;
+          return [...prev, section];
+        });
+
+        setTimeout(() => {
+          const firstField = section === "experience" ? "company" : (section === "education" ? "school" : "name");
+          const inputId = `${section}.${newId}.${firstField}`;
+          const element = document.getElementById(inputId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.focus();
+            element.classList.add("focus-highlight");
+            setTimeout(() => element.classList.remove("focus-highlight"), 1500);
+          }
+        }, 250);
+      }
+    };
+
+    const handleDeleteCvItem = (e: Event) => {
+      const customEvent = e as CustomEvent<{ section: string; id: string }>;
+      const { section, id } = customEvent.detail;
+      if (section.startsWith("customSections.")) {
+        const sectionId = section.replace("customSections.", "");
+        removeCustomSectionItem(sectionId, id);
+      } else {
+        if (section === "experience") removeExperience(id);
+        else if (section === "education") removeEducation(id);
+        else if (section === "projects") removeProject(id);
+        else if (section === "languages") removeLanguage(id);
+        else if (section === "references") removeReference(id);
+      }
+    };
+
+    const handleMoveCvItem = (e: Event) => {
+      const customEvent = e as CustomEvent<{ section: string; id: string; direction: "up" | "down" }>;
+      const { section, id, direction } = customEvent.detail;
+      if (section.startsWith("customSections.")) {
+        const sectionId = section.replace("customSections.", "");
+        moveCustomSectionItem(sectionId, id, direction);
+      } else {
+        if (section === "experience") moveExperience(id, direction);
+        else if (section === "education") moveEducation(id, direction);
+        else if (section === "projects") moveProject(id, direction);
+        else if (section === "languages") moveLanguage(id, direction);
+        else if (section === "references") moveReference(id, direction);
+      }
+    };
+
+    window.addEventListener("focus-cv-field", handleFocusField);
+    window.addEventListener("add-cv-item", handleAddCvItem);
+    window.addEventListener("delete-cv-item", handleDeleteCvItem);
+    window.addEventListener("move-cv-item", handleMoveCvItem);
+    return () => {
+      window.removeEventListener("focus-cv-field", handleFocusField);
+      window.removeEventListener("add-cv-item", handleAddCvItem);
+      window.removeEventListener("delete-cv-item", handleDeleteCvItem);
+      window.removeEventListener("move-cv-item", handleMoveCvItem);
+    };
+  }, [data, openSections]);
+
   const handleThemeChange = (field: keyof CVTheme, value: string | number | boolean) => {
     onChange({
       ...data,
@@ -354,7 +721,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
       </div>
 
       <div className="p-6 lg:overflow-y-auto lg:max-h-[calc(100vh-280px)] space-y-6">
-        <Accordion multiple defaultValue={["theme", "personal"]} className="w-full space-y-3 border-none">
+        <Accordion multiple value={openSections} onValueChange={setOpenSections} className="w-full space-y-3 border-none">
           
           {/* Design & Layout (Templates & Colors) */}
           <AccordionItem value="theme" className="border border-slate-200 rounded-xl px-4 py-1 bg-white shadow-none">
@@ -1143,7 +1510,11 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* GitHub */}
                 <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
-                  <span className="text-xs font-bold text-slate-700 block">GitHub Profile</span>
+                  <span className="text-xs font-bold text-slate-700 block">
+                    {parseField(data.personalInfo.github).label 
+                      ? `${parseField(data.personalInfo.github).label} Profile` 
+                      : "GitHub Profile"}
+                  </span>
                   <div className="space-y-1.5">
                     <Label htmlFor="github-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
                     <Input
@@ -1168,7 +1539,11 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
 
                 {/* LinkedIn */}
                 <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
-                  <span className="text-xs font-bold text-slate-700 block">LinkedIn Profile</span>
+                  <span className="text-xs font-bold text-slate-700 block">
+                    {parseField(data.personalInfo.linkedin).label 
+                      ? `${parseField(data.personalInfo.linkedin).label} Profile` 
+                      : "LinkedIn Profile"}
+                  </span>
                   <div className="space-y-1.5">
                     <Label htmlFor="linkedin-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
                     <Input
@@ -1193,7 +1568,11 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
 
                 {/* Portfolio / Custom Link */}
                 <div className="space-y-2 border border-slate-100 rounded-lg p-2.5 bg-slate-50/50">
-                  <span className="text-xs font-bold text-slate-700 block">Portfolio / Custom Link</span>
+                  <span className="text-xs font-bold text-slate-700 block">
+                    {parseField(data.personalInfo.portfolio).label 
+                      ? parseField(data.personalInfo.portfolio).label 
+                      : "Portfolio / Custom Link"}
+                  </span>
                   <div className="space-y-1.5">
                     <Label htmlFor="portfolio-label" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Button Text / Label</Label>
                     <Input
@@ -1224,10 +1603,20 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <FileText className="h-4.5 w-4.5 text-blue-500" />
-                Professional Summary
+                {data.theme?.sectionNames?.professionalSummary || "Professional Summary"}
               </span>
             </AccordionTrigger>
-            <AccordionContent className="pt-2 pb-4">
+            <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-summary" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-summary"
+                  value={data.theme?.sectionNames?.professionalSummary || ""}
+                  onChange={(e) => updateSectionName("professionalSummary", e.target.value)}
+                  placeholder="e.g. Professional Summary"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center gap-2">
                   <Label htmlFor="summaryText" className="text-xs font-semibold text-slate-600">About Me</Label>
@@ -1269,10 +1658,20 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <Briefcase className="h-4.5 w-4.5 text-blue-500" />
-                Work Experience
+                {data.theme?.sectionNames?.workExperience || "Work Experience"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-experience" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-experience"
+                  value={data.theme?.sectionNames?.workExperience || ""}
+                  onChange={(e) => updateSectionName("workExperience", e.target.value)}
+                  placeholder="e.g. Work Experience"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               {/* Professional Pitch for Entry-Level / No Experience */}
               <div className="p-4 border border-indigo-100 rounded-xl bg-indigo-50/10 space-y-3">
                 <div className="flex items-start gap-2.5">
@@ -1337,7 +1736,27 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
 
               {data.experience.map((exp, index) => (
                 <div key={exp.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveExperience(exp.id, "up")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === data.experience.length - 1}
+                      onClick={() => moveExperience(exp.id, "down")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -1354,6 +1773,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Company Name</Label>
                       <Input
+                        id={`experience.${exp.id}.company`}
                         value={exp.company}
                         onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
                         placeholder="Company Inc."
@@ -1363,6 +1783,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Position / Job Title</Label>
                       <Input
+                        id={`experience.${exp.id}.position`}
                         value={exp.position}
                         onChange={(e) => updateExperience(exp.id, "position", e.target.value)}
                         placeholder="Senior Software Engineer"
@@ -1375,6 +1796,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Start Date</Label>
                       <Input
+                        id={`experience.${exp.id}.startDate`}
                         value={exp.startDate}
                         onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
                         placeholder="e.g., 2021-06 or June 2021"
@@ -1384,6 +1806,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">End Date</Label>
                       <Input
+                        id={`experience.${exp.id}.endDate`}
                         value={exp.endDate}
                         onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
                         placeholder="e.g., Present or June 2023"
@@ -1404,7 +1827,8 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         preview="edit"
                         height={160}
                         textareaProps={{
-                          placeholder: "Detail your responsibilities, key projects, and achievements..."
+                          placeholder: "Detail your responsibilities, key projects, and achievements...",
+                          id: `experience.${exp.id}.description`
                         }}
                       />
                     </div>
@@ -1472,13 +1896,43 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <GraduationCap className="h-4.5 w-4.5 text-blue-500" />
-                Education
+                {data.theme?.sectionNames?.education || "Education"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-education" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-education"
+                  value={data.theme?.sectionNames?.education || ""}
+                  onChange={(e) => updateSectionName("education", e.target.value)}
+                  placeholder="e.g. Education"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               {data.education.map((edu, index) => (
                 <div key={edu.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveEducation(edu.id, "up")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === data.education.length - 1}
+                      onClick={() => moveEducation(edu.id, "down")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -1495,6 +1949,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">School / University</Label>
                       <Input
+                        id={`education.${edu.id}.school`}
                         value={edu.school}
                         onChange={(e) => updateEducation(edu.id, "school", e.target.value)}
                         placeholder="University Name"
@@ -1504,6 +1959,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Major / Degree</Label>
                       <Input
+                        id={`education.${edu.id}.major`}
                         value={edu.major}
                         onChange={(e) => updateEducation(edu.id, "major", e.target.value)}
                         placeholder="B.S. in Computer Science"
@@ -1516,6 +1972,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Start Date</Label>
                       <Input
+                        id={`education.${edu.id}.startDate`}
                         value={edu.startDate}
                         onChange={(e) => updateEducation(edu.id, "startDate", e.target.value)}
                         placeholder="e.g., 2016-09"
@@ -1525,6 +1982,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">End Date</Label>
                       <Input
+                        id={`education.${edu.id}.endDate`}
                         value={edu.endDate}
                         onChange={(e) => updateEducation(edu.id, "endDate", e.target.value)}
                         placeholder="e.g., 2020-05"
@@ -1545,7 +2003,8 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         preview="edit"
                         height={140}
                         textareaProps={{
-                          placeholder: "Graduated with honors, GPA, key courses..."
+                          placeholder: "Graduated with honors, GPA, key courses...",
+                          id: `education.${edu.id}.description`
                         }}
                       />
                     </div>
@@ -1613,13 +2072,43 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <FolderGit2 className="h-4.5 w-4.5 text-blue-500" />
-                Projects
+                {data.theme?.sectionNames?.projects || "Projects & Courses"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-projects" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-projects"
+                  value={data.theme?.sectionNames?.projects || ""}
+                  onChange={(e) => updateSectionName("projects", e.target.value)}
+                  placeholder="e.g. Projects & Courses"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               {data.projects.map((proj, index) => (
                 <div key={proj.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveProject(proj.id, "up")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === data.projects.length - 1}
+                      onClick={() => moveProject(proj.id, "down")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -1636,6 +2125,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Project Name</Label>
                       <Input
+                        id={`projects.${proj.id}.name`}
                         value={proj.name}
                         onChange={(e) => updateProject(proj.id, "name", e.target.value)}
                         placeholder="E-commerce Web App"
@@ -1645,6 +2135,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Project Link</Label>
                       <Input
+                        id={`projects.${proj.id}.link`}
                         value={proj.link}
                         onChange={(e) => updateProject(proj.id, "link", e.target.value)}
                         placeholder="github.com/yourusername/project"
@@ -1656,6 +2147,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold text-slate-600">Technologies Used</Label>
                     <Input
+                      id={`projects.${proj.id}.technologies`}
                       value={proj.technologies}
                       onChange={(e) => updateProject(proj.id, "technologies", e.target.value)}
                       placeholder="Next.js, Tailwind CSS, TypeScript"
@@ -1672,7 +2164,8 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                         preview="edit"
                         height={140}
                         textareaProps={{
-                          placeholder: "Explain what you built, what challenge you resolved, and final results..."
+                          placeholder: "Explain what you built, what challenge you resolved, and final results...",
+                          id: `projects.${proj.id}.description`
                         }}
                       />
                     </div>
@@ -1727,10 +2220,20 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <Award className="h-4.5 w-4.5 text-blue-500" />
-                Skills
+                {data.theme?.sectionNames?.skills || "Skills"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-skills" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-skills"
+                  value={data.theme?.sectionNames?.skills || ""}
+                  onChange={(e) => updateSectionName("skills", e.target.value)}
+                  placeholder="e.g. Skills"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               <form onSubmit={handleAddSkill} className="flex gap-2">
                 <Input
                   value={skillInput}
@@ -1788,13 +2291,43 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <Languages className="h-4.5 w-4.5 text-blue-500" />
-                Languages
+                {data.theme?.sectionNames?.languages || "Languages"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-languages" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-languages"
+                  value={data.theme?.sectionNames?.languages || ""}
+                  onChange={(e) => updateSectionName("languages", e.target.value)}
+                  placeholder="e.g. Languages"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               {data.languages.map((lang, index) => (
                 <div key={lang.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveLanguage(lang.id, "up")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === data.languages.length - 1}
+                      onClick={() => moveLanguage(lang.id, "down")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -1811,6 +2344,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Language Name</Label>
                       <Input
+                        id={`languages.${lang.id}.name`}
                         value={lang.name}
                         onChange={(e) => updateLanguage(lang.id, "name", e.target.value)}
                         placeholder="e.g. English, French"
@@ -1820,6 +2354,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Proficiency Level</Label>
                       <Input
+                        id={`languages.${lang.id}.level`}
                         value={lang.level}
                         onChange={(e) => updateLanguage(lang.id, "level", e.target.value)}
                         placeholder="e.g. Native, Bilingual, Fluent, Basic"
@@ -1862,13 +2397,43 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             <AccordionTrigger className="hover:no-underline py-3">
               <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm">
                 <UserCheck className="h-4.5 w-4.5 text-blue-500" />
-                References
+                {data.theme?.sectionNames?.references || "References"}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Label htmlFor="rename-references" className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Rename Section</Label>
+                <Input
+                  id="rename-references"
+                  value={data.theme?.sectionNames?.references || ""}
+                  onChange={(e) => updateSectionName("references", e.target.value)}
+                  placeholder="e.g. References"
+                  className="h-8 text-xs bg-white max-w-[200px]"
+                />
+              </div>
               {(data.references || []).map((ref, index) => (
                 <div key={ref.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4">
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveReference(ref.id, "up")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === (data.references || []).length - 1}
+                      onClick={() => moveReference(ref.id, "down")}
+                      className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -1885,6 +2450,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Reference Name</Label>
                       <Input
+                        id={`references.${ref.id}.name`}
                         value={ref.name}
                         onChange={(e) => updateReference(ref.id, "name", e.target.value)}
                         placeholder="John Doe"
@@ -1894,6 +2460,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Relationship</Label>
                       <Input
+                        id={`references.${ref.id}.relationship`}
                         value={ref.relationship}
                         onChange={(e) => updateReference(ref.id, "relationship", e.target.value)}
                         placeholder="e.g. Former Manager, Mentor"
@@ -1906,6 +2473,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5 sm:col-span-1">
                       <Label className="text-xs font-semibold text-slate-600">Company</Label>
                       <Input
+                        id={`references.${ref.id}.company`}
                         value={ref.company}
                         onChange={(e) => updateReference(ref.id, "company", e.target.value)}
                         placeholder="e.g. Stripe"
@@ -1915,6 +2483,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Email</Label>
                       <Input
+                        id={`references.${ref.id}.email`}
                         value={ref.email}
                         onChange={(e) => updateReference(ref.id, "email", e.target.value)}
                         placeholder="john.doe@company.com"
@@ -1924,6 +2493,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-slate-600">Phone</Label>
                       <Input
+                        id={`references.${ref.id}.phone`}
                         value={ref.phone}
                         onChange={(e) => updateReference(ref.id, "phone", e.target.value)}
                         placeholder="+1 (555) 012-3456"
@@ -1931,7 +2501,6 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       />
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
                     <div className="flex items-center gap-2">
                       <input
@@ -1976,7 +2545,239 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
             </AccordionContent>
           </AccordionItem>
 
+          {/* Dynamic Custom Sections */}
+          {(data.customSections || []).map((sec) => (
+            <AccordionItem
+              key={sec.id}
+              value={`customSections.${sec.id}`}
+              className="border border-slate-200 rounded-xl px-4 py-1 bg-white shadow-none"
+            >
+              <AccordionTrigger className="hover:no-underline py-3">
+                <span className="flex items-center gap-2.5 font-bold text-slate-800 text-sm w-full">
+                  <Award className="h-4.5 w-4.5 text-indigo-550 shrink-0" />
+                  <span className="flex-1 text-left">{sec.name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Are you sure you want to delete the whole "${sec.name}" section?`)) {
+                        removeCustomSection(sec.id);
+                      }
+                    }}
+                    className="mr-2 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded-md print:hidden text-xs flex items-center gap-1 cursor-pointer font-bold"
+                    title="Delete entire section"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Delete Section</span>
+                  </button>
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pt-2 pb-4 space-y-4">
+                <div className="space-y-1.5 pb-2 border-b border-slate-100">
+                  <Label className="text-xs font-semibold text-slate-600">Section Title</Label>
+                  <Input
+                    value={sec.name}
+                    onChange={(e) => updateCustomSectionName(sec.id, e.target.value)}
+                    placeholder="e.g. Courses, Achievements"
+                    className="h-9 text-xs font-bold text-slate-800 bg-slate-50/50"
+                  />
+                </div>
+
+                {sec.items.map((item, index) => (
+                  <div key={item.id} className="relative p-4 border border-slate-200 rounded-xl bg-slate-50/30 space-y-4 animate-in fade-in slide-in-from-top-1.5 duration-200">
+                    <div className="absolute top-3 right-3 flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        disabled={index === 0}
+                        onClick={() => moveCustomSectionItem(sec.id, item.id, "up")}
+                        className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        disabled={index === sec.items.length - 1}
+                        onClick={() => moveCustomSectionItem(sec.id, item.id, "down")}
+                        className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeCustomSectionItem(sec.id, item.id)}
+                        className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Entry #{index + 1}</h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-slate-600">Title / Name</Label>
+                        <Input
+                          id={`customSections.${sec.id}.${item.id}.title`}
+                          value={item.title}
+                          onChange={(e) => updateCustomSectionItem(sec.id, item.id, "title", e.target.value)}
+                          placeholder="e.g. Course or Award Name"
+                          className="h-9 text-xs"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-slate-600">Subtitle / Institution / Issuer</Label>
+                        <Input
+                          id={`customSections.${sec.id}.${item.id}.subtitle`}
+                          value={item.subtitle || ""}
+                          onChange={(e) => updateCustomSectionItem(sec.id, item.id, "subtitle", e.target.value)}
+                          placeholder="e.g. Stanford University, AWS"
+                          className="h-9 text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-slate-600">Start Date / Issue Date</Label>
+                        <Input
+                          id={`customSections.${sec.id}.${item.id}.startDate`}
+                          value={item.startDate || ""}
+                          onChange={(e) => updateCustomSectionItem(sec.id, item.id, "startDate", e.target.value)}
+                          placeholder="e.g. 2023-01 or Jan 2023"
+                          className="h-9 text-xs"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-slate-600">End Date / Expiry Date</Label>
+                        <Input
+                          id={`customSections.${sec.id}.${item.id}.endDate`}
+                          value={item.endDate || ""}
+                          onChange={(e) => updateCustomSectionItem(sec.id, item.id, "endDate", e.target.value)}
+                          placeholder="e.g. 2023-06 or Present"
+                          className="h-9 text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center gap-2">
+                        <Label className="text-xs font-semibold text-slate-600">Description</Label>
+                        {renderHighlightButton(`csec-desc-${item.id}`, item.description || "", (val) => updateCustomSectionItem(sec.id, item.id, "description", val))}
+                      </div>
+                      <div data-color-mode="light" className="text-xs mt-1">
+                        <MDEditor
+                          value={item.description || ""}
+                          onChange={(val) => updateCustomSectionItem(sec.id, item.id, "description", val || "")}
+                          preview="edit"
+                          height={140}
+                          textareaProps={{
+                            placeholder: "Detail your key takeaways, learnings, or achievement context...",
+                            id: `customSections.${sec.id}.${item.id}.description`
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 pt-1 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id={`csec-pb-${item.id}`}
+                          checked={!!item.pageBreakBefore}
+                          onChange={(e) => updateCustomSectionItem(sec.id, item.id, "pageBreakBefore", e.target.checked)}
+                          className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        />
+                        <Label htmlFor={`csec-pb-${item.id}`} className="text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                          Force page break before this item
+                        </Label>
+                      </div>
+
+                      {data.theme?.pagesCount && data.theme.pagesCount > 1 ? (
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor={`csec-pg-${item.id}`} className="text-xs font-semibold text-slate-500">Show on Page:</Label>
+                          <select
+                            id={`csec-pg-${item.id}`}
+                            value={item.page || 1}
+                            onChange={(e) => updateCustomSectionItem(sec.id, item.id, "page", parseInt(e.target.value) || 1)}
+                            className="h-7 rounded border border-slate-200 bg-white px-2 py-0.5 text-xs focus-visible:outline-none cursor-pointer font-semibold text-slate-650"
+                          >
+                            {Array.from({ length: data.theme.pagesCount }).map((_, i) => (
+                              <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => addCustomSectionItem(sec.id)}
+                  className="w-full flex items-center justify-center gap-2 h-9 text-xs font-semibold border-dashed border-slate-350 hover:bg-slate-50 text-slate-600"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Item
+                </Button>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+
         </Accordion>
+
+        {/* Add Section Controls */}
+        <div className="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/30 space-y-3 print:hidden mt-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-bold text-slate-700">Add More CV Sections</span>
+            <span className="text-[10px] text-slate-400">Expand your resume with custom subsections tailored to your background.</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {[
+              { name: "Courses", label: "Courses" },
+              { name: "Certifications", label: "Certifications" },
+              { name: "Achievements & Awards", label: "Awards" },
+              { name: "Volunteer Experience", label: "Volunteer" },
+              { name: "Publications", label: "Publications" }
+            ].map((s) => {
+              const exists = (data.customSections || []).some((sec) => sec.name === s.name);
+              return (
+                <Button
+                  key={s.name}
+                  type="button"
+                  variant="outline"
+                  disabled={exists}
+                  onClick={() => addCustomSection(s.name)}
+                  className="h-8 px-2.5 text-[11px] font-semibold border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 disabled:opacity-40 cursor-pointer"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  {s.label}
+                </Button>
+              );
+            })}
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                const name = prompt("Enter the name of your custom section (e.g. Activities, Publications):");
+                if (name && name.trim()) {
+                  addCustomSection(name.trim());
+                }
+              }}
+              className="h-8 px-2.5 text-[11px] font-semibold border-indigo-200 bg-indigo-50/20 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 cursor-pointer"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Custom Section...
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -93,6 +93,24 @@ export interface CVTheme {
   professionalPitch?: string;
   backgroundColor?: string;
   sidebarBackgroundColor?: string;
+  sectionNames?: Record<string, string>;
+}
+
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  pageBreakBefore?: boolean;
+  page?: number;
+}
+
+export interface CustomSection {
+  id: string;
+  name: string;
+  items: CustomSectionItem[];
 }
 
 export interface CVData {
@@ -104,5 +122,6 @@ export interface CVData {
   experience: Experience[];
   languages: Language[];
   references?: Reference[];
+  customSections?: CustomSection[];
   theme?: CVTheme;
 }

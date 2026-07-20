@@ -95,6 +95,22 @@ export const defaultCVData: CVData = {
       phone: "+1 (555) 012-3456"
     }
   ],
+  customSections: [
+    {
+      id: "sec-cert",
+      name: "Certifications",
+      items: [
+        {
+          id: "cert-1",
+          title: "AWS Certified Solutions Architect",
+          subtitle: "Amazon Web Services (AWS)",
+          startDate: "2023-08",
+          endDate: "2026-08",
+          description: "Validation of expertise in designing and deploying scalable, highly available, and fault-tolerant systems on AWS."
+        }
+      ]
+    }
+  ],
   theme: {
     templateId: "modern",
     primaryColor: "#2563eb",

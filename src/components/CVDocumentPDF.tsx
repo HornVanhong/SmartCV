@@ -1,7 +1,7 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, Image, Link, Svg, Circle, Path, G } from "@react-pdf/renderer";
-import { CVData } from "@/types/cv";
-import { t } from "@/lib/translations";
+import { CVData, CustomSection } from "@/types/cv";
+import { t, getSectionName } from "@/lib/translations";
 import { getPageData } from "@/lib/page-utils";
 import { formatUrl, isLightColor, parseInlineMarkdown } from "@/lib/utils";
 
@@ -84,6 +84,76 @@ const renderMarkdownPDF = (text?: string, isBoldBase = false, customStyle?: any)
   }
 
   return <View style={{ gap: 0.5 }}>{elements}</View>;
+};
+
+const renderCustomSectionsPDF = (customSections: CustomSection[] | undefined, primaryColor: string, styles: any, lang: string) => {
+  if (!customSections || customSections.length === 0) return null;
+  return customSections.map((sec) => (
+    <View key={sec.id} style={[styles.section, { marginTop: 12 }]} wrap={false}>
+      <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: withPdfAlpha(primaryColor, 0.2) }]}>
+        {sec.name}
+      </Text>
+      <View style={{ gap: 6, marginTop: 4 }}>
+        {sec.items.map((item) => (
+          <View key={item.id} style={{ marginBottom: 4 }} break={item.pageBreakBefore}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
+              <Text style={{ fontSize: 9, fontFamily: "Helvetica-Bold", color: "#0f172a" }}>
+                {item.title || "Untitled Entry"}
+              </Text>
+              <Text style={{ fontSize: 7.5, color: "#64748b", fontFamily: "Helvetica" }}>
+                {item.startDate} {item.endDate ? `– ${item.endDate}` : ""}
+              </Text>
+            </View>
+            {item.subtitle ? (
+              <Text style={{ fontSize: 8, color: "#475569", fontFamily: "Helvetica-Bold", marginTop: 1 }}>
+                {item.subtitle}
+              </Text>
+            ) : null}
+            {item.description ? (
+              <View style={{ marginTop: 2 }}>
+                {renderMarkdownPDF(item.description, false, { fontSize: 7.5, color: "#475569" })}
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  ));
+};
+
+const renderCustomSectionsPDFWhite = (customSections: CustomSection[] | undefined, primaryColor: string) => {
+  if (!customSections || customSections.length === 0) return null;
+  return customSections.map((sec) => (
+    <View key={sec.id} style={{ marginBottom: 12 }} wrap={false}>
+      <Text style={{ fontSize: 8.5, fontFamily: "Times-Bold", color: "#102a54", textDecoration: "underline", textTransform: "uppercase", marginBottom: 4 }}>
+        {sec.name}
+      </Text>
+      <View style={{ gap: 6 }}>
+        {sec.items.map((item) => (
+          <View key={item.id} style={{ gap: 2, fontFamily: "Times-Roman" }} wrap={false} break={item.pageBreakBefore}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
+              <Text style={{ fontSize: 8, fontFamily: "Times-Bold", color: "#102a54" }}>
+                {item.title || "Untitled Entry"}
+              </Text>
+              <Text style={{ fontSize: 8, color: "#1e293b", fontFamily: "Times-Roman" }}>
+                {item.startDate} {item.endDate ? `– ${item.endDate}` : ""}
+              </Text>
+            </View>
+            {item.subtitle ? (
+              <Text style={{ fontSize: 8, color: "#334155", fontFamily: "Times-Bold" }}>
+                {item.subtitle}
+              </Text>
+            ) : null}
+            {item.description ? (
+              <View style={{ marginTop: 2 }}>
+                {renderMarkdownPDF(item.description, false, { fontSize: 7.5, color: "#334155", fontFamily: "Times-Roman" })}
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  ));
 };
 
 // React-PDF does not reliably render the CSS-style 8-digit hex values used by
@@ -508,12 +578,48 @@ const GlobeIcon = ({ color }: { color: string }) => (
   </Svg>
 );
 
+const FacebookIcon = ({ color }: { color: string }) => (
+  <Svg viewBox="0 0 24 24" style={{ width: 7.5, height: 7.5 }}>
+    <Path
+      d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+      fill="none"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const TwitterIcon = ({ color }: { color: string }) => (
+  <Svg viewBox="0 0 24 24" style={{ width: 7.5, height: 7.5 }}>
+    <Path
+      d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
+      fill="none"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const renderSocialIconPDF = (val: string | undefined | null, color: string) => {
+  if (!val) return <GlobeIcon color={color} />;
+  const trimmed = val.toLowerCase();
+  if (trimmed.includes("github") || trimmed.includes("git")) return <GithubIcon color={color} />;
+  if (trimmed.includes("linkedin")) return <LinkedinIcon color={color} />;
+  if (trimmed.includes("facebook") || trimmed.includes("fb")) return <FacebookIcon color={color} />;
+  if (trimmed.includes("twitter") || trimmed.includes("x.com")) return <TwitterIcon color={color} />;
+  return <GlobeIcon color={color} />;
+};
+
 interface CVDocumentPDFProps {
   data: CVData;
 }
 
 export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
-  let { personalInfo, professionalSummary, education, skills, projects, experience, languages, references } = data;
+  let { personalInfo, professionalSummary, education, skills, projects, experience, languages, references, customSections } = data;
   const primaryColor = data.theme?.primaryColor || "#2563eb";
   const templateId = data.theme?.templateId || "modern";
   const lang = data.theme?.language || "en";
@@ -597,7 +703,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {professionalSummary ? (
         <View style={styles.section} wrap={false}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            {t("professionalSummary", lang)}
+            {getSectionName("professionalSummary", data)}
           </Text>
           <Text style={styles.summaryText}>{professionalSummary}</Text>
         </View>
@@ -607,7 +713,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {experience && experience.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            {t("workExperience", lang)}
+            {getSectionName("workExperience", data)}
           </Text>
           {experience.map((exp) => (
             <View key={exp.id} style={styles.itemContainer} wrap={false}>
@@ -629,7 +735,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {education && education.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            {t("education", lang)}
+            {getSectionName("education", data)}
           </Text>
           {education.map((edu) => (
             <View key={edu.id} style={styles.itemContainer} wrap={false}>
@@ -650,7 +756,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
       {projects && projects.length > 0 ? (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-            {t("projects", lang)}
+            {getSectionName("projects", data)}
           </Text>
           {projects.map((proj) => (
             <View key={proj.id} style={styles.itemContainer} wrap={false}>
@@ -683,7 +789,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {skills && skills.length > 0 ? (
           <View style={styles.skillsColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              {t("skills", lang)}
+              {getSectionName("skills", data)}
             </Text>
             <View style={styles.badgeContainer}>
               {skills.map((skill, index) => (
@@ -697,7 +803,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {languages && languages.length > 0 ? (
           <View style={styles.languagesColumn}>
             <Text style={[styles.sectionTitle, { color: primaryColor, borderBottomColor: `${primaryColor}20` }]}>
-              {t("languages", lang)}
+              {getSectionName("languages", data)}
             </Text>
             <View>
               {languages.map((lang) => (
@@ -742,6 +848,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </View>
         </View>
       ) : null}
+
+      {/* Dynamic Custom Sections */}
+      {renderCustomSectionsPDF(customSections, primaryColor, styles, lang)}
     </View>
   );
 
@@ -1021,6 +1130,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </View>
         </View>
       ) : null}
+
+      {/* Dynamic Custom Sections */}
+      {renderCustomSectionsPDF(customSections, primaryColor, styles, lang)}
     </View>
   );
 
@@ -1110,7 +1222,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {personalInfo.portfolio ? (
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 3.5 }}>
                 <View style={{ width: 10, alignItems: "center", justifyContent: "center", marginRight: 4, marginTop: -1 }}>
-                  <GlobeIcon color={isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)"} />
+                  {renderSocialIconPDF(personalInfo.portfolio, isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)")}
                 </View>
                 <Link src={formatUrl(personalInfo.portfolio)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff", marginBottom: 0, lineHeight: 1 }]}>
                   {cleanLink(personalInfo.portfolio)}
@@ -1120,7 +1232,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {personalInfo.github ? (
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 3.5 }}>
                 <View style={{ width: 10, alignItems: "center", justifyContent: "center", marginRight: 4, marginTop: -1 }}>
-                  <GithubIcon color={isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)"} />
+                  {renderSocialIconPDF(personalInfo.github, isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)")}
                 </View>
                 <Link src={formatUrl(personalInfo.github)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff", marginBottom: 0, lineHeight: 1 }]}>
                   {cleanLink(personalInfo.github)}
@@ -1130,7 +1242,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {personalInfo.linkedin ? (
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 3.5 }}>
                 <View style={{ width: 10, alignItems: "center", justifyContent: "center", marginRight: 4, marginTop: -1 }}>
-                  <LinkedinIcon color={isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)"} />
+                  {renderSocialIconPDF(personalInfo.linkedin, isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.55)")}
                 </View>
                 <Link src={formatUrl(personalInfo.linkedin)} style={[styles.sidebarContactLink, { color: isLight ? primaryColor : "#ffffff", marginBottom: 0, lineHeight: 1 }]}>
                   {cleanLink(personalInfo.linkedin)}
@@ -1220,7 +1332,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {projects && projects.length > 0 ? (
               <View style={[styles.section, { marginBottom: 9 }]}>
                 <Text style={creativeSectionTitleStyle}>
-                  {t("projects", lang)}
+                  {getSectionName("projects", data)}
                 </Text>
                 {projects.map((proj) => (
                   <View key={proj.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
@@ -1249,7 +1361,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {experience && experience.length > 0 ? (
               <View style={[styles.section, { marginBottom: 9 }]}>
                 <Text style={creativeSectionTitleStyle}>
-                  {t("workExperience", lang)}
+                  {getSectionName("workExperience", data)}
                 </Text>
                 {experience.map((exp) => (
                   <View key={exp.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
@@ -1273,7 +1385,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {experience && experience.length > 0 ? (
               <View style={[styles.section, { marginBottom: 9 }]}>
                 <Text style={creativeSectionTitleStyle}>
-                  {t("workExperience", lang)}
+                  {getSectionName("workExperience", data)}
                 </Text>
                 {experience.map((exp) => (
                   <View key={exp.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
@@ -1295,7 +1407,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {education && education.length > 0 ? (
               <View style={[styles.section, { marginBottom: 9 }]}>
                 <Text style={creativeSectionTitleStyle}>
-                  {t("education", lang)}
+                  {getSectionName("education", data)}
                 </Text>
                 {education.map((edu) => (
                   <View key={edu.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
@@ -1316,7 +1428,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
             {projects && projects.length > 0 ? (
               <View style={[styles.section, { marginBottom: 9 }]}>
                 <Text style={creativeSectionTitleStyle}>
-                  {t("projects", lang)}
+                  {getSectionName("projects", data)}
                 </Text>
                 {projects.map((proj) => (
                   <View key={proj.id} style={[styles.itemContainer, { marginBottom: 5 }]} wrap={false}>
@@ -1347,7 +1459,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
         {references && references.length > 0 ? (
           <View style={[styles.section, { marginTop: 6, marginBottom: 0 }]} wrap={false}>
             <Text style={creativeSectionTitleStyle}>
-              {t("references", lang)}
+              {getSectionName("references", data)}
             </Text>
             <View style={styles.referencesGrid}>
               {references.map((ref) => (
@@ -3171,6 +3283,9 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
           </View>
         ) : null}
 
+        {/* Dynamic Custom Sections */}
+        {renderCustomSectionsPDFWhite(customSections, primaryColor)}
+
         <View style={{ flex: 1 }} />
 
         {/* Footer */}
@@ -3226,6 +3341,7 @@ export const CVDocumentPDF: React.FC<CVDocumentPDFProps> = ({ data }) => {
     experience = pageData.experience;
     languages = pageData.languages;
     references = pageData.references;
+    customSections = pageData.customSections;
     
     const pageLayout = data.theme?.pageLayouts?.[pageNumber - 1] || templateId;
     return renderLayout(pageLayout, pageNumber);

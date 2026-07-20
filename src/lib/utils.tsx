@@ -1,8 +1,24 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Mail, Phone, MapPin, Github, Linkedin, Globe, Facebook, Twitter, Instagram, Youtube, Gitlab } from "lucide-react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function getSocialIcon(val: string | undefined | null, className?: string) {
+  if (!val) return <Globe className={className} />;
+  const trimmed = val.toLowerCase();
+  
+  if (trimmed.includes("github") || trimmed.includes("git")) return <Github className={className} />;
+  if (trimmed.includes("linkedin")) return <Linkedin className={className} />;
+  if (trimmed.includes("facebook") || trimmed.includes("fb")) return <Facebook className={className} />;
+  if (trimmed.includes("twitter") || trimmed.includes("x.com")) return <Twitter className={className} />;
+  if (trimmed.includes("instagram") || trimmed.includes("ig")) return <Instagram className={className} />;
+  if (trimmed.includes("youtube") || trimmed.includes("yt")) return <Youtube className={className} />;
+  if (trimmed.includes("gitlab")) return <Gitlab className={className} />;
+  
+  return <Globe className={className} />;
 }
 
 export function getLinkInfo(val: string | undefined | null): { label: string; url: string } {

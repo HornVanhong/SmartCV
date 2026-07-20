@@ -43,3 +43,11 @@ export function t(key: TranslationKey, lang: "en" | "km" = "en"): string {
   const dict = translations[lang] || translations.en;
   return dict[key] || translations.en[key] || "";
 }
+
+export function getSectionName(key: string, data: any): string {
+  if (data?.theme?.sectionNames?.[key]) {
+    return data.theme.sectionNames[key];
+  }
+  const lang = data?.theme?.language || "en";
+  return t(key as TranslationKey, lang);
+}

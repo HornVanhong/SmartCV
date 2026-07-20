@@ -1,7 +1,7 @@
 import { CVData } from "@/types/cv";
 
 /**
- * Partitions the CVData object to only return items assigned to a specific pageIndex.
+ * Partition the CVData object to only return items assigned to a specific pageIndex.
  */
 export const getPageData = (data: CVData, pageIndex: number): CVData => {
   return {
@@ -14,6 +14,10 @@ export const getPageData = (data: CVData, pageIndex: number): CVData => {
     languages: data.languages.filter((lang) => (lang.page || 1) === pageIndex),
     references: (data.references || []).filter((ref) => (ref.page || 1) === pageIndex),
     skills: (data.theme?.skillsPage || 1) === pageIndex ? data.skills : [],
+    customSections: (data.customSections || []).map((sec) => ({
+      ...sec,
+      items: sec.items.filter((item) => (item.page || 1) === pageIndex)
+    })).filter((sec) => sec.items.length > 0),
   };
 };
 
@@ -69,6 +73,16 @@ export const duplicatePageContent = (data: CVData, pageNumber: number): CVData =
       .map(ref => ({ ...ref, id: `ref-${Date.now()}-${Math.random()}`, page: newPage }))
   ];
 
+  const duplicatedCustomSections = (data.customSections || []).map((sec) => ({
+    ...sec,
+    items: [
+      ...sec.items.map(item => ({ ...item, page: shiftItemPage(item.page) })),
+      ...sec.items
+        .filter(item => (item.page || 1) === targetPage)
+        .map(item => ({ ...item, id: `citem-${Date.now()}-${Math.random()}`, page: newPage }))
+    ]
+  }));
+
   const oldLayouts = data.theme?.pageLayouts || Array.from({ length: currentCount }).map(() => templateId);
   const targetLayout = oldLayouts[targetPage - 1] || templateId;
   const newLayouts = [...oldLayouts];
@@ -81,6 +95,7 @@ export const duplicatePageContent = (data: CVData, pageNumber: number): CVData =
     projects: duplicatedProjects,
     languages: duplicatedLanguages,
     references: duplicatedReferences,
+    customSections: duplicatedCustomSections,
     theme: {
       ...data.theme,
       templateId,
@@ -122,6 +137,10 @@ export const deletePageContent = (data: CVData, pageNumber: number): CVData => {
     projects: data.projects.map(proj => ({ ...proj, page: cleanItemPage(proj.page) })),
     languages: data.languages.map(lang => ({ ...lang, page: cleanItemPage(lang.page) })),
     references: (data.references || []).map(ref => ({ ...ref, page: cleanItemPage(ref.page) })),
+    customSections: (data.customSections || []).map((sec) => ({
+      ...sec,
+      items: sec.items.map(item => ({ ...item, page: cleanItemPage(item.page) }))
+    })),
     theme: {
       ...data.theme,
       templateId,

@@ -18,7 +18,7 @@ import { Copy, Trash2, Plus, ChevronUp, ChevronDown, Eye, Lock } from "lucide-re
 import { Button } from "@/components/ui/button";
 
 const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
-  const { education, experience, projects, languages, references, skills, theme } = data;
+  const { education, experience, projects, languages, references, skills, theme, customSections } = data;
   const primaryColor = theme?.primaryColor || "#2563eb";
 
   const isEmpty = !data.professionalSummary && 
@@ -27,7 +27,8 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
     (!projects || projects.length === 0) &&
     (!languages || languages.length === 0) &&
     (!references || references.length === 0) &&
-    (!skills || skills.length === 0);
+    (!skills || skills.length === 0) &&
+    (!customSections || customSections.length === 0);
 
   if (isEmpty) {
     return <div className="bg-white min-h-[inherit]" />;
@@ -142,7 +143,7 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {references.map((ref) => (
-              <div key={ref.id} className="text-xs text-slate-750 space-y-0.5">
+              <div key={ref.id} className="text-xs text-slate-755 space-y-0.5">
                 <p className="font-bold text-slate-800">{ref.name}</p>
                 <p>{ref.relationship} {ref.company ? `@ ${ref.company}` : ""}</p>
                 {ref.email && <p>Email: {ref.email}</p>}
@@ -152,6 +153,27 @@ const CVTemplateWhite: React.FC<{ data: CVData }> = ({ data }) => {
           </div>
         </section>
       )}
+
+      {/* Dynamic Custom Sections */}
+      {customSections && customSections.map((sec) => (
+        <section key={sec.id} className="space-y-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider border-b pb-1 border-slate-200" style={{ color: primaryColor }}>
+            {sec.name}
+          </h3>
+          <div className="space-y-4">
+            {sec.items.map((item) => (
+              <div key={item.id} className="space-y-1">
+                <div className="flex justify-between items-baseline font-bold text-xs sm:text-sm">
+                  <span className="text-slate-850 font-bold">{item.title || "Untitled Entry"}</span>
+                  <span className="text-slate-500 font-medium text-[11px]">{item.startDate} {item.endDate ? `- ${item.endDate}` : ""}</span>
+                </div>
+                {item.subtitle && <div className="text-xs font-semibold text-slate-600">{item.subtitle}</div>}
+                {item.description && <div className="mt-0.5">{renderMarkdownHTML(item.description, "text-xs text-slate-500 mt-1")}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 };
