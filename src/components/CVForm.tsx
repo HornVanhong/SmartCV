@@ -175,6 +175,34 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     );
   };
 
+  const renderActionVerbsHelper = (currentText: string, onUpdate: (val: string) => void) => {
+    const actionVerbs = [
+      "Led", "Architected", "Built", "Developed", "Spearheaded", "Optimized", 
+      "Streamlined", "Increased", "Engineered", "Orchestrated", "Implemented", "Transformed"
+    ];
+
+    return (
+      <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full no-scrollbar">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Action Verbs:</span>
+        {actionVerbs.map((verb) => (
+          <button
+            key={verb}
+            type="button"
+            onClick={() => {
+              const text = currentText || "";
+              const needsNewline = text.length > 0 && !text.endsWith("\n");
+              const bullet = `${needsNewline ? "\n" : ""}• ${verb} `;
+              onUpdate(`${text}${bullet}`);
+            }}
+            className="text-[10px] font-semibold bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 hover:border-indigo-200 text-slate-650 px-2 py-0.5 rounded-full cursor-pointer shrink-0 transition-all"
+          >
+            + {verb}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   // List manipulation helpers
   const addEducation = () => {
     const newEdu: Education = {
@@ -681,7 +709,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
     };
   }, [data, openSections]);
 
-  const handleThemeChange = (field: keyof CVTheme, value: string | number | boolean) => {
+  const handleThemeChange = (field: keyof CVTheme, value: any) => {
     onChange({
       ...data,
       theme: {
@@ -952,9 +980,12 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                 <div className="flex flex-wrap gap-2 pt-1">
                   {[
                     { hex: "#2563eb", name: "Royal Blue" },
+                    { hex: "#1e3a8a", name: "Midnight Navy" },
                     { hex: "#059669", name: "Emerald" },
+                    { hex: "#0f766e", name: "Teal" },
                     { hex: "#4f46e5", name: "Indigo" },
                     { hex: "#7c3aed", name: "Violet" },
+                    { hex: "#881337", name: "Burgundy" },
                     { hex: "#e11d48", name: "Rose" },
                     { hex: "#d97706", name: "Amber" },
                     { hex: "#0f172a", name: "Charcoal" }
@@ -1192,8 +1223,71 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                     <span className="text-[10px] font-medium text-slate-400">Large</span>
                   </div>
                 </div>
-              </div>
+                {/* Global Section Order Panel */}
+                <div className="space-y-3 border-t border-slate-100 pt-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs font-bold text-slate-700">Section Display Order</Label>
+                    <span className="text-[10px] text-slate-400 font-normal">Reorder main sections</span>
+                  </div>
+                  {(() => {
+                    const defaultSections = [
+                      { id: "summary", name: data.theme?.sectionNames?.professionalSummary || "Professional Summary" },
+                      { id: "experience", name: data.theme?.sectionNames?.workExperience || "Work Experience" },
+                      { id: "education", name: data.theme?.sectionNames?.education || "Education" },
+                      { id: "projects", name: data.theme?.sectionNames?.projects || "Projects & Courses" },
+                      { id: "skills", name: data.theme?.sectionNames?.skills || "Skills" },
+                      { id: "languages", name: data.theme?.sectionNames?.languages || "Languages" },
+                      { id: "references", name: data.theme?.sectionNames?.references || "References" }
+                    ];
 
+                    const currentOrderKeys = data.theme?.sectionOrder && data.theme.sectionOrder.length > 0 
+                      ? data.theme.sectionOrder 
+                      : defaultSections.map(s => s.id);
+                    
+                    const orderedSections = currentOrderKeys
+                      .map(key => defaultSections.find(s => s.id === key))
+                      .filter(Boolean) as { id: string; name: string }[];
+
+                    const moveSectionOrder = (index: number, direction: "up" | "down") => {
+                      const newOrder = [...currentOrderKeys];
+                      const targetIndex = direction === "up" ? index - 1 : index + 1;
+                      if (targetIndex < 0 || targetIndex >= newOrder.length) return;
+                      const temp = newOrder[index];
+                      newOrder[index] = newOrder[targetIndex];
+                      newOrder[targetIndex] = temp;
+                      handleThemeChange("sectionOrder", newOrder);
+                    };
+
+                    return (
+                      <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        {orderedSections.map((sec, idx) => (
+                          <div key={sec.id} className="flex items-center justify-between px-3 py-1.5 bg-white rounded-lg border border-slate-200 text-xs font-semibold text-slate-700">
+                            <span>{sec.name}</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => moveSectionOrder(idx, "up")}
+                                className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                              >
+                                <ChevronUp className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === orderedSections.length - 1}
+                                onClick={() => moveSectionOrder(idx, "down")}
+                                className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                              >
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -1820,6 +1914,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
                       <Label className="text-xs font-semibold text-slate-600">Description</Label>
                       {renderHighlightButton(`exp-desc-${exp.id}`, exp.description, (val) => updateExperience(exp.id, "description", val))}
                     </div>
+                    {renderActionVerbsHelper(exp.description, (val) => updateExperience(exp.id, "description", val))}
                     <div data-color-mode="light" className="text-xs mt-1">
                       <MDEditor
                         value={exp.description}
@@ -2157,6 +2252,7 @@ export const CVForm: React.FC<CVFormProps> = ({ data, onChange }) => {
 
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold text-slate-600">Description</Label>
+                    {renderActionVerbsHelper(proj.description, (val) => updateProject(proj.id, "description", val))}
                     <div data-color-mode="light" className="text-xs mt-1">
                       <MDEditor
                         value={proj.description}

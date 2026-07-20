@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CVData } from "@/types/cv";
 import { defaultCVData } from "@/lib/default-cv";
 import { CVForm } from "@/components/CVForm";
 import { CVPreview } from "@/components/CVPreview";
 import { ExportButton } from "@/components/ExportButton";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Save, ArrowLeft, Check, FileText } from "lucide-react";
+import { RotateCcw, Save, ArrowLeft, Check, FileText, Download, Upload } from "lucide-react";
 import Link from "next/link";
 
 export const CVBuilder: React.FC = () => {
@@ -16,6 +16,7 @@ export const CVBuilder: React.FC = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "info">("success");
   const [showResetModal, setShowResetModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -45,6 +46,39 @@ export const CVBuilder: React.FC = () => {
       localStorage.setItem("smart_cv_data", JSON.stringify(cvData));
       triggerToast("Draft saved successfully!", "success");
     }
+  };
+
+  const handleExportJson = () => {
+    if (!cvData) return;
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(cvData, null, 2))}`;
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", jsonString);
+    downloadAnchor.setAttribute("download", `CV_Backup_${(cvData.personalInfo?.fullName || "Resume").replace(/\s+/g, "_")}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    triggerToast("Backup exported as JSON!", "success");
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (parsed && typeof parsed === "object" && parsed.personalInfo) {
+          setCvData(parsed);
+          triggerToast("CV backup successfully restored!", "success");
+        } else {
+          triggerToast("Invalid JSON file structure.", "info");
+        }
+      } catch (err) {
+        triggerToast("Failed to parse JSON file.", "info");
+      }
+    };
+    reader.readAsText(file);
+    if (e.target) e.target.value = "";
   };
 
   const handleResetConfirm = () => {
@@ -133,7 +167,35 @@ export const CVBuilder: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".json"
+            className="hidden"
+          />
+
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            title="Import JSON Backup"
+            className="flex items-center gap-1.5 h-9 text-xs font-semibold border-slate-250 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">Import JSON</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleExportJson}
+            title="Export JSON Backup"
+            className="flex items-center gap-1.5 h-9 text-xs font-semibold border-slate-250 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">Export JSON</span>
+          </Button>
+
           <Button
             variant="outline"
             onClick={() => setShowResetModal(true)}

@@ -94,6 +94,7 @@ export interface CVTheme {
   backgroundColor?: string;
   sidebarBackgroundColor?: string;
   sectionNames?: Record<string, string>;
+  sectionOrder?: string[];
 }
 
 export interface CustomSectionItem {
